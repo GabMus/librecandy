@@ -1,6 +1,8 @@
 # LibreCandy
 
-## Legend: Attribute, *Foreign Key*, **Primary Key**
+#### Legend
+
+Attribute, *Foreign Key*, **Primary Key**
 
 ## Database schema
 
@@ -41,9 +43,9 @@
 
 ***
 
-##DBMS comparison
+# DBMS comparison
 
-### MongoDB
+## MongoDB
 
 ### Pros
 

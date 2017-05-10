@@ -34,3 +34,15 @@ Attribute
 - Value (X/10)
 - *Author*
 - Pub_Datetime
+
+##Choose of DBMS
+###Pro
+- JSON
+- Array and Nested Objects
+- Easy
+- Sharding
+- Horizontal/Vertical Scalability
+
+###Contro
+- Higher DB Size
+- Slow Joins

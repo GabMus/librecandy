@@ -1,10 +1,11 @@
-#LibreCandy
-##Legenda
-Attribute
-*Foreign Key*
-**Primary KeyDB**
-##Database
-###User
+# LibreCandy
+
+## Legend: Attribute, *Foreign Key*, **Primary Key**
+
+## Database schema
+
+### User
+
 - Real Name
 - **Nickname**
 - Avatar
@@ -12,7 +13,8 @@ Attribute
 - Password
 - Bio
 
-###Treat
+### Treat
+
 - **Id**
 - Description
 - Version Tag
@@ -21,28 +23,37 @@ Attribute
 - Screenshots {}
 - Pub_Datetime
 
-###Comment
+### Comment
+
 - **Id**
 - *Author*
 - *Treat*
 - Content
 - Pub_Datetime
 
-###Rating
+### Rating
+
 - **Id**
 - *Treat*
 - Value (X/10)
 - *Author*
 - Pub_Datetime
 
-##Choose of DBMS
-###Pro
+***
+
+##DBMS comparison
+
+### MongoDB
+
+### Pros
+
 - JSON
 - Array and Nested Objects
 - Easy
 - Sharding
 - Horizontal/Vertical Scalability
 
-###Contro
+### Cons
+
 - Higher DB Size
 - Slow Joins

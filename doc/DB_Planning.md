@@ -19,28 +19,24 @@ Attribute, *Foreign Key*, **Primary Key**
 ### Treat
 
 - **Id**
-- Description
-- Version Tag
-- is_Deprecated
-- File
-- Screenshots {}
-- Pub_Datetime
-
-### Comment
-
-- **Id**
+- Name
+- Category
 - *Author*
-- *Treat*
-- Content
-- Pub_Datetime
-
-### Rating
-
-- **Id**
-- *Treat*
-- Value (X/10)
-- *Author*
-- Pub_Datetime
+- Details {...}
+ - Description
+ - Version
+ - Is_Deprecated
+ - File
+ - Screenshots []
+ - Pub_Datetime
+- Ratings {...}
+ - *Author*
+ - Pub_Datetime
+ - Value /10
+- Comments {...}
+ - *Author*
+ - Content
+ - Pub_Datetime
 
 ***
 

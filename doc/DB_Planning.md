@@ -8,7 +8,7 @@ Attribute, *Foreign Key*, **Primary Key**
 
 ### User
 
-- Real Name
+- Realname
 - **Username**
 - Avatar
 - Email
@@ -22,18 +22,19 @@ Attribute, *Foreign Key*, **Primary Key**
 - Name
 - Category
 - *Author*
-- Details {...}
+- First_Pub_Datetime
+- Details [{...},...]
   - Description
   - Version
   - Is_Deprecated
   - File
   - Screenshots []
   - Pub_Datetime
-- Ratings {...}
+- Ratings [{...},...]
   - *Author*
   - Pub_Datetime
   - Value /10
-- Comments {...}
+- Comments [{...},...]
   - *Author*
   - Content
   - Pub_Datetime

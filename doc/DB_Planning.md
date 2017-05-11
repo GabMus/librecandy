@@ -23,20 +23,20 @@ Attribute, *Foreign Key*, **Primary Key**
 - Category
 - *Author*
 - Details {...}
- - Description
- - Version
- - Is_Deprecated
- - File
- - Screenshots []
- - Pub_Datetime
+  - Description
+  - Version
+  - Is_Deprecated
+  - File
+  - Screenshots []
+  - Pub_Datetime
 - Ratings {...}
- - *Author*
- - Pub_Datetime
- - Value /10
+  - *Author*
+  - Pub_Datetime
+  - Value /10
 - Comments {...}
- - *Author*
- - Content
- - Pub_Datetime
+  - *Author*
+  - Content
+  - Pub_Datetime
 
 ***
 

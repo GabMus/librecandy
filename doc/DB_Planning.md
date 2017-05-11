@@ -9,7 +9,7 @@ Attribute, *Foreign Key*, **Primary Key**
 ### User
 
 - Real Name
-- **Nickname**
+- **Username**
 - Avatar
 - Email
 - Password

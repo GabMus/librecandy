@@ -22,6 +22,7 @@ Attribute, *Foreign Key*, **Primary Key**
 - Name
 - Category
 - *Author*
+- First_Pub_Datetime
 - Details [{...},...]
   - Description
   - Version

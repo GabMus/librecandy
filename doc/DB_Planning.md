@@ -14,6 +14,7 @@ Attribute, *Foreign Key*, **Primary Key**
 - Email
 - Password
 - Bio
+- Signup_Datetime
 
 ### Treat
 

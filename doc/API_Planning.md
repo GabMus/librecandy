@@ -41,6 +41,7 @@
 | /users?username==*username*&deleteuser | Delete user and related content in cascade | DELETE |  |
 | /treats | List of treats ordered by first_pub_datetime | GET |  |
 | /treats?create | Create new treat | POST | name (required), category (fixed set, required), version (required), author (required), description (required), file (required), screenshots (comma separated list of urls, required) |
+| /treat?nocomments | Treat request without the comments list | GET |  |
 | /treats?id=*treatid*&newversion | Add version to treat | POST | version (unique, required), description (provide old one in the frontend form), deprecation_list (list of newly deprecated versions, required, can provide empty list []), file (required), screenshots (conditionally optional, see next opt), keep_screenshots (required, default=false, indicates that screenshots correspond with the older version) |
 | /treats?id=*treatid*&ratetreat | Add or update rating for treat | POST | author (required), value (required) |
 | /treats?id=*treatid*&edittreat | Edit general treat info | POST | name (required),  deprecation_list (list of newly deprecated versions, required, can provide empty list []) |

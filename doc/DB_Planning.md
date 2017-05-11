@@ -2,7 +2,7 @@
 
 #### Legend
 
-Attribute, *Foreign Key*, **Primary Key**
+Attribute, *Foreign Key*, **Primary Key**, /logic calculated field/
 
 ## Database schema
 
@@ -23,6 +23,7 @@ Attribute, *Foreign Key*, **Primary Key**
 - Category
 - *Author*
 - First_Pub_Datetime
+- /Last_Pub_Datetime/
 - Details [{...},...]
   - Description
   - Version
@@ -35,6 +36,7 @@ Attribute, *Foreign Key*, **Primary Key**
   - *Author*
   - Pub_Datetime
   - Value /10
+- /Rating_Score/
 - Comments [{...},...]
   - *Author*
   - Content

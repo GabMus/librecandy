@@ -25,6 +25,7 @@ Attribute, *Foreign Key*, **Primary Key**, /logic calculated field/
 - First_Pub_Datetime
 - /Last_Pub_Datetime/
 - Details [{...},...]
+  - Id
   - Description
   - Version
   - Is_Deprecated

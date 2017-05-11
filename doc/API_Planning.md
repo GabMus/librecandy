@@ -31,14 +31,21 @@
 
 `BASE_URI` + `requestname` + `?option1=value1&option2=value2`
 
-| Name | GET | POST (create) | PUT (update) |
+| Name | Description | Method | POST attributes |
 |----|----|----|----|
-| /users | List of users ordered by username |  |  |
-| /users?orderby=*attribute[+,-]* | List of users ordered by *attribute* ascending (using +) or descending (using -). If attribute doesn't exist return "400: Invalid operation: no *attribute* attribute in users schema". **Allowed ordering values: username, (email?), signup_datetime** | 400: Invalid operation (POST) for query /users?orderby | 400: Invalid operation (PUT) for query /users?orderby |
-| /users?*attribute[=,>,>=<,<=]value* | List of users filtered by *attribute*. If no results for select filter return `"users": []`. If attribute doesn't exist return "400: Invalid operation: no *attribute* attribute in users schema". **Allowed filtering values: username, email, signup_datetime, realname**. For strings >,>=,<,<= return "400: Invalid operator *operator*. Use = as contains for string filtering". For strings filtering only the = operator is used with the **contains** semantic |  |  |
-| /treats | List of treats ordered by first_pub_datetime |  |  |
-| /treats?orderby=*attribute[+,-]* | List of treats ordered by *attribute* ascending (using +) or descending (using -). If attribute doesn't exist return "400: Invalid operation: no *attribute* attribute in treats schema". **Allowed ordering values: first_pub_datetime, id, name, last_pub_datetime** | 400: Invalid operation (POST) for query /treats?orderby | 400: Invalid operation (PUT) for query /treats?orderby |
-| /treats?*attribute[=,>,>=<,<=]value* | List of treats filtered by *attribute*. If no results for select filter return `"treats": []`. If attribute doesn't exist return "400: Invalid operation: no *attribute* attribute in treats schema". **Allowed filtering values: id, name, category, author, first_pub_datetime, last_pub_datetime, rating**. For strings >,>=,<,<= return "400: Invalid operator *operator*. Use = as contains for string filtering". For strings filtering only the = operator is used with the **contains** semantic |  |  |
+| /users | List of users ordered by username | GET |  |
+| /users/create | Create new user | POST | realname, username (unique, required), email (unique, required), password (hash?, required), bio |
+| /users?orderby=*attribute[+,-]* | List of users ordered by *attribute* ascending (using +) or descending (using -). If attribute doesn't exist return "400: Invalid operation: no *attribute* attribute in users schema". **Allowed ordering values: username, (email?), signup_datetime** | GET |  |
+| /users?*attribute[=,>,>=<,<=]value* | List of users filtered by *attribute*. If no results for select filter return `"users": []`. If attribute doesn't exist return "400: Invalid operation: no *attribute* attribute in users schema". **Allowed filtering values: username, email, signup_datetime, realname**. For strings >,>=,<,<= return "400: Invalid operator *operator*. Use = as contains for string filtering". For strings filtering only the = operator is used with the **contains** semantic | GET |  |
+| /treats | List of treats ordered by first_pub_datetime | GET |  |
+| /treats/create | Create new treat | POST | name (required), category (fixed set, required), version (required), author (required), description (required), file (required), screenshots (comma separated list of urls, required) |
+| /treats?id=*treatid*&newversion | Add version to treat | POST | version (unique, required), description (provide old one in the frontend form), deprecation_list (list of newly deprecated versions, required, can provide empty list []), file (required), screenshots (conditionally optional, see next opt), keep_screenshots (required, default=false, indicates that screenshots correspond with the older version) |
+| /treats?id=*treatid*&ratetreat | Add or update rating for treat | POST | author (required), value (required) |
+| /treats?id=*treatid*&versionid=*versionid*&edit | Edit version | POST | version (unique, required), description (required), isdeprecated (required), file (optional, will keep old one if not provided), screenshots (defaults to old list, changes will be overwritten, including removing screenshots from the list) |
+| /treats?id=*treatid*&comment | Add comment for treat | POST | author (required), content (required) |
+| /treats?id=*treatid*&commentid=*commentid*&delete | Delete comment | DELETE |  |
+| /treats?orderby=*attribute[+,-]* | List of treats ordered by *attribute* ascending (using +) or descending (using -). If attribute doesn't exist return "400: Invalid operation: no *attribute* attribute in treats schema". **Allowed ordering values: first_pub_datetime, id, name, last_pub_datetime** | GET |  |
+| /treats?*attribute[=,>,>=<,<=]value* | List of treats filtered by *attribute*. If no results for select filter return `"treats": []`. If attribute doesn't exist return "400: Invalid operation: no *attribute* attribute in treats schema". **Allowed filtering values: id, name, category, author, first_pub_datetime, last_pub_datetime, rating_score**. For strings >,>=,<,<= return "400: Invalid operator *operator*. Use = as contains for string filtering". For strings filtering only the = operator is used with the **contains** semantic | GET |  |
 
 ### Common options
 

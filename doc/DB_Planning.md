@@ -25,7 +25,7 @@ Attribute, *Foreign Key*, **Primary Key**, /logic calculated field/
 - First_Pub_Datetime
 - /Last_Pub_Datetime/
 - Details [{...},...]
-  - Id
+  - **Id**
   - Description
   - Version
   - Is_Deprecated
@@ -39,6 +39,7 @@ Attribute, *Foreign Key*, **Primary Key**, /logic calculated field/
   - Value /10
 - /Rating_Score/
 - Comments [{...},...]
+  - **Id**
   - *Author*
   - Content
   - Pub_Datetime

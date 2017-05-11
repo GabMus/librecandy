@@ -29,7 +29,7 @@
 
 *Options can be added to the request with the following syntax:*
 
-`BASE_URI` + `requestname` + `?option1=value1,value2&option2=value3,value4`
+`BASE_URI` + `requestname` + `?option1=value1&option2=value2`
 
 | Name | GET | POST (create) | PUT (update) |
 |----|----|----|----|

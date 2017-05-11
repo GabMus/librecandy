@@ -30,6 +30,7 @@ Attribute, *Foreign Key*, **Primary Key**
   - File
   - Screenshots []
   - Pub_Datetime
+  - Downloads
 - Ratings [{...},...]
   - *Author*
   - Pub_Datetime

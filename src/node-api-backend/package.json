@@ -1,0 +1,28 @@
+{
+  "name": "librecandy-api-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GabMus/librecandy.git"
+  },
+  "author": "Gabriele Musco",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/GabMus/librecandy/issues"
+  },
+  "homepage": "https://github.com/GabMus/librecandy#readme",
+  "dependencies": {
+    "body-parser": "^1.17.1",
+    "express": "^4.15.2",
+    "mongodb": "^2.2.26",
+    "mongoose": "^4.9.8",
+    "mongoose-file": "0.0.2",
+    "passport": "^0.3.2",
+    "passport-local": "^1.0.0"
+  }
+}

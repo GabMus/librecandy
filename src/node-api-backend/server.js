@@ -1,13 +1,14 @@
 // Node entry point
 
 // constants
-const MONGODB_URI='mongodb://localhost:27017/node-api-backend'
+const MONGODB_URI='mongodb://localhost:27017/node-api-backend';
 
 // import libs
 var express = require('express');
 var bodyParser = require('body-parser');
 var router = require('./router')
 var mongoose = require('mongoose');
+var models = require('./models/librecandyModels.js')
 
 var app = express(); // create express app
 

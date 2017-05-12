@@ -19,9 +19,11 @@
   "dependencies": {
     "body-parser": "^1.17.1",
     "express": "^4.15.2",
+    "jsonwebtoken": "^7.4.0",
     "mongodb": "^2.2.26",
     "mongoose": "^4.9.8",
     "mongoose-file": "0.0.2",
+    "morgan": "^1.8.1",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0"
   }

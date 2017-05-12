@@ -16,7 +16,7 @@ var UserSchema = new Schema({
     realname: {type: String, trim: true},
     username: {type: String, trim: true, required: true, unique: true},
     // avatar using mongoose-file?
-    email: {type: String trim: true, required: true, unique: true, match: EMAIL_REGEX},
+    email: {type: String, trim: true, required: true, unique: true, match: EMAIL_REGEX},
     // password using passport?
     bio: {type: String, trim: true},
     signup_datetime: {type: Date, default: Date.now}
@@ -38,14 +38,14 @@ TreatDetailSchema.plugin(filePlugin, {
 });
 
 var TreatRatingSchema = new Schema({
-    author: {type: User, required: true},
+    author: {type: UserSchema, required: true},
     pub_datetime: {type: Date, default: Date.now},
     value: {type: Number, min: 1, max: 10}
 });
 
 var TreatCommentSchema = new Schema({
     // _id should be already defined
-    author: {type: User, required: true},
+    author: {type: UserSchema, required: true},
     pub_datetime: {type: Date, default: Date.now},
     content: {type: String, trim: true, required: true},
 });
@@ -54,11 +54,11 @@ var TreatSchema = new Schema({
     // _id should be already defined
     name: {type: String, trim: true},
     category: {type: String, trim: true},
-    author: {type: User, required: true},
+    author: {type: UserSchema, required: true},
     first_pub_datetime: {type: Date, default: Date.now},
-    details: [TreatDetail],
-    ratings: [TreatRating],
-    comments: [TreatComment]
+    details: [TreatDetailSchema],
+    ratings: [TreatRatingSchema],
+    comments: [TreatCommentSchema]
 });
 
 var models = {

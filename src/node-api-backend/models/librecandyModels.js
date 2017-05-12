@@ -18,7 +18,7 @@ var UserSchema = new Schema({
     // avatar using mongoose-file?
     email: {type: String trim: true, required: true, unique: true, match: EMAIL_REGEX},
     // password using passport?
-    bio: {type: String, trim: true, required: true},
+    bio: {type: String, trim: true},
     signup_datetime: {type: Date, default: Date.now}
 });
 
@@ -31,7 +31,7 @@ var TreatDetailSchema = new Schema({
 });
 
 // add file field
-TreatDetail.plugin(filePlugin, {
+TreatDetailSchema.plugin(filePlugin, {
     name: 'file',
     upload_to: make_upload_to_model(MEDIA_PATH, TREATS_FILE_REL_PATH),
     relative_to: MEDIA_PATH

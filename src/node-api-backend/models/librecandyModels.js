@@ -21,7 +21,8 @@ var UserSchema = new Schema({
     email: {type: String, trim: true, required: true, unique: true, match: EMAIL_REGEX},
     password: {type: String, required: true},
     bio: {type: String, trim: true},
-    signup_datetime: {type: Date, default: Date.now}
+    signup_datetime: {type: Date, default: Date.now},
+    is_superuser: {type: Boolean, default: false}
 });
 
 // this function is called BEFORE the user.save() function is executed

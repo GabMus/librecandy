@@ -1,6 +1,17 @@
 var models = require('./models/librecandyModels.js');
 var passport = require('passport');
 var BasicStrategy = require('passport-http').BasicStrategy;
+var JwtStrategy = require('passport-jwt').Strategy;
+var ExtractJwt = require('passport-jwt').ExtractJwt;
+var jwt = require('jsonwebtoken');
+var config = require('./config.js');
+
+var passport_jwt_options = {};
+passport_jwt_options.secretOrKey = config.secret;
+//passport_jwt_options.jwtFromRequest = ExtractJwt.fromBodyField('token');
+passport_jwt_options.jwtFromRequest = ExtractJwt.fromAuthHeader();
+//passport_jwt_options.ignoreExpiration = false;
+//passport_jwt_options.passReqToCallback = true;
 
 passport.use(new BasicStrategy(
     function(username, password, callback) {
@@ -22,4 +33,22 @@ passport.use(new BasicStrategy(
     }
 ));
 
-exports.isAuthenticated = passport.authenticate('basic', {session: false});
+var authenticateBasic = passport.authenticate('basic', {session: false});
+
+passport.use(new JwtStrategy(passport_jwt_options, function(jwt_payload, callback) {
+    models.User.findOne({username: jwt_payload.username}, function(err, user) {
+        if (err) {
+            return callback(err, false);
+        }
+        if (user) {
+            return callback(null, user);
+        }
+        return callback(null, false);
+    });
+    return authenticateBasic;
+}));
+
+var authenticateJwt = passport.authenticate('jwt', {session: false});
+
+exports.isAuthenticated = authenticateJwt;
+exports.isAuthenticatedBasic = authenticateBasic;

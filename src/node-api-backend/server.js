@@ -1,8 +1,5 @@
 // Node entry point
 
-// constants
-const MONGODB_URI='mongodb://localhost:27017/node-api-backend';
-
 // import libs
 var express = require('express');
 var bodyParser = require('body-parser');
@@ -11,6 +8,10 @@ var mongoose = require('mongoose');
 var morgan = require('morgan');
 var passport = require('passport');
 // var models = require('./models/librecandyModels.js') // already in router
+var config = require('./config.js');
+
+var MONGODB_URI = config.database;
+var SECRET = config.secret;
 
 var app = express(); // create express app
 
@@ -18,6 +19,9 @@ var app = express(); // create express app
 // NOTE: to start the mongo DB daemon run:
 // mongod --dbpath=dbdir/data --port 27017
 mongoose.connect(MONGODB_URI);
+
+// set the secret to the app
+app.set('superSecret', SECRET);
 
 // tell app to use bodyParser
 // this will enable us to parse the POST data

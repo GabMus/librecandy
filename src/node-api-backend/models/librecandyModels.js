@@ -7,20 +7,49 @@ const USERS_AVATAR_REL_PATH = 'avatars';
 const EMAIL_REGEX = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
 var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
+var bcrypt = require('bcrypt-nodejs');
+
 var filePluginLib = require('mongoose-file');
 var filePlugin = filePluginLib.filePlugin;
 var make_upload_to_model = filePluginLib.make_upload_to_model;
-var Schema = mongoose.Schema;
 
 var UserSchema = new Schema({
     realname: {type: String, trim: true},
     username: {type: String, trim: true, required: true, unique: true},
     // avatar using mongoose-file?
     email: {type: String, trim: true, required: true, unique: true, match: EMAIL_REGEX},
-    // password using passport?
+    password: {type: String, required: true},
     bio: {type: String, trim: true},
     signup_datetime: {type: Date, default: Date.now}
 });
+
+// this function is called BEFORE the user.save() function is executed
+// basically hashes the password if it's changed
+UserSchema.pre('save', function (callback) {
+    var user = this;
+
+    //if password is unchanged, do nothing
+    if (!user.isModified('password')) return callback();
+
+    //if password is changed, hash it
+    bcrypt.genSalt(5, function(err, salt) {
+        if (err) return callback(err); //error checking
+        bcrypt.hash(user.password, salt, null, function(err, hash) {
+            if (err) return callback(err);
+            user.password = hash;
+            callback();
+        });
+    });
+});
+
+// add a method to User to verify passwords
+UserSchema.methods.verifyPassword = function(password, callback) {
+    bcrypt.compare(password, this.password, function(err, isMatch) {
+        if (err) return callback(err);
+        callback(null, isMatch);
+    });
+};
 
 var TreatDetailSchema = new Schema({
     description: {type: String, trim: true, required: true},

@@ -1,5 +1,11 @@
 # LibreCandy
 
+## Documentation
+
+- [restful authentication with username and password](http://stackoverflow.com/questions/14572600/passport-js-restful-auth)
+- [api keys and secret keys](http://stackoverflow.com/questions/2674445/how-do-api-keys-and-secret-keys-work)
+- [material components](https://material.io/components/)
+
 #### Legend
 
 Attribute, *Foreign Key*, **Primary Key**, /logic calculated field/

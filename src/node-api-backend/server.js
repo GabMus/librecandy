@@ -6,9 +6,11 @@ const MONGODB_URI='mongodb://localhost:27017/node-api-backend';
 // import libs
 var express = require('express');
 var bodyParser = require('body-parser');
-var router = require('./router')
+var router = require('./router');
 var mongoose = require('mongoose');
-var models = require('./models/librecandyModels.js')
+var morgan = require('morgan');
+var passport = require('passport');
+// var models = require('./models/librecandyModels.js') // already in router
 
 var app = express(); // create express app
 
@@ -21,6 +23,13 @@ mongoose.connect(MONGODB_URI);
 // this will enable us to parse the POST data
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
+
+// use morgan to log requests to the console
+// when in production, redirect the log to the log server
+app.use(morgan('dev'));
+
+// use passport for authentication
+app.use(passport.initialize());
 
 var port = process.env.PORT || 8080; // set port. TODO: change in production?
 

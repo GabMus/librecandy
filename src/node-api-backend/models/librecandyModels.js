@@ -1,23 +1,13 @@
-const MEDIA_PATH = '../uploads/mediafiles/';
-
-const TREATS_FILE_REL_PATH = 'treats';
-const TREATS_SCROT_REL_PATH = 'screenshots';
-const USERS_AVATAR_REL_PATH = 'avatars';
-
 const EMAIL_REGEX = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var bcrypt = require('bcrypt-nodejs');
 
-var filePluginLib = require('mongoose-file');
-var filePlugin = filePluginLib.filePlugin;
-var make_upload_to_model = filePluginLib.make_upload_to_model;
-
 var UserSchema = new Schema({
     realname: {type: String, trim: true},
     username: {type: String, trim: true, required: true, unique: true},
-    // avatar using mongoose-file?
+    avatar: {type: String},
     email: {type: String, trim: true, required: true, unique: true, match: EMAIL_REGEX},
     password: {type: String, required: true},
     bio: {type: String, trim: true},
@@ -56,15 +46,7 @@ var TreatDetailSchema = new Schema({
     description: {type: String, trim: true, required: true},
     version: {type: String, trim: true, required: true},
     is_deprecated: {type: Boolean, default: false}
-    // file field below
-    //
-});
-
-// add file field
-TreatDetailSchema.plugin(filePlugin, {
-    name: 'file',
-    upload_to: make_upload_to_model(MEDIA_PATH, TREATS_FILE_REL_PATH),
-    relative_to: MEDIA_PATH
+    // TODO: add file field
 });
 
 var TreatRatingSchema = new Schema({

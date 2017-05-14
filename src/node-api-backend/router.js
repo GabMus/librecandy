@@ -3,7 +3,10 @@ var router = express.Router(); // new instance of express router
 var models = require('./models/librecandyModels.js');
 var auth = require('./auth.js');
 var jwt = require('jsonwebtoken');
-var config = require('./config.js')
+var config = require('./config.js');
+var multer = require('multer');
+
+var multer_upload = multer({dest: config.media_path});
 
 const API_SUCCESS_MSG = {message: 'success', error: null};
 
@@ -11,7 +14,7 @@ function make_user_safe(user) {
     return {
         username: user.username,
         realname: user.realname,
-        //avatar: user.avatar, //TODO: implement avatar first
+        avatar: user.avatar, //TODO: implement avatar first
         email: user.email,
         bio: user.bio,
         signup_datetime: user.signup_datetime
@@ -93,8 +96,7 @@ router.route('/users/:username').get(function(req, res){
         }
         res.json(make_user_safe(user));
     });
-}).put(auth.isAuthenticated, function(req,res) {
-    console.log('       test router put /users/:username ' + req.user.username);
+}).put(auth.isAuthenticated, function(req, res) {
     // if the user making the request isn't the requested user
     if ((req.params.username != req.user.username)) {
         // OR if the user isn't a superuser
@@ -147,6 +149,38 @@ router.route('/users/:username').get(function(req, res){
             res.json(API_SUCCESS_MSG);
         }
     );
+});
+
+// TODO: complete using https://www.npmjs.com/package/multer
+router.route('/users/:username/avatar').post(auth.isAuthenticated,
+    multer_upload.single('avatar'), function(req, res) {
+        // if the user making the request isn't the requested user
+        if ((req.params.username != req.user.username)) {
+            // OR if the user isn't a superuser
+            if (!req.user.is_superuser) {
+                res.status(403);
+                res.send('Forbidden');
+                return;
+            }
+        }
+        models.User.findOne({'username': req.params.username}, function(err, user) {
+            if (err) {
+                res.json(err);
+                return;
+            }
+
+            // manage file upload here
+            // req.file is the `avatar` file
+            console.log(req.file);
+
+            /*user.save(function(err) {
+                if (err) {
+                    res.json(err);
+                    return; //failsafe, dont continue
+                }
+                res.json(API_SUCCESS_MSG);
+            });*/
+        });
 });
 
 module.exports = router;

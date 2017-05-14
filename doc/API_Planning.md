@@ -6,6 +6,8 @@
 
 **Note2: the standard we're following requires the use of all plural nouns.**
 
+**Note3: upon user deletion, prompt if they just want to temporarily suspend their account instead of deleting everything forever. Also ask if they want to keep the treats they published accessible**
+
 ## BASE_URI
 
 `https://librecandy.org/api/v1/`

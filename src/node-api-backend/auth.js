@@ -8,10 +8,16 @@ var config = require('./config.js');
 
 var passport_jwt_options = {};
 passport_jwt_options.secretOrKey = config.secret;
-//passport_jwt_options.jwtFromRequest = ExtractJwt.fromBodyField('token');
 passport_jwt_options.jwtFromRequest = ExtractJwt.fromAuthHeader();
-//passport_jwt_options.ignoreExpiration = false;
+// example Auth Header: "Authorization: JWT <token>"
+passport_jwt_options.ignoreExpiration = false;
 //passport_jwt_options.passReqToCallback = true;
+
+function generate_jwt_token(username) {
+    return jwt.sign({username: username, issue_time: Date.now()}, config.secret, {
+        expiresIn: 60*60*24*7 // 1 week
+    });
+}
 
 passport.use(new BasicStrategy(
     function(username, password, callback) {
@@ -52,3 +58,4 @@ var authenticateJwt = passport.authenticate('jwt', {session: false});
 
 exports.isAuthenticated = authenticateJwt;
 exports.isAuthenticatedBasic = authenticateBasic;
+exports.generate_jwt_token = generate_jwt_token;

@@ -18,25 +18,20 @@ function make_user_safe(user) {
     }
 }
 
-/*router.use(function(req, res, next) {
-    var token = req.body.token || req.query.token || req.headers['x-access-token'];
-    if (!token) {
-        return res.status(403).json({
-            success: false,
-            message: 'No token provided'
-        });
-    }
-    jwt.verify(token, config.secret, function(err, decoded) {
-        if (err) {
-            return res.json({
-                message: 'Failed to authenticate token',
-                error: err
-            });
+router.use(function(req, res, callback) { // refresh token every hour
+    var token = req.headers['authorization'];
+    if (token) {
+        var decoded = jwt.verify(token, config.secret);
+        // if 1 hour passed since token issue
+        if (Date.now() - decoded.issue_time >= config.jwt_refresh_time) {
+            var n_token = auth.generate_jwt_token(decoded.username);
+            res.librecandy = {};
+            // check in the frontend and get this new token
+            res.librecandy.newtoken = n_token;
         }
-        req.decoded = decoded;
-        next();
-    });
-});*/
+    }
+    callback();
+});
 
 router.get('/', function(req, res){
     res.json({
@@ -45,9 +40,7 @@ router.get('/', function(req, res){
 });
 
 router.route('/authenticate').post(auth.isAuthenticatedBasic, function(req,res) {
-    var token = jwt.sign({username: req.user.username}, config.secret, {
-        expiresIn: 60*60*24
-    });
+    var token = auth.generate_jwt_token(req.user.username);
     res.json({
         success: true,
         message: 'Token created for user ' + req.user.username,

@@ -1,4 +1,5 @@
 src/node-api-backend/node_modules/
 doc/demo/prova auth/node_modules/
 src/node-api-backend/dbdir/
+src/node-api-backend/media/
 src/frontend/node_modules/

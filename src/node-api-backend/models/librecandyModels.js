@@ -7,7 +7,7 @@ var bcrypt = require('bcrypt-nodejs');
 var UserSchema = new Schema({
     realname: {type: String, trim: true},
     username: {type: String, trim: true, required: true, unique: true},
-    avatar: {type: String},
+    avatar: {type: String, trim: true},
     email: {type: String, trim: true, required: true, unique: true, match: EMAIL_REGEX},
     password: {type: String, required: true},
     bio: {type: String, trim: true},
@@ -45,8 +45,9 @@ UserSchema.methods.verifyPassword = function(password, callback) {
 var TreatDetailSchema = new Schema({
     description: {type: String, trim: true, required: true},
     version: {type: String, trim: true, required: true},
-    is_deprecated: {type: Boolean, default: false}
-    // TODO: add file field
+    is_deprecated: {type: Boolean, default: false},
+    file: {type: String, trim: true}, // required?
+    pub_datetime: {type: Date, default: Date.now}
 });
 
 var TreatRatingSchema = new Schema({
@@ -56,7 +57,6 @@ var TreatRatingSchema = new Schema({
 });
 
 var TreatCommentSchema = new Schema({
-    // _id should be already defined
     author: {type: UserSchema, required: true},
     pub_datetime: {type: Date, default: Date.now},
     content: {type: String, trim: true, required: true},
@@ -64,10 +64,12 @@ var TreatCommentSchema = new Schema({
 
 var TreatSchema = new Schema({
     // _id should be already defined
-    name: {type: String, trim: true},
-    category: {type: String, trim: true},
-    author: {type: UserSchema, required: true},
+    name: {type: String, trim: true, required: true},
+    category: {type: String, trim: true, required: true},
+    author: {type: String, required: true}, // username
+    package_name: {type: String, required: true, unique: true},
     first_pub_datetime: {type: Date, default: Date.now},
+    screenshots: [{type: String, trim: true}], // is this legal?
     details: [TreatDetailSchema],
     ratings: [TreatRatingSchema],
     comments: [TreatCommentSchema]

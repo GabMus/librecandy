@@ -3,7 +3,7 @@
 // import libs
 var express = require('express');
 var bodyParser = require('body-parser');
-var router = require('./router');
+var router = require('./router.js');
 var mongoose = require('mongoose');
 var morgan = require('morgan');
 var passport = require('passport');

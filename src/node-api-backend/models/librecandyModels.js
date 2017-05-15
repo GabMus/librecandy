@@ -43,7 +43,6 @@ UserSchema.methods.verifyPassword = function(password, callback) {
 };
 
 var TreatDetailSchema = new Schema({
-    description: {type: String, trim: true, required: true},
     version: {type: String, trim: true, required: true},
     is_deprecated: {type: Boolean, default: false},
     file: {type: String, trim: true}, // required?
@@ -65,6 +64,7 @@ var TreatCommentSchema = new Schema({
 var TreatSchema = new Schema({
     // _id should be already defined
     name: {type: String, trim: true, required: true},
+    description: {type: String, trim: true, required: true},
     category: {type: String, trim: true, required: true},
     author: {type: String, required: true}, // username
     package_name: {type: String, required: true, unique: true},
@@ -77,7 +77,10 @@ var TreatSchema = new Schema({
 
 var models = {
     User: mongoose.model('User', UserSchema),
-    Treat: mongoose.model('Treat', TreatSchema)
+    Treat: mongoose.model('Treat', TreatSchema),
+    TreatComment: mongoose.model('TreatComment', TreatCommentSchema),
+    TreatRating: mongoose.model('TreatRating', TreatRatingSchema),
+    TreatDetail: mongoose.model('TreatDetail', TreatDetailSchema)
 };
 
 module.exports = models;

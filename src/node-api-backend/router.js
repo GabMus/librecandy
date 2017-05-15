@@ -8,6 +8,7 @@ var multer = require('multer');
 var imagic = require('imagemagick');
 var fs = require('fs');
 var mkdirp = require('fs-mkdirp');
+var mv = require('mv');
 imagic.convert.path = '/usr/bin/convert';
 
 var multer_upload = multer({dest: config.media_upload});
@@ -28,13 +29,19 @@ function make_user_safe(user) {
 function make_treat_base_path(username, treat, detail) {
     return config.media_path +
         '/users/'+username +
-        '/'+treat._id+
-        '/'+detail._id+
+        '/'+treat.package_name+
         '/'+detail.version;
 }
-function make_treat_file_path(username, treat, detail, extension) {
+function get_file_ext(filename) {
+    var parts = filename.split('.');
+    if (parts[parts.length-2]=='tar') {
+        return '.tar.' + parts[parts.length-1];
+    }
+    return '.' + parts[parts.length-1];
+}
+function make_treat_file_path(username, treat, detail, originalname) {
     return make_treat_base_path(username, treat, detail)+
-        '/'+treat.name+'_'+detail.version+extension;
+        '/'+treat.name+'_'+detail.version+get_file_ext(originalname);
 }
 function make_treat_screenshot_path(username, treat, detail) {
     return make_treat_base_path(username, treat, detail)+
@@ -318,6 +325,7 @@ router.route('/treats').get(function(req, res) {
     treat.name = req.body.name;
     treat.author = req.user.username;
     treat.category = req.body.category;
+    treat.description = req.body.description;
     treat.package_name = treat2pkgname(treat);
     treat.save(function(err) {
         if (err) return res.json(err);
@@ -329,13 +337,20 @@ router.route('/treats').get(function(req, res) {
 router.route('/treats/id/:treatid').get(function(req, res) {
     models.Treat.findOne({'_id': req.params.treatid}, function(err, treat) {
         if (err) return res.json(err);
+        if (!treat) return res.status(404).send('Not Found');
         res.json(treat);
     });
 }).delete(auth.isAuthenticated, function(req, res) {
-    if ((req.params.username != req.user.username)) {
-        if (!req.user.is_superuser)
-            return res.status(403).send('Forbidden');
-    }
+    // verify that the treat belongs to the authenticated user
+    models.Treat.findOne({'_id': req.params.treatid}, function(err, treat) {
+        if (err) return res.json(err);
+        if (!treat) return res.status(404).send('Not Found');
+        if (req.user.username != treat.author) {
+            if (!req.user.is_superuser) {
+                return res.status(403).send('Forbidden');
+            }
+        }
+    });
     models.Treat.remove({'_id': req.params.treatid}, function(err, treat) {
         if (err) return res.json(err);
         res.json(API_SUCCESS_MSG);
@@ -346,22 +361,160 @@ router.route('/treats/:pkgname').get(function(req, res) {
     models.Treat.findOne({'package_name': req.params.pkgname},
         function(err, treat) {
             if (err) return res.json(err);
+            if (!treat) return res.status(404).send('Not Found');
             res.json(treat);
         }
     );
 }).delete(auth.isAuthenticated, function(req, res) {
-    if ((req.params.username != req.user.username)) {
-        if (!req.user.is_superuser)
-            return res.status(403).send('Forbidden');
-    }
+    // verify that the treat belongs to the authenticated user
+    models.Treat.findOne({'package_name': req.params.pkgname}, function(err, treat) {
+        if (err) return res.json(err);
+        if (!treat) return res.status(404).send('Not Found');
+        if (req.user.username != treat.author) {
+            if (!req.user.is_superuser) {
+                return res.status(403).send('Forbidden');
+            }
+        }
+    });
     models.Treat.remove({'package_name': req.params.pkgname},
         function(err, treat) {
             if (err) return res.json(err);
             res.json(API_SUCCESS_MSG);
         }
     );
-});
+})/*.put(auth.isAuthenticated, function(req, res) { // TODO: implement update as add/remove details
+    // verify that the treat belongs to the authenticated user
+    models.Treat.findOne({'package_name': req.params.pkgname}, function(err, treat) {
+        if (err) return res.json(err);
+        if (!treat) return res.status(404).send('Not Found');
+        if (req.user.username != treat.author) {
+            if (!req.user.is_superuser) {
+                return res.status(403).send('Forbidden');
+            }
+        }
+    });
+    if (req.body.)  = req.body.;
+    if (req.body.)  = req.body.;
+    if (req.body.)  = req.body.;
+})*/;
 
-router.route
+router.route('/treats/:pkgname/versions') // aka detail
+    .post(auth.isAuthenticated, function(req,res) {
+        models.Treat.findOne(
+            {'package_name': req.params.pkgname},
+            function(err, treat) {
+                if (err) return res.json(err);
+                if (req.user.username != treat.author)
+                    if (!req.user.is_superuser)
+                        return res.status(403).send('Forbidden');
+
+                var detail = new models.TreatDetail();
+                if (!req.body.version) return res.json({success: false, error: 'Version not provided'});
+                if (req.body.version.includes(' ')) {
+                    return res.json({success: false, error: 'Version names cannot contain spaces'});
+                }
+                detail.version = req.body.version;
+                for (i in treat.details) {
+                    if (treat.details[i].version == detail.version) {
+                        return res.json({success: false, error: 'Duplicate version name'});
+                    }
+                }
+                treat.details.unshift(detail); // unshift = head insert
+                treat.save(function(err) {
+                    if (err) return res.json(err);
+                    res.json({message: 'success', error: null, treat: treat});
+                });
+            }
+        );
+    }
+);
+
+// TODO: put on /treats/:pkgname/versions/:version to edit is_deprecated only
+// TODO: delete on /treats/:pkgname/versions/:version
+
+router.route('/treats/:pkgname/versions/:version/file').post(auth.isAuthenticated,
+    multer_upload.single('versionfile'), function(req, res) {
+        // if the user making the request isn't the requested user
+        models.Treat.findOne(
+            {'package_name': req.params.pkgname},
+            function(err, treat) {
+                if (err) return res.json(err);
+                if (req.user.username != treat.author) {
+                    if (!req.user.is_superuser) {
+                        return res.status(403).send('Forbidden');
+                    }
+                }
+                var detail = null;
+                for (i in treat.details) {
+                    if (treat.details[i].version == req.params.version) {
+                        detail = treat.details[i];
+                        break;
+                    }
+                }
+                if (!detail) {
+                    return res.status(404).send('Not Found');
+                }
+                // TODO: check if tarball?
+
+                var treat_file_path = make_treat_file_path(
+                    req.user.username,
+                    treat,
+                    detail,
+                    req.file.originalname
+                );
+                var treat_file_dir = make_treat_base_path(
+                    req.user.username,
+                    treat,
+                    detail
+                );
+                mv(req.file.path, treat_file_path, {mkdirp: true},
+                    function(err, results) {
+                        if (err) {
+                            console.log(err);
+                            return res.status(500).json({
+                                success: false,
+                                error: err
+                            });
+                        }
+                        detail.file = treat_file_path;
+                        treat.save(function(err) {
+                            if (err) return res.json(err);
+                            return res.json({message: 'success', error: null, treat: treat});
+                        });
+                    }
+                );
+            }
+        );
+    }
+);
+            /*  var user_avatar_path = user_avatar_dir + '/avatar.png';
+                imagic.convert([
+                    req.file.path, // original image
+                    '-resize', // option
+                    config.avatart_size + 'x' + config.avatart_size, // size
+                    user_avatar_path  // convert & move
+                ], function (err, stdout) {
+                    if (err) {
+                        console.log(err);
+                        return res.status(500).json({
+                            success: false,
+                            error: err
+                        });
+                    }
+                    console.log('avatar: imagemagick:' + stdout);
+                    user.avatar = user_avatar_path;
+                    // remove file in /tmp
+                    fs.unlink(req.file.path, function(err) {
+                        if (err) console.log(err);
+                    });
+
+                    user.save(function(err) {
+                        if (err) return res.json(err);
+                        return res.json(API_SUCCESS_MSG);
+                    });
+                });
+            });
+        });
+})*/
 
 module.exports = router;

@@ -43,8 +43,22 @@ function make_treat_screenshot_path(username, treat, detail) {
 
 function treat2pkgname(treat) {
     var pkgname = 'org.' +
-        treat.author +
+        treat.author + '.' +
         treat.name.replace(/ /g,'_');
+    return pkgname;
+}
+function pkgname2treat(pkgname) {
+    var parts = pkgname.split('.');
+    var username = parts[1];
+    var themename = parts[2];
+    var to_ret = {err: null, treat: null};
+    models.Treat.findOne({'author': username, 'name': themename},
+        function(err, treat) {
+            if (err) {to_ret.err = err; return to_ret;}
+            to_ret.treat=treat;
+            return to_ret;
+        }
+    );
 }
 
 router.use(function(req, res, next) { // refresh token every hour
@@ -82,6 +96,11 @@ router.route('/superuser').post(function(req, res) {
     if (true) return res.status(403).send('Forbidden'); // NOTE: DISABLE IN PRODUCTION!
     var user = new models.User();
     user.username = req.body.username;
+    if (req.body.username.includes('.'))
+        return res.json({
+            success: false,
+            error: 'Usernames cannot contain the `.` (dot) character'
+        });
     user.email = req.body.email;
     user.password = req.body.password;
     user.is_superuser = true;
@@ -100,6 +119,11 @@ router.route('/superuser').post(function(req, res) {
 router.route('/users').post(function(req, res) {
     var user = new models.User();
     user.username = req.body.username;
+    if (req.body.username.includes('.'))
+        return res.json({
+            success: false,
+            error: 'Usernames cannot contain the `.` (dot) character'
+        });
     user.email = req.body.email;
     user.password = req.body.password;
     if (req.body.realname) user.realname = req.body.realname;
@@ -286,11 +310,15 @@ router.route('/treats').get(function(req, res) {
     });
 }).post(auth.isAuthenticated, function(req, res) {
     var treat = new models.Treat();
-    if (req.body.name.includes('_')) return res.json({success: false, error: 'Treat names cannot contain the `_` (underscore) character'});
+    if (req.body.name.includes('_') || req.body.name.includes('.'))
+        return res.json({
+            success: false,
+            error: 'Treat names cannot contain the `_` (underscore) or `.` (dot) characters'
+        });
     treat.name = req.body.name;
     treat.author = req.user.username;
     treat.category = req.body.category;
-    treat.package_name =
+    treat.package_name = treat2pkgname(treat);
     treat.save(function(err) {
         if (err) return res.json(err);
 
@@ -298,10 +326,9 @@ router.route('/treats').get(function(req, res) {
     });
 });
 
-router.route('/treats/:treatid').get(function(req, res) {
+router.route('/treats/id/:treatid').get(function(req, res) {
     models.Treat.findOne({'_id': req.params.treatid}, function(err, treat) {
         if (err) return res.json(err);
-
         res.json(treat);
     });
 }).delete(auth.isAuthenticated, function(req, res) {
@@ -313,6 +340,26 @@ router.route('/treats/:treatid').get(function(req, res) {
         if (err) return res.json(err);
         res.json(API_SUCCESS_MSG);
     });
+});
+
+router.route('/treats/:pkgname').get(function(req, res) {
+    models.Treat.findOne({'package_name': req.params.pkgname},
+        function(err, treat) {
+            if (err) return res.json(err);
+            res.json(treat);
+        }
+    );
+}).delete(auth.isAuthenticated, function(req, res) {
+    if ((req.params.username != req.user.username)) {
+        if (!req.user.is_superuser)
+            return res.status(403).send('Forbidden');
+    }
+    models.Treat.remove({'package_name': req.params.pkgname},
+        function(err, treat) {
+            if (err) return res.json(err);
+            res.json(API_SUCCESS_MSG);
+        }
+    );
 });
 
 router.route

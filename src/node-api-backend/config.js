@@ -12,6 +12,12 @@ var config = {
         'application/x-7z-compressed',
         'application/x-bzip2',
         'application/x-gzip'
+    ],
+    treat_categories = [
+        'Icons',
+        'GTK',
+        'Qt',
+        'Wallpapers'
     ]
 };
 

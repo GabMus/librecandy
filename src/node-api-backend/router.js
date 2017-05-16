@@ -285,7 +285,10 @@ router.route('/users/:username/avatar').post(auth.isAuthenticated,
         fs.unlink(user.avatar, function(err) {
             if (err) return res.status(500).json(err);
             user.avatar=null;
-            return res.json(API_SUCCESS_MSG);
+            user.save(function(err) {
+                if (err) return res.json(err);
+                return res.json(API_SUCCESS_MSG);
+            });
         });
     });
 });
@@ -301,8 +304,8 @@ router.route('/users/:username/treats').get(function(req, res) {
         if (req.param('limit')) {
             limit=parseInt(req.param('limit'));
         }
-        treats = treats.slice(offset, offset+limit);
-        res.json({author: req.params.username, treats: treats, offset: offset, limit: limit});
+        var treats_filter = treats.slice(offset, offset+limit);
+        res.json({author: req.params.username, treats: treats_filter, offset: offset, limit: limit});
     });
 });
 
@@ -312,10 +315,10 @@ router.route('/treats').get(function(req, res) {
         var offset=0;
         var limit=20;
         if (req.param('offset')) {
-            offset=req.param('offset');
+            offset=parseInt(req.param('offset'));
         }
         if (req.param('limit')) {
-            limit=req.param('limit');
+            limit=parseInt(req.param('limit'));
         }
         var treats_filter = treats.slice(offset, offset+limit);
         res.json({treats: treats_filter, offset: offset, limit: limit});
@@ -339,7 +342,26 @@ router.route('/treats').get(function(req, res) {
     });
 });
 
-// router.route('/treats/')
+router.route('/treats/categories').get(function(req, res) {
+    res.json({categories: config.treat_categories});
+});
+
+router.route('/treats/categories/:category').get(function(req, res) {
+    models.Treat.find({'category': req.params.category}, null, {sort: '-date'}, function(err, treats) {
+        if (!treats || treats.length ==0) return res.signal(404).send('Not Found');
+        if (err) return res.json(err);
+        var offset=0;
+        var limit=20;
+        if (req.param('offset')) {
+            offset=parseInt(req.param('offset'));
+        }
+        if (req.param('limit')) {
+            limit=parseInt(req.param('limit'));
+        }
+        var treats_filter = treats.slice(offset, offset+limit);
+        res.json({treats: treats_filter, offset: offset, limit: limit});
+    });
+});
 
 router.route('/treats/id/:treatid').get(function(req, res) {
     models.Treat.findOne({'_id': req.params.treatid}, function(err, treat) {

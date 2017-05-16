@@ -434,6 +434,7 @@ router.route('/treats/:pkgname').get(function(req, res) {
             }
         }
         for (i in treat.details) {
+            if (!treat.details[i] || !treat.details[i].file) break;
             fs.unlink(treat.details[i].file, function(err) {
                 if (err) return res.status(500).json(err);
                 treat.details.splice(i, 1);

@@ -534,7 +534,7 @@ router.route('/treats/:pkgname/versions/:version')
                         error: 'is_deprecated must be either \'true\' or \'false\''
                     });
                 }
-                treat.detail[index] = detail;
+                treat.details[index] = detail;
                 treat.save(function(err) {
                     if (err) return res.json(err);
                     return res.json({message: 'success', error: null, treat: treat});

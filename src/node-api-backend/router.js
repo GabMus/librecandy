@@ -15,7 +15,7 @@ imagic.convert.path = '/usr/bin/convert';
 
 var multer_upload = multer({dest: config.media_upload});
 
-const API_SUCCESS_MSG = {message: 'success', error: null};
+const API_SUCCESS_MSG = {success: true, error: null};
 
 function make_user_safe(user) {
     return {
@@ -343,7 +343,7 @@ router.route('/treats').get(function(req, res) {
     treat.save(function(err) {
         if (err) return res.json(err);
 
-        res.json({message: 'success', error: null, treat: treat});
+        res.json({success: true, error: null, treat: treat});
     });
 });
 
@@ -459,7 +459,7 @@ router.route('/treats/:pkgname').get(function(req, res) {
         if (req.body.description) treat.description = req.body.description;
         treat.save(function(err) {
             if (err) return res.json(err);
-            res.json({message: 'success', error: null, treat: treat});
+            res.json({success: true, error: null, treat: treat});
         });
     });
 });
@@ -489,7 +489,7 @@ router.route('/treats/:pkgname/versions') // aka detail
                 treat.details.unshift(detail); // unshift = head insert
                 treat.save(function(err) {
                     if (err) return res.json(err);
-                    res.json({message: 'success', error: null, treat: treat});
+                    res.json({success: true, error: null, treat: treat});
                 });
             }
         );
@@ -497,7 +497,7 @@ router.route('/treats/:pkgname/versions') // aka detail
 );
 
 router.route('/treats/:pkgname/versions/:version')
-    .put(auth.isAuthenticated, function(req, res) {
+    .put(auth.isAuthenticated, function(req, res) { //TODO: is_deprecated value doesn't get updated, remains false in every occasion
         models.Treat.findOne(
             {'package_name': req.params.pkgname},
             function(err, treat) {
@@ -537,7 +537,7 @@ router.route('/treats/:pkgname/versions/:version')
                 treat.details[index] = detail;
                 treat.save(function(err) {
                     if (err) return res.json(err);
-                    return res.json({message: 'success', error: null, treat: treat});
+                    return res.json({success: true, error: null, treat: treat});
                 });
             }
         );
@@ -565,7 +565,7 @@ router.route('/treats/:pkgname/versions/:version')
 
                 treat.save(function(err) {
                     if (err) return res.json(err);
-                    return res.json({message: 'success', error: null, treat: treat});
+                    return res.json({success: true, error: null, treat: treat});
                 });
             }
         );
@@ -624,7 +624,7 @@ router.route('/treats/:pkgname/versions/:version/file').post(auth.isAuthenticate
                         detail.file = treat_file_path;
                         treat.save(function(err) {
                             if (err) return res.json(err);
-                            return res.json({message: 'success', error: null, treat: treat});
+                            return res.json({success: true, error: null, treat: treat});
                         });
                     }
                 );
@@ -695,7 +695,7 @@ router.route('/treats/:pkgname/screenshots').post(auth.isAuthenticated,
                                 });
                                 treat.save(function(err) {
                                     if (err) return res.json(err);
-                                    return res.json({message: 'success', error: null, treat: treat});
+                                    return res.json({success: true, error: null, treat: treat});
                                 });
                             });
                         }
@@ -723,7 +723,7 @@ router.route('/treats/:pkgname/screenshots').post(auth.isAuthenticated,
                                 });
                                 treat.save(function(err) {
                                     if (err) return res.json(err);
-                                    return res.json({message: 'success', error: null, treat: treat});
+                                    return res.json({success: true, error: null, treat: treat});
                                 });
                             });
                         }
@@ -761,7 +761,7 @@ router.route('/treats/:pkgname/screenshots/:scrotfilename').put(auth.isAuthentic
             scrot.is_main = true;
             treat.save(function(err) {
                 if (err) return res.json(err);
-                return res.json({message: 'success', error: null, treat: treat});
+                return res.json({success: true, error: null, treat: treat});
             });
         }
     );
@@ -792,7 +792,7 @@ router.route('/treats/:pkgname/screenshots/:scrotfilename').put(auth.isAuthentic
             }
             treat.save(function(err) {
                 if (err) return res.json(err);
-                return res.json({message: 'success', error: null, treat: treat});
+                return res.json({success: true, error: null, treat: treat});
             });
         }
     );
@@ -811,7 +811,7 @@ router.route('/treats/:pkgname/comments').post(auth.isAuthenticated, function(re
         treat.unshift(comment);
         treat.save(function(err) {
             if (err) return res.json(err);
-            return res.json({message: 'success', error: null, treat: treat});
+            return res.json({success: true, error: null, treat: treat});
         });
     });
 });
@@ -839,7 +839,7 @@ router.route('/treats/:pkgname/comments/:commentid').put(auth.isAuthenticated, f
         comment.content = req.body.content;
         treat.save(function(err) {
             if (err) return res.json(err);
-            return res.json({message: 'success', error: null, treat: treat});
+            return res.json({success: true, error: null, treat: treat});
         });
     });
 }).delete(auth.isAuthenticated, function(req,res) {
@@ -858,7 +858,7 @@ router.route('/treats/:pkgname/comments/:commentid').put(auth.isAuthenticated, f
                 treat.comments.splice(i,1);
                 treat.save(function(err) {
                     if (err) return res.json(err);
-                    return res.json({message: 'success', error: null, treat: treat});
+                    return res.json({success: true, error: null, treat: treat});
                 });
             }
         }
@@ -887,7 +887,7 @@ router.route('/treats/:pkgname/ratings').post(auth.isAuthenticated, function(req
         treat.total_rating = Math.floor((rating_rawtotal/rating_count)+0.5);
         treat.save(function(err) {
             if (err) return res.json(err);
-            return res.json({message: 'success', error: null, treat: treat});
+            return res.json({success: true, error: null, treat: treat});
         });
     });
 });
@@ -922,7 +922,7 @@ router.route('/treats/:pkgname/ratings/:ratingid').put(auth.isAuthenticated, fun
         treat.total_rating = Math.floor((rating_rawtotal/rating_count)+0.5);
         treat.save(function(err) {
             if (err) return res.json(err);
-            return res.json({message: 'success', error: null, treat: treat});
+            return res.json({success: true, error: null, treat: treat});
         });
     });
 }).delete(auth.isAuthenticated, function(req,res) {
@@ -948,7 +948,7 @@ router.route('/treats/:pkgname/ratings/:ratingid').put(auth.isAuthenticated, fun
                 treat.total_rating = Math.floor((rating_rawtotal/rating_count)+0.5);
                 treat.save(function(err) {
                     if (err) return res.json(err);
-                    return res.json({message: 'success', error: null, treat: treat});
+                    return res.json({success: true, error: null, treat: treat});
                 });
             }
         }

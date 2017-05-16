@@ -9,6 +9,8 @@ var imagic = require('imagemagick');
 var fs = require('fs');
 var mkdirp = require('fs-mkdirp');
 var mv = require('mv');
+var fse = require('fs-extra');
+var imagesize = require('image-size');
 imagic.convert.path = '/usr/bin/convert';
 
 var multer_upload = multer({dest: config.media_upload});
@@ -45,7 +47,7 @@ function make_treat_file_path(username, treat, detail, originalname) {
 }
 function make_treat_screenshot_path(username, treat, detail) {
     return make_treat_base_path(username, treat, detail)+
-        '/screenshots';
+        '/screenshots/';
 }
 
 function treat2pkgname(treat) {
@@ -382,7 +384,7 @@ router.route('/treats/:pkgname').get(function(req, res) {
             res.json(API_SUCCESS_MSG);
         }
     );
-})/*.put(auth.isAuthenticated, function(req, res) { // TODO: implement update as add/remove details
+}).put(auth.isAuthenticated, function(req, res) { // TODO: implement update as add/remove details
     // verify that the treat belongs to the authenticated user
     models.Treat.findOne({'package_name': req.params.pkgname}, function(err, treat) {
         if (err) return res.json(err);
@@ -392,11 +394,13 @@ router.route('/treats/:pkgname').get(function(req, res) {
                 return res.status(403).send('Forbidden');
             }
         }
+        if (req.body.description) treat.description = req.body.description;
+        treat.save(function(err) {
+            if (err) return res.json(err);
+            res.json({message: 'success', error: null, treat: treat});
+        });
     });
-    if (req.body.)  = req.body.;
-    if (req.body.)  = req.body.;
-    if (req.body.)  = req.body.;
-})*/;
+});
 
 router.route('/treats/:pkgname/versions') // aka detail
     .post(auth.isAuthenticated, function(req,res) {
@@ -429,8 +433,61 @@ router.route('/treats/:pkgname/versions') // aka detail
     }
 );
 
-// TODO: put on /treats/:pkgname/versions/:version to edit is_deprecated only
-// TODO: delete on /treats/:pkgname/versions/:version
+router.route('/treats/:pkgname/versions/:version')
+    .put(auth.isAuthenticated, function(req, res) {
+        models.Treat.findOne(
+            {'package_name': req.params.pkgname},
+            function(err, treat) {
+                if (err) return res.json(err);
+                if (req.user.username != treat.author) {
+                    if (!req.user.is_superuser) {
+                        return res.status(403).send('Forbidden');
+                    }
+                }
+                var detail = null;
+                for (i in treat.details) {
+                    if (treat.details[i].version == req.params.version) {
+                        detail = treat.details[i];
+                        break;
+                    }
+                }
+                if (!detail) return res.status(404).send('Not Found');
+                detail.version.is_deprecated =
+                    (req.body.is_deprecated == 'true') ? true : false;
+                treat.save(function(err) {
+                    if (err) return res.json(err);
+                    return res.json({message: 'success', error: null, treat: treat});
+                });
+            }
+        );
+    }
+)
+    .delete(auth.isAuthenticated, function(req, res) {
+        models.Treat.findOne(
+            {'package_name': req.params.pkgname},
+            function(err, treat) {
+                if (err) return res.json(err);
+                if (req.user.username != treat.author) {
+                    if (!req.user.is_superuser) {
+                        return res.status(403).send('Forbidden');
+                    }
+                }
+                var detail = null;
+                for (i in treat.details) {
+                    if (treat.details[i].version == req.params.version) {
+                        treat.details.splice(i, 1);
+                        break;
+                    }
+                }
+
+                treat.save(function(err) {
+                    if (err) return res.json(err);
+                    return res.json({message: 'success', error: null, treat: treat});
+                });
+            }
+        );
+    }
+);
 
 router.route('/treats/:pkgname/versions/:version/file').post(auth.isAuthenticated,
     multer_upload.single('versionfile'), function(req, res) {
@@ -454,7 +511,12 @@ router.route('/treats/:pkgname/versions/:version/file').post(auth.isAuthenticate
                 if (!detail) {
                     return res.status(404).send('Not Found');
                 }
-                // TODO: check if tarball?
+                if (!req.file.mimetype in config.treat_mimetypes) {
+                    fs.unlink(req.file.path, function(err) {
+                        if (err) console.log(err);
+                        res.status(422).json({success: false, error: 'The loaded file is not a supported archive', treat: treat});
+                    });
+                }
 
                 var treat_file_path = make_treat_file_path(
                     req.user.username,
@@ -487,34 +549,308 @@ router.route('/treats/:pkgname/versions/:version/file').post(auth.isAuthenticate
         );
     }
 );
-            /*  var user_avatar_path = user_avatar_dir + '/avatar.png';
-                imagic.convert([
-                    req.file.path, // original image
-                    '-resize', // option
-                    config.avatart_size + 'x' + config.avatart_size, // size
-                    user_avatar_path  // convert & move
-                ], function (err, stdout) {
-                    if (err) {
-                        console.log(err);
-                        return res.status(500).json({
-                            success: false,
-                            error: err
-                        });
-                    }
-                    console.log('avatar: imagemagick:' + stdout);
-                    user.avatar = user_avatar_path;
-                    // remove file in /tmp
-                    fs.unlink(req.file.path, function(err) {
-                        if (err) console.log(err);
-                    });
 
-                    user.save(function(err) {
-                        if (err) return res.json(err);
-                        return res.json(API_SUCCESS_MSG);
-                    });
-                });
+
+
+router.route('/treats/:pkgname/screenshots').post(auth.isAuthenticated,
+    multer_upload.single('screenshot'), function(req, res) {
+        // if the user making the request isn't the requested user
+        models.Treat.findOne(
+            {'package_name': req.params.pkgname},
+            function(err, treat) {
+                if (err) return res.json(err);
+                if (req.user.username != treat.author) {
+                    if (!req.user.is_superuser) {
+                        return res.status(403).send('Forbidden');
+                    }
+                }
+                var detail = null;
+                for (i in treat.details) {
+                    if (treat.details[i].version == req.params.version) {
+                        detail = treat.details[i];
+                        break;
+                    }
+                }
+                if (!detail) {
+                    return res.status(404).send('Not Found');
+                }
+
+                var screenshot_dir_path = make_treat_screenshot_path(
+                    req.user.username,
+                    treat,
+                    detail
+                );
+                var screenshot_filename = treat.name+'_screenshot'+
+                    treat.screenshots.length+'_'+Date.now()+'.png';
+                fse.mkdirs('screenshot_dir_path', function(err) {
+                    console.log(err);
+                    var screenshot_path = screenshot_dir_path+
+                        '/'+screenshot_filename;
+                        if (imagesize(req.file.path).width > 1920) {
+                            imagic.convert([
+                                req.file.path, // original image
+                                '-resize', // option
+                                config.screenshot_size + 'x', // size
+                                screenshot_path  // convert & move
+                            ], function (err, stdout) {
+                                if (err) {
+                                    console.log(err);
+                                    return res.status(500).json({
+                                        success: false,
+                                        error: err
+                                    });
+                                }
+                                var scrot_obj = new models.TreatScreenshot();
+                                scrot_obj.file = screenshot_path;
+                                scrot_obj.filename = screenshot_filename;
+                                if (treat.screenshots.length == 0)
+                                    scrot_obj.is_main = true;
+                                treat.screenshots.push(scrot_obj);
+                                // remove file in /tmp
+                                fs.unlink(req.file.path, function(err) {
+                                    if (err) console.log(err);
+                                });
+                                treat.save(function(err) {
+                                    if (err) return res.json(err);
+                                    return res.json({message: 'success', error: null, treat: treat});
+                                });
+                            });
+                        }
+                        else {
+                            imagic.convert([
+                                req.file.path, // original image
+                                screenshot_path  // convert & move
+                            ], function (err, stdout) {
+                                if (err) {
+                                    console.log(err);
+                                    return res.status(500).json({
+                                        success: false,
+                                        error: err
+                                    });
+                                }
+                                var scrot_obj = new models.TreatScreenshot();
+                                scrot_obj.file = screenshot_path;
+                                scrot_obj.filename = screenshot_filename;
+                                if (treat.screenshots.length == 0)
+                                    scrot_obj.is_main = true;
+                                treat.screenshots.push(scrot_obj);
+                                // remove file in /tmp
+                                fs.unlink(req.file.path, function(err) {
+                                    if (err) console.log(err);
+                                });
+                                treat.save(function(err) {
+                                    if (err) return res.json(err);
+                                    return res.json({message: 'success', error: null, treat: treat});
+                                });
+                            });
+                        }
+                    }
+                );
+            }
+        );
+    }
+);
+
+router.route('/treats/:pkgname/screenshots/:scrotfilename').put(auth.isAuthenticated, function(req, res) {
+    models.Treat.findOne(
+        {'package_name': req.params.pkgname},
+        function(err, treat) {
+            if (err) return res.json(err);
+            if (req.user.username != treat.author) {
+                if (!req.user.is_superuser) {
+                    return res.status(403).send('Forbidden');
+                }
+            }
+            var scrot = null;
+            for (i in treat.screenshots) {
+                if (treat.screenshots[i].filename == req.params.scrotfilename) {
+                    scrot = treat.screenshots[i];
+                }
+            }
+            if (!scrot) {
+                return res.status(404).send('Not Found');
+            }
+            for (i in treat.screenshots) {
+                if (treat.screenshots[i]!=scrot) {
+                    treat.screenshots[i].is_main = false;
+                }
+            }
+            scrot.is_main = true;
+            treat.save(function(err) {
+                if (err) return res.json(err);
+                return res.json({message: 'success', error: null, treat: treat});
             });
+        }
+    );
+}).delete(auth.isAuthenticated, function(req, res) {
+    models.Treat.findOne(
+        {'package_name': req.params.pkgname},
+        function(err, treat) {
+            if (err) return res.json(err);
+            if (req.user.username != treat.author) {
+                if (!req.user.is_superuser) {
+                    return res.status(403).send('Forbidden');
+                }
+            }
+            var scrot = null;
+            for (i in treat.screenshots) {
+                if (treat.screenshots[i].filename == req.params.scrotfilename) {
+                    scrot = treat.screenshots[i];
+                    fs.unlink(scrot.file);
+                    treat.screenshots.splice(i, 1);
+                    if (treat.screenshots.length != 0) {
+                        treat.screenshots[0].is_main = true;
+                    }
+                    break
+                }
+            }
+            if (!scrot) {
+                return res.status(404).send('Not Found');
+            }
+            treat.save(function(err) {
+                if (err) return res.json(err);
+                return res.json({message: 'success', error: null, treat: treat});
+            });
+        }
+    );
+});
+
+router.route('/treats/:pkgname/comments').post(auth.isAuthenticated, function(req, res) {
+    models.Treat.findOne({'package_name': req.params.pkgname}, function(err, treat) {
+        if (err) return res.json(err);
+        var comment = new models.TreatComment();
+        comment.author = req.user.username;
+        if (!req.body.content) return res.json({
+            success: false,
+            error: 'Comment content not provided'
         });
-})*/
+        comment.content = req.body.content;
+        treat.unshift(comment);
+        treat.save(function(err) {
+            if (err) return res.json(err);
+            return res.json({message: 'success', error: null, treat: treat});
+        });
+    });
+});
+
+router.route('/treats/:pkgname/comments/:commentid').put(auth.isAuthenticated, function(req,res) {
+    models.Treat.findOne({'package_name': req.params.pkgname}, function(err, treat) {
+        if (err) return res.json(err);
+        var comment = null;
+        for (i in treat.comments) {
+            if (treat.comments[i]._id == req.params.commentid) {
+                comment = treat.comments[i];
+                break;
+            }
+        }
+        if (!comment) return res.status(404).send('Not Found');
+        if (comment.author != req.user.username) {
+            if (!req.user.is_superuser) {
+                return res.status(403).send('Forbidden');
+            }
+        }
+        if (!req.body.content) return res.json({
+            success: false,
+            error: 'Comment content not provided'
+        });
+        comment.content = req.body.content;
+        treat.save(function(err) {
+            if (err) return res.json(err);
+            return res.json({message: 'success', error: null, treat: treat});
+        });
+    });
+}).delete(auth.isAuthenticated, function(req,res) {
+    models.Treat.findOne({'package_name': req.params.pkgname}, function(err, treat) {
+        if (err) return res.json(err);
+        var comment = null;
+        for (i in treat.comments) {
+            if (treat.comments[i]._id == req.params.commentid) {
+                comment = treat.comments[i];
+                if (comment.author != req.user.username) {
+                    if (!req.user.is_superuser) {
+                        return res.status(403).send('Forbidden');
+                    }
+                }
+                // delete comment
+                treat.comments.splice(i,1);
+                treat.save(function(err) {
+                    if (err) return res.json(err);
+                    return res.json({message: 'success', error: null, treat: treat});
+                });
+            }
+        }
+        if (!comment) return res.status(404).send('Not Found');
+        return res.status(500).json({success: false, error: 'Unexpected server error'});
+    });
+});
+
+router.route('/treats/:pkgname/ratings').post(auth.isAuthenticated, function(req, res) {
+    models.Treat.findOne({'package_name': req.params.pkgname}, function(err, treat) {
+        if (err) return res.json(err);
+        var rating = new models.TreatRating();
+        rating.author = req.user.username;
+        if (!req.body.rating) return res.json({
+            success: false,
+            error: 'Rating value not provided'
+        });
+        rating.value = req.body.rating;
+        treat.unshift(rating);
+        treat.save(function(err) {
+            if (err) return res.json(err);
+            return res.json({message: 'success', error: null, treat: treat});
+        });
+    });
+});
+
+router.route('/treats/:pkgname/ratings/:ratingid').put(auth.isAuthenticated, function(req,res) {
+    models.Treat.findOne({'package_name': req.params.pkgname}, function(err, treat) {
+        if (err) return res.json(err);
+        var rating = null;
+        for (i in treat.ratings) {
+            if (treat.ratings[i]._id == req.params.ratingid) {
+                rating = treat.ratings[i];
+                break;
+            }
+        }
+        if (!rating) return res.status(404).send('Not Found');
+        if (rating.author != req.user.username) {
+            if (!req.user.is_superuser) {
+                return res.status(403).send('Forbidden');
+            }
+        }
+        if (!req.body.rating) return res.json({
+            success: false,
+            error: 'Comment content not provided'
+        });
+        rating.value = req.body.rating;
+        treat.save(function(err) {
+            if (err) return res.json(err);
+            return res.json({message: 'success', error: null, treat: treat});
+        });
+    });
+}).delete(auth.isAuthenticated, function(req,res) {
+    models.Treat.findOne({'package_name': req.params.pkgname}, function(err, treat) {
+        if (err) return res.json(err);
+        var rating = null;
+        for (i in treat.ratings) {
+            if (treat.ratings[i]._id == req.params.ratingid) {
+                rating = treat.ratings[i];
+                if (rating.author != req.user.username) {
+                    if (!req.user.is_superuser) {
+                        return res.status(403).send('Forbidden');
+                    }
+                }
+                // delete rating
+                treat.ratings.splice(i,1);
+                treat.save(function(err) {
+                    if (err) return res.json(err);
+                    return res.json({message: 'success', error: null, treat: treat});
+                });
+            }
+        }
+        if (!rating) return res.status(404).send('Not Found');
+        return res.status(500).json({success: false, error: 'Unexpected server error'});
+    });
+});
 
 module.exports = router;

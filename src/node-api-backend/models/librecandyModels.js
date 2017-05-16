@@ -42,6 +42,12 @@ UserSchema.methods.verifyPassword = function(password, callback) {
     });
 };
 
+var TreatScreenshotSchema = new Schema({
+    file: {type: String, trim: true}, // required?
+    filename: {type: String, trim:true},
+    is_main: {type: Boolean, default: false}
+});
+
 var TreatDetailSchema = new Schema({
     version: {type: String, trim: true, required: true},
     is_deprecated: {type: Boolean, default: false},
@@ -50,13 +56,13 @@ var TreatDetailSchema = new Schema({
 });
 
 var TreatRatingSchema = new Schema({
-    author: {type: UserSchema, required: true},
+    author: {type: String, required: true},
     pub_datetime: {type: Date, default: Date.now},
     value: {type: Number, min: 1, max: 10}
 });
 
 var TreatCommentSchema = new Schema({
-    author: {type: UserSchema, required: true},
+    author: {type: String, required: true},
     pub_datetime: {type: Date, default: Date.now},
     content: {type: String, trim: true, required: true},
 });
@@ -69,7 +75,7 @@ var TreatSchema = new Schema({
     author: {type: String, required: true}, // username
     package_name: {type: String, required: true, unique: true},
     first_pub_datetime: {type: Date, default: Date.now},
-    screenshots: [{type: String, trim: true}], // is this legal?
+    screenshots: [TreatScreenshotSchema], // is this legal?
     details: [TreatDetailSchema],
     ratings: [TreatRatingSchema],
     comments: [TreatCommentSchema]
@@ -80,7 +86,8 @@ var models = {
     Treat: mongoose.model('Treat', TreatSchema),
     TreatComment: mongoose.model('TreatComment', TreatCommentSchema),
     TreatRating: mongoose.model('TreatRating', TreatRatingSchema),
-    TreatDetail: mongoose.model('TreatDetail', TreatDetailSchema)
+    TreatDetail: mongoose.model('TreatDetail', TreatDetailSchema),
+    TreatScreenshot: mongoose.model('TreatScreenshot', TreatScreenshotSchema)
 };
 
 module.exports = models;

@@ -523,10 +523,10 @@ router.route('/treats/:pkgname/versions/:version')
                     error: 'is_deprecated body value not passed'
                 });
                 if (req.body.is_deprecated == 'true') {
-                    detail.version.is_deprecated = true
+                    detail.version.is_deprecated = true;
                 }
                 else if (req.body.is_deprecated == 'false') {
-                    detail.version.is_deprecated = false
+                    detail.version.is_deprecated = false;
                 }
                 else {
                     return res.json({

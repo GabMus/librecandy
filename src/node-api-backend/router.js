@@ -175,7 +175,7 @@ router.route('/users').post(function(req, res) {
 router.route('/users/:username').get(function(req, res){
     models.User.findOne({'username': req.params.username}, function(err, user) {
         if (err) return res.json(err);
-
+        if (!user) return res.status(404).send('Not Found');
         res.json(make_user_safe(user));
     });
 }).put(auth.isAuthenticated, function(req, res) {
@@ -306,8 +306,6 @@ router.route('/users/:username/treats').get(function(req, res) {
 });
 
 router.route('/treats').get(function(req, res) {
-    /*req.param('orderby')
-    if (req.param('orderby') ==)*/
     models.Treat.find({}, null, {sort: '-date'}, function(err, treats) {
         if (err) return res.json(err);
         var offset=0;

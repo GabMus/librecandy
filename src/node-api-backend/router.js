@@ -313,7 +313,7 @@ router.route('/users/:username/treats').get(function(req, res) {
 });
 
 router.route('/treats').get(function(req, res) {
-    models.Treat.find({}, null, {sort: '-date'}, function(err, treats) {
+    models.Treat.find({}, null, {sort: '-first_pub_datetime'}, function(err, treats) {
         if (err) return res.json(err);
         var offset=0;
         var limit=20;
@@ -333,6 +333,11 @@ router.route('/treats').get(function(req, res) {
             success: false,
             error: 'Treat names cannot contain the `_` (underscore) or `.` (dot) characters'
         });
+    if (!req.body.category in config.treat_categories)
+        return res.json({
+            success: false,
+            error: 'Invalid treat category'
+        });
     treat.name = req.body.name;
     treat.author = req.user.username;
     treat.category = req.body.category;
@@ -350,7 +355,7 @@ router.route('/treats/categories').get(function(req, res) {
 });
 
 router.route('/treats/categories/:category').get(function(req, res) {
-    models.Treat.find({'category': req.params.category}, null, {sort: '-date'}, function(err, treats) {
+    models.Treat.find({'category': req.params.category}, null, {sort: '-first_pub_datetime'}, function(err, treats) {
         if (!treats) return res.signal(404).send('Not Found');
         if (err) return res.json(err);
         var offset=0;
@@ -366,26 +371,37 @@ router.route('/treats/categories/:category').get(function(req, res) {
     });
 });
 
-router.route('/treats/id/:treatid').get(function(req, res) {
-    models.Treat.findOne({'_id': req.params.treatid}, function(err, treat) {
+router.route('/treats/categories/:category/orderby/rating').get(function(req, res) {
+    models.Treat.find({'category': req.params.category}).sort({'total_rating': -1, 'first_pub_datetime': -1}).exec(function(err, treats) {
+        if (!treats) return res.signal(404).send('Not Found');
         if (err) return res.json(err);
-        if (!treat) return res.status(404).send('Not Found');
-        res.json(treat);
-    });
-}).delete(auth.isAuthenticated, function(req, res) {
-    // verify that the treat belongs to the authenticated user
-    models.Treat.findOne({'_id': req.params.treatid}, function(err, treat) {
-        if (err) return res.json(err);
-        if (!treat) return res.status(404).send('Not Found');
-        if (req.user.username != treat.author) {
-            if (!req.user.is_superuser) {
-                return res.status(403).send('Forbidden');
-            }
+        var offset=0;
+        var limit=20;
+        if (req.param('offset')) {
+            offset=parseInt(req.param('offset'));
         }
+        if (req.param('limit')) {
+            limit=parseInt(req.param('limit'));
+        }
+        var treats_filter = treats.slice(offset, offset+limit);
+        res.json({treats: treats_filter, offset: offset, limit: limit});
     });
-    models.Treat.remove({'_id': req.params.treatid}, function(err, treat) {
+});
+
+router.route('/treats/orderby/rating').get(function(req, res) {
+    models.Treat.find().sort({'total_rating': -1, 'first_pub_datetime': -1}).exec(function(err, treats) {
+        if (!treats) return res.signal(404).send('Not Found');
         if (err) return res.json(err);
-        res.json(API_SUCCESS_MSG);
+        var offset=0;
+        var limit=20;
+        if (req.param('offset')) {
+            offset=parseInt(req.param('offset'));
+        }
+        if (req.param('limit')) {
+            limit=parseInt(req.param('limit'));
+        }
+        var treats_filter = treats.slice(offset, offset+limit);
+        res.json({treats: treats_filter, offset: offset, limit: limit});
     });
 });
 
@@ -817,6 +833,7 @@ router.route('/treats/:pkgname/comments/:commentid').put(auth.isAuthenticated, f
 router.route('/treats/:pkgname/ratings').post(auth.isAuthenticated, function(req, res) {
     models.Treat.findOne({'package_name': req.params.pkgname}, function(err, treat) {
         if (err) return res.json(err);
+        if (!treat) return res.signal(404).send('Not Found');
         var rating = new models.TreatRating();
         rating.author = req.user.username;
         if (!req.body.rating) return res.json({
@@ -825,6 +842,12 @@ router.route('/treats/:pkgname/ratings').post(auth.isAuthenticated, function(req
         });
         rating.value = req.body.rating;
         treat.unshift(rating);
+        var rating_rawtotal = 0;
+        var rating_count = treat.ratings.length;
+        for (i in treat.ratings) {
+            rating_rawtotal = rating_rawtotal + treat.ratings[i].value;
+        }
+        treat.total_rating = Math.floor((rating_rawtotal/rating_count)+0.5);
         treat.save(function(err) {
             if (err) return res.json(err);
             return res.json({message: 'success', error: null, treat: treat});
@@ -835,6 +858,7 @@ router.route('/treats/:pkgname/ratings').post(auth.isAuthenticated, function(req
 router.route('/treats/:pkgname/ratings/:ratingid').put(auth.isAuthenticated, function(req,res) {
     models.Treat.findOne({'package_name': req.params.pkgname}, function(err, treat) {
         if (err) return res.json(err);
+        if (!treat) return res.signal(404).send('Not Found');
         var rating = null;
         for (i in treat.ratings) {
             if (treat.ratings[i]._id == req.params.ratingid) {
@@ -853,6 +877,12 @@ router.route('/treats/:pkgname/ratings/:ratingid').put(auth.isAuthenticated, fun
             error: 'Comment content not provided'
         });
         rating.value = req.body.rating;
+        var rating_rawtotal = 0;
+        var rating_count = treat.ratings.length;
+        for (i in treat.ratings) {
+            rating_rawtotal = rating_rawtotal + treat.ratings[i].value;
+        }
+        treat.total_rating = Math.floor((rating_rawtotal/rating_count)+0.5);
         treat.save(function(err) {
             if (err) return res.json(err);
             return res.json({message: 'success', error: null, treat: treat});
@@ -861,6 +891,7 @@ router.route('/treats/:pkgname/ratings/:ratingid').put(auth.isAuthenticated, fun
 }).delete(auth.isAuthenticated, function(req,res) {
     models.Treat.findOne({'package_name': req.params.pkgname}, function(err, treat) {
         if (err) return res.json(err);
+        if (!treat) return res.signal(404).send('Not Found');
         var rating = null;
         for (i in treat.ratings) {
             if (treat.ratings[i]._id == req.params.ratingid) {
@@ -872,6 +903,12 @@ router.route('/treats/:pkgname/ratings/:ratingid').put(auth.isAuthenticated, fun
                 }
                 // delete rating
                 treat.ratings.splice(i,1);
+                var rating_rawtotal = 0;
+                var rating_count = treat.ratings.length;
+                for (i in treat.ratings) {
+                    rating_rawtotal = rating_rawtotal + treat.ratings[i].value;
+                }
+                treat.total_rating = Math.floor((rating_rawtotal/rating_count)+0.5);
                 treat.save(function(err) {
                     if (err) return res.json(err);
                     return res.json({message: 'success', error: null, treat: treat});

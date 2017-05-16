@@ -70,6 +70,23 @@ function pkgname2treat(pkgname) {
     );
 }
 
+// callback(user, success)
+function verify_user_action_authorized(user, requested_username, callback) { // NOTE: avoid using this for now
+    if (user.username != requested_username) { // user requesting action on other user
+        if (!user.is_superuser) { // user is not superuser
+            return callback(null, false);
+        }
+    }
+    return callback(user, true);
+}
+// callback(err, treat)
+function verify_treat_action_authorized(user, treat_pkgname, callback) {
+    models.Treat.findOne({'package_name': treat_pkgname}, function(err, treat) {
+        if (err) return callback(err, null);
+        if (!treat) return callback();
+    });
+}
+
 router.use(function(req, res, next) { // refresh token every hour
     var token = req.headers['authorization'];
     if (token && token.substr(0,3)=='JWT') {
@@ -102,7 +119,7 @@ router.route('/authenticate').post(auth.isAuthenticatedBasic, function(req,res) 
 });
 
 router.route('/superuser').post(function(req, res) {
-    if (true) return res.status(403).send('Forbidden'); // NOTE: DISABLE IN PRODUCTION!
+    if (true) return res.sendStatus(403);; // NOTE: DISABLE IN PRODUCTION!
     var user = new models.User();
     user.username = req.body.username;
     if (req.body.username.includes('.'))
@@ -146,7 +163,7 @@ router.route('/users').post(function(req, res) {
 }).get(auth.isAuthenticated, function(req, res) {
     // can only use this function as superuser
     if (!req.user.is_superuser)
-        return res.status(403).send('Forbidden');
+        return res.sendStatus(403);;
     models.User.find(function(err, users) {
         if (err) return res.json(err);
         var offset=0;
@@ -173,7 +190,7 @@ router.route('/users').post(function(req, res) {
 router.route('/users/:username').get(function(req, res){
     models.User.findOne({'username': req.params.username}, function(err, user) {
         if (err) return res.json(err);
-        if (!user) return res.status(404).send('Not Found');
+        if (!user) return res.sendStatus(404);;
         res.json(make_user_safe(user));
     });
 }).put(auth.isAuthenticated, function(req, res) {
@@ -181,11 +198,11 @@ router.route('/users/:username').get(function(req, res){
     if ((req.params.username != req.user.username)) {
         // OR if the user isn't a superuser
         if (!req.user.is_superuser)
-            return res.status(403).send('Forbidden');
+            return res.sendStatus(403);;
     }
     models.User.findOne({'username': req.params.username}, function(err, user) {
         if (err) return res.json(err);
-        if (!user) return res.status(404).send('Not Found');
+        if (!user) return res.sendStatus(404);;
 
         if (req.body.realname) {
             user.realname = req.body.realname;
@@ -206,7 +223,7 @@ router.route('/users/:username').get(function(req, res){
     if ((req.params.username != req.user.username)) {
         // OR if the user isn't a superuser
         if (!req.user.is_superuser)
-            return res.status(403).send('Forbidden');
+            return res.sendStatus(403);;
     }
     models.User.remove(
         {username: req.params.username},
@@ -222,11 +239,11 @@ router.route('/users/:username/avatar').post(auth.isAuthenticated,
         // if the user making the request isn't the requested user
         if (req.params.username != req.user.username) {
             // OR if the user isn't a superuser
-            if (!req.user.is_superuser) return res.status(403).send('Forbidden');
+            if (!req.user.is_superuser) return res.sendStatus(403);;
         }
         models.User.findOne({'username': req.params.username}, function(err, user) {
             if (err) return res.json(err);
-            if (!user) return res.status(404).send('Not Found');
+            if (!user) return res.sendStatus(404);;
             if (req.file.mimetype.substr(0,6)!='image/')
                 return res.status(422).json({
                     success: false,
@@ -274,13 +291,13 @@ router.route('/users/:username/avatar').post(auth.isAuthenticated,
     // if the user making the request isn't the requested user
     if (req.params.username != req.user.username) {
         // OR if the user isn't a superuser
-        if (!req.user.is_superuser) return res.status(403).send('Forbidden');
+        if (!req.user.is_superuser) return res.sendStatus(403);;
     }
 
     models.User.findOne({'username': req.params.username}, function(err, user) {
         if (err) return res.json(err);
-        if (!user) return res.status(404).send('Not Found');
-        if (!user.avatar) return res.status(404).send('Not Found');
+        if (!user) return res.sendStatus(404);;
+        if (!user.avatar) return res.sendStatus(404);;
         fs.unlink(user.avatar, function(err) {
             if (err) return res.status(500).json(err);
             user.avatar=null;
@@ -295,7 +312,7 @@ router.route('/users/:username/avatar').post(auth.isAuthenticated,
 router.route('/users/:username/treats').get(function(req, res) {
     models.Treat.find({'author': req.params.username}, function(err, treats) {
         if (err) return res.json(err);
-        if (!treats) return res.signal(404).send('Not Found');
+        if (!treats) return res.sendStatus(404);
         var offset=0;
         var limit=20;
         if (req.param('offset')) {
@@ -358,7 +375,7 @@ router.route('/treats/categories/:category').get(function(req, res) {
             error: 'Invalid treat category'
         });
     models.Treat.find({'category': req.params.category}, null, {sort: '-first_pub_datetime'}, function(err, treats) {
-        if (!treats) return res.signal(404).send('Not Found');
+        if (!treats) return res.sendStatus(404);
         if (err) return res.json(err);
         var offset=0;
         var limit=20;
@@ -380,7 +397,7 @@ router.route('/treats/categories/:category/orderby/rating').get(function(req, re
             error: 'Invalid treat category'
         });
     models.Treat.find({'category': req.params.category}).sort({'total_rating': -1, 'first_pub_datetime': -1}).exec(function(err, treats) {
-        if (!treats) return res.signal(404).send('Not Found');
+        if (!treats) return res.sendStatus(404);
         if (err) return res.json(err);
         var offset=0;
         var limit=20;
@@ -397,7 +414,7 @@ router.route('/treats/categories/:category/orderby/rating').get(function(req, re
 
 router.route('/treats/orderby/rating').get(function(req, res) {
     models.Treat.find().sort({'total_rating': -1, 'first_pub_datetime': -1}).exec(function(err, treats) {
-        if (!treats) return res.signal(404).send('Not Found');
+        if (!treats) return res.sendStatus(404);
         if (err) return res.json(err);
         var offset=0;
         var limit=20;
@@ -416,7 +433,7 @@ router.route('/treats/:pkgname').get(function(req, res) {
     models.Treat.findOne({'package_name': req.params.pkgname},
         function(err, treat) {
             if (err) return res.json(err);
-            if (!treat) return res.status(404).send('Not Found');
+            if (!treat) return res.sendStatus(404);;
             res.json(treat);
         }
     );
@@ -425,11 +442,11 @@ router.route('/treats/:pkgname').get(function(req, res) {
     models.Treat.findOne({'package_name': req.params.pkgname}, function(err, treat) {
         if (err) return res.json(err);
 
-        if (!treat) return res.status(404).send('Not Found');
+        if (!treat) return res.sendStatus(404);;
 
         if (req.user.username != treat.author) {
             if (!req.user.is_superuser) {
-                return res.status(403).send('Forbidden');
+                return res.sendStatus(403);;
             }
         }
         for (i in treat.details) {
@@ -450,10 +467,10 @@ router.route('/treats/:pkgname').get(function(req, res) {
     // verify that the treat belongs to the authenticated user
     models.Treat.findOne({'package_name': req.params.pkgname}, function(err, treat) {
         if (err) return res.json(err);
-        if (!treat) return res.status(404).send('Not Found');
+        if (!treat) return res.sendStatus(404);;
         if (req.user.username != treat.author) {
             if (!req.user.is_superuser) {
-                return res.status(403).send('Forbidden');
+                return res.sendStatus(403);;
             }
         }
         if (req.body.description) treat.description = req.body.description;
@@ -470,10 +487,10 @@ router.route('/treats/:pkgname/versions') // aka detail
             {'package_name': req.params.pkgname},
             function(err, treat) {
                 if (err) return res.json(err);
-                if (!treat) return res.status(404).send('Not Found');
+                if (!treat) return res.sendStatus(404);;
                 if (req.user.username != treat.author)
                     if (!req.user.is_superuser)
-                        return res.status(403).send('Forbidden');
+                        return res.sendStatus(403);;
 
                 var detail = new models.TreatDetail();
                 if (!req.body.version) return res.json({success: false, error: 'Version not provided'});
@@ -502,10 +519,10 @@ router.route('/treats/:pkgname/versions/:version')
             {'package_name': req.params.pkgname},
             function(err, treat) {
                 if (err) return res.json(err);
-                if (!treat) return res.status(404).send('Not Found');
+                if (!treat) return res.sendStatus(404);;
                 if (req.user.username != treat.author) {
                     if (!req.user.is_superuser) {
-                        return res.status(403).send('Forbidden');
+                        return res.sendStatus(403);;
                     }
                 }
                 var detail = null;
@@ -517,7 +534,7 @@ router.route('/treats/:pkgname/versions/:version')
                         break;
                     }
                 }
-                if (!detail) return res.status(404).send('Not Found');
+                if (!detail) return res.sendStatus(404);;
                 if (!req.body.is_deprecated) return res.json({
                     success: false,
                     error: 'is_deprecated body value not passed'
@@ -548,10 +565,10 @@ router.route('/treats/:pkgname/versions/:version')
             {'package_name': req.params.pkgname},
             function(err, treat) {
                 if (err) return res.json(err);
-                if (!treat) return res.status(404).send('Not Found');
+                if (!treat) return res.sendStatus(404);;
                 if (req.user.username != treat.author) {
                     if (!req.user.is_superuser) {
-                        return res.status(403).send('Forbidden');
+                        return res.sendStatus(403);;
                     }
                 }
                 var detail = null;
@@ -581,7 +598,7 @@ router.route('/treats/:pkgname/versions/:version/file').post(auth.isAuthenticate
                 if (err) return res.json(err);
                 if (req.user.username != treat.author) {
                     if (!req.user.is_superuser) {
-                        return res.status(403).send('Forbidden');
+                        return res.sendStatus(403);;
                     }
                 }
                 var detail = null;
@@ -592,7 +609,7 @@ router.route('/treats/:pkgname/versions/:version/file').post(auth.isAuthenticate
                     }
                 }
                 if (!detail) {
-                    return res.status(404).send('Not Found');
+                    return res.sendStatus(404);;
                 }
                 if (!config.treat_mimetypes.includes(req.file.mimetype)) {
                     fs.unlink(req.file.path, function(err) {
@@ -644,7 +661,7 @@ router.route('/treats/:pkgname/screenshots').post(auth.isAuthenticated,
                 if (err) return res.json(err);
                 if (req.user.username != treat.author) {
                     if (!req.user.is_superuser) {
-                        return res.status(403).send('Forbidden');
+                        return res.sendStatus(403);;
                     }
                 }
                 var detail = null;
@@ -655,7 +672,7 @@ router.route('/treats/:pkgname/screenshots').post(auth.isAuthenticated,
                     }
                 }
                 if (!detail) {
-                    return res.status(404).send('Not Found');
+                    return res.sendStatus(404);;
                 }
 
                 var screenshot_dir_path = make_treat_screenshot_path(
@@ -741,7 +758,7 @@ router.route('/treats/:pkgname/screenshots/:scrotfilename').put(auth.isAuthentic
             if (err) return res.json(err);
             if (req.user.username != treat.author) {
                 if (!req.user.is_superuser) {
-                    return res.status(403).send('Forbidden');
+                    return res.sendStatus(403);;
                 }
             }
             var scrot = null;
@@ -751,7 +768,7 @@ router.route('/treats/:pkgname/screenshots/:scrotfilename').put(auth.isAuthentic
                 }
             }
             if (!scrot) {
-                return res.status(404).send('Not Found');
+                return res.sendStatus(404);;
             }
             for (i in treat.screenshots) {
                 if (treat.screenshots[i]!=scrot) {
@@ -772,7 +789,7 @@ router.route('/treats/:pkgname/screenshots/:scrotfilename').put(auth.isAuthentic
             if (err) return res.json(err);
             if (req.user.username != treat.author) {
                 if (!req.user.is_superuser) {
-                    return res.status(403).send('Forbidden');
+                    return res.sendStatus(403);;
                 }
             }
             var scrot = null;
@@ -788,7 +805,7 @@ router.route('/treats/:pkgname/screenshots/:scrotfilename').put(auth.isAuthentic
                 }
             }
             if (!scrot) {
-                return res.status(404).send('Not Found');
+                return res.sendStatus(404);;
             }
             treat.save(function(err) {
                 if (err) return res.json(err);
@@ -826,10 +843,10 @@ router.route('/treats/:pkgname/comments/:commentid').put(auth.isAuthenticated, f
                 break;
             }
         }
-        if (!comment) return res.status(404).send('Not Found');
+        if (!comment) return res.sendStatus(404);;
         if (comment.author != req.user.username) {
             if (!req.user.is_superuser) {
-                return res.status(403).send('Forbidden');
+                return res.sendStatus(403);;
             }
         }
         if (!req.body.content) return res.json({
@@ -851,7 +868,7 @@ router.route('/treats/:pkgname/comments/:commentid').put(auth.isAuthenticated, f
                 comment = treat.comments[i];
                 if (comment.author != req.user.username) {
                     if (!req.user.is_superuser) {
-                        return res.status(403).send('Forbidden');
+                        return res.sendStatus(403);;
                     }
                 }
                 // delete comment
@@ -862,7 +879,7 @@ router.route('/treats/:pkgname/comments/:commentid').put(auth.isAuthenticated, f
                 });
             }
         }
-        if (!comment) return res.status(404).send('Not Found');
+        if (!comment) return res.sendStatus(404);;
         return res.status(500).json({success: false, error: 'Unexpected server error'});
     });
 });
@@ -870,7 +887,7 @@ router.route('/treats/:pkgname/comments/:commentid').put(auth.isAuthenticated, f
 router.route('/treats/:pkgname/ratings').post(auth.isAuthenticated, function(req, res) {
     models.Treat.findOne({'package_name': req.params.pkgname}, function(err, treat) {
         if (err) return res.json(err);
-        if (!treat) return res.signal(404).send('Not Found');
+        if (!treat) return res.sendStatus(404);
         var rating = new models.TreatRating();
         rating.author = req.user.username;
         if (!req.body.rating) return res.json({
@@ -895,7 +912,7 @@ router.route('/treats/:pkgname/ratings').post(auth.isAuthenticated, function(req
 router.route('/treats/:pkgname/ratings/:ratingid').put(auth.isAuthenticated, function(req,res) {
     models.Treat.findOne({'package_name': req.params.pkgname}, function(err, treat) {
         if (err) return res.json(err);
-        if (!treat) return res.signal(404).send('Not Found');
+        if (!treat) return res.sendStatus(404);
         var rating = null;
         for (i in treat.ratings) {
             if (treat.ratings[i]._id == req.params.ratingid) {
@@ -903,10 +920,10 @@ router.route('/treats/:pkgname/ratings/:ratingid').put(auth.isAuthenticated, fun
                 break;
             }
         }
-        if (!rating) return res.status(404).send('Not Found');
+        if (!rating) return res.sendStatus(404);;
         if (rating.author != req.user.username) {
             if (!req.user.is_superuser) {
-                return res.status(403).send('Forbidden');
+                return res.sendStatus(403);;
             }
         }
         if (!req.body.rating) return res.json({
@@ -928,14 +945,14 @@ router.route('/treats/:pkgname/ratings/:ratingid').put(auth.isAuthenticated, fun
 }).delete(auth.isAuthenticated, function(req,res) {
     models.Treat.findOne({'package_name': req.params.pkgname}, function(err, treat) {
         if (err) return res.json(err);
-        if (!treat) return res.signal(404).send('Not Found');
+        if (!treat) return res.sendStatus(404);
         var rating = null;
         for (i in treat.ratings) {
             if (treat.ratings[i]._id == req.params.ratingid) {
                 rating = treat.ratings[i];
                 if (rating.author != req.user.username) {
                     if (!req.user.is_superuser) {
-                        return res.status(403).send('Forbidden');
+                        return res.sendStatus(403);;
                     }
                 }
                 // delete rating
@@ -952,8 +969,8 @@ router.route('/treats/:pkgname/ratings/:ratingid').put(auth.isAuthenticated, fun
                 });
             }
         }
-        if (!rating) return res.status(404).send('Not Found');
-        return res.status(500).json({success: false, error: 'Unexpected server error'});
+        if (!rating) return res.sendStatus(404);;
+        return res.sendStatus(500);
     });
 });
 

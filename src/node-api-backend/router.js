@@ -433,6 +433,12 @@ router.route('/treats/:pkgname').get(function(req, res) {
                 return res.status(403).send('Forbidden');
             }
         }
+        for (i in treat.details) {
+            fs.unlink(treat.details[0].file, function(err) {
+                if (err) return res.status(500).json(err);
+                treat.details.splice(0, 1);
+            });
+        }
     });
     models.Treat.remove({'package_name': req.params.pkgname},
         function(err, treat) {
@@ -464,6 +470,7 @@ router.route('/treats/:pkgname/versions') // aka detail
             {'package_name': req.params.pkgname},
             function(err, treat) {
                 if (err) return res.json(err);
+                if (!treat) return res.status(404).send('Not Found');
                 if (req.user.username != treat.author)
                     if (!req.user.is_superuser)
                         return res.status(403).send('Forbidden');
@@ -495,6 +502,7 @@ router.route('/treats/:pkgname/versions/:version')
             {'package_name': req.params.pkgname},
             function(err, treat) {
                 if (err) return res.json(err);
+                if (!treat) return res.status(404).send('Not Found');
                 if (req.user.username != treat.author) {
                     if (!req.user.is_superuser) {
                         return res.status(403).send('Forbidden');
@@ -523,6 +531,7 @@ router.route('/treats/:pkgname/versions/:version')
             {'package_name': req.params.pkgname},
             function(err, treat) {
                 if (err) return res.json(err);
+                if (!treat) return res.status(404).send('Not Found');
                 if (req.user.username != treat.author) {
                     if (!req.user.is_superuser) {
                         return res.status(403).send('Forbidden');
@@ -531,8 +540,11 @@ router.route('/treats/:pkgname/versions/:version')
                 var detail = null;
                 for (i in treat.details) {
                     if (treat.details[i].version == req.params.version) {
-                        treat.details.splice(i, 1);
-                        break;
+                        fs.unlink(treat.details[i].file, function(err) {
+                            if (err) return res.status(500).json(err);
+                            treat.details.splice(i, 1);
+                            break;
+                        });
                     }
                 }
 

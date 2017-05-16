@@ -540,11 +540,9 @@ router.route('/treats/:pkgname/versions/:version')
                 var detail = null;
                 for (i in treat.details) {
                     if (treat.details[i].version == req.params.version) {
-                        fs.unlink(treat.details[i].file, function(err) {
-                            if (err) return res.status(500).json(err);
-                            treat.details.splice(i, 1);
-                            break;
-                        });
+                        fs.unlinkSync(treat.details[i].file);
+                        if (err) return res.status(500).json(err);
+                        treat.details.splice(i, 1);
                     }
                 }
 

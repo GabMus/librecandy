@@ -577,7 +577,7 @@ router.route('/treats/:pkgname/versions/:version/file').post(auth.isAuthenticate
                 if (!detail) {
                     return res.status(404).send('Not Found');
                 }
-                if (!config.treat_mimetypes.includes(req.file.mimetype) {
+                if (!config.treat_mimetypes.includes(req.file.mimetype)) {
                     fs.unlink(req.file.path, function(err) {
                         if (err) console.log(err);
                         res.status(422).json({success: false, error: 'The loaded file is not a supported archive', treat: treat});

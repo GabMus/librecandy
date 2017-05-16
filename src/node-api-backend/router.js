@@ -298,6 +298,7 @@ router.route('/users/:username/avatar').post(auth.isAuthenticated,
 router.route('/users/:username/treats').get(function(req, res) {
     models.Treat.find({'author': req.params.username}, function(err, treats) {
         if (err) return res.json(err);
+        if (!treats || treats.length == 0) return res.signal(404).send('Not Found');
         var offset=0;
         var limit=20;
         if (req.param('offset')) {
@@ -350,7 +351,7 @@ router.route('/treats/categories').get(function(req, res) {
 
 router.route('/treats/categories/:category').get(function(req, res) {
     models.Treat.find({'category': req.params.category}, null, {sort: '-date'}, function(err, treats) {
-        if (!treats || treats.length ==0) return res.signal(404).send('Not Found');
+        if (!treats || treats.length == 0) return res.signal(404).send('Not Found');
         if (err) return res.json(err);
         var offset=0;
         var limit=20;

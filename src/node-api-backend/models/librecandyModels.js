@@ -78,7 +78,8 @@ var TreatSchema = new Schema({
     screenshots: [TreatScreenshotSchema], // is this legal?
     details: [TreatDetailSchema],
     ratings: [TreatRatingSchema],
-    comments: [TreatCommentSchema]
+    comments: [TreatCommentSchema],
+    total_rating: {type: Number, default: 0}
 });
 
 var models = {

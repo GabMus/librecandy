@@ -161,6 +161,7 @@ router.route('/users').post(function(req, res) {
         }
         var safeusers = [];
         for (i in users) {
+            if(!users[i+offset]) break;
             safeusers.push(make_user_safe(users[i+offset]));
             if (i>=limit) {
                 break;
@@ -304,7 +305,9 @@ router.route('/users/:username/treats').get(function(req, res) {
 });
 
 router.route('/treats').get(function(req, res) {
-    models.Treat.find(function(err, treats) {
+    /*req.param('orderby')
+    if (req.param('orderby') ==)*/
+    models.Treat.find({}, null, {sort: '-date'}, function(err, treats) {
         if (err) return res.json(err);
         var offset=0;
         var limit=20;
@@ -314,8 +317,8 @@ router.route('/treats').get(function(req, res) {
         if (req.param('limit')) {
             limit=req.param('limit');
         }
-        treats = treats.slice(offset, offset+limit);
-        res.json({treats: treats, offset: offset, limit: limit});
+        var treats_filter = treats.slice(offset, offset+limit);
+        res.json({treats: treats_filter, offset: offset, limit: limit});
     });
 }).post(auth.isAuthenticated, function(req, res) {
     var treat = new models.Treat();

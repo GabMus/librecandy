@@ -187,6 +187,7 @@ router.route('/users/:username').get(function(req, res){
     }
     models.User.findOne({'username': req.params.username}, function(err, user) {
         if (err) return res.json(err);
+        if (!user) return res.status(404).send('Not Found');
 
         if (req.body.realname) {
             user.realname = req.body.realname;
@@ -337,6 +338,8 @@ router.route('/treats').get(function(req, res) {
         res.json({message: 'success', error: null, treat: treat});
     });
 });
+
+router.route('/treats/') // ASDDAS
 
 router.route('/treats/id/:treatid').get(function(req, res) {
     models.Treat.findOne({'_id': req.params.treatid}, function(err, treat) {

@@ -154,13 +154,14 @@ router.route('/users').post(function(req, res) {
         var offset=0;
         var limit=20;
         if (req.param('offset')) {
-            offset=req.param('offset');
+            offset=parseInt(req.param('offset'));
         }
         if (req.param('limit')) {
-            limit=req.param('limit');
+            limit=parseInt(req.param('limit'));
         }
         var safeusers = [];
         for (i in users) {
+            i=parseInt(i);
             if(!users[i+offset]) break;
             safeusers.push(make_user_safe(users[i+offset]));
             if (i>=limit) {

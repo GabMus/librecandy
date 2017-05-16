@@ -339,7 +339,7 @@ router.route('/treats').get(function(req, res) {
     });
 });
 
-router.route('/treats/') // ASDDAS
+// router.route('/treats/')
 
 router.route('/treats/id/:treatid').get(function(req, res) {
     models.Treat.findOne({'_id': req.params.treatid}, function(err, treat) {

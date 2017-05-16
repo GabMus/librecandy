@@ -434,9 +434,9 @@ router.route('/treats/:pkgname').get(function(req, res) {
             }
         }
         for (i in treat.details) {
-            fs.unlink(treat.details[0].file, function(err) {
+            fs.unlink(treat.details[i].file, function(err) {
                 if (err) return res.status(500).json(err);
-                treat.details.splice(0, 1);
+                treat.details.splice(i, 1);
             });
         }
     });

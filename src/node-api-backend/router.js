@@ -333,7 +333,7 @@ router.route('/treats').get(function(req, res) {
             success: false,
             error: 'Treat names cannot contain the `_` (underscore) or `.` (dot) characters'
         });
-    if (!(req.body.category in config.treat_categories))
+    if (!config.treat_categories.includes(req.body.category)) // TODO returns true even if condition is false???
         return res.json({
             success: false,
             error: 'Invalid treat category'
@@ -355,7 +355,7 @@ router.route('/treats/categories').get(function(req, res) {
 });
 
 router.route('/treats/categories/:category').get(function(req, res) {
-    if (!(req.params.category in config.treat_categories))
+    if (!config.treat_categories.includes(req.params.category))
         return res.json({
             success: false,
             error: 'Invalid treat category'
@@ -377,7 +377,7 @@ router.route('/treats/categories/:category').get(function(req, res) {
 });
 
 router.route('/treats/categories/:category/orderby/rating').get(function(req, res) {
-    if (!(req.params.category in config.treat_categories))
+    if (!config.treat_categories.includes(req.params.category))
         return res.json({
             success: false,
             error: 'Invalid treat category'

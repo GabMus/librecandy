@@ -6,7 +6,7 @@ import {Toolbar, ToolbarGroup, ToolbarTitle} from 'material-ui/Toolbar';
 import MenuItem from 'material-ui/MenuItem';
 import IconMenu from 'material-ui/IconMenu';
 import SearchBox from './SearchBox';
-
+import CustomDrawer from './CustomDrawer';
 injectTapEventPlugin();
 
 
@@ -15,18 +15,10 @@ class CustomToolbar extends Component {
   render() {
     return (
       <div>
-
       <Toolbar>
         <ToolbarGroup>
-          <IconMenu
-            iconButtonElement={
-              <IconButton touch={true}>
-                <NavigationMenu />
-              </IconButton>
-            }>
-            <MenuItem primaryText="Download" />
-            <MenuItem primaryText="More Info" />
-          </IconMenu>
+
+          <CustomDrawer/>
           <ToolbarTitle text="Librecandy"/>
         </ToolbarGroup>
         <ToolbarGroup>

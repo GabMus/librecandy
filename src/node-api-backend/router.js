@@ -282,6 +282,8 @@ router.route('/users/:username/avatar').post(auth.isAuthenticated,
 
     models.User.findOne({'username': req.params.username}, function(err, user) {
         if (err) return res.json(err);
+        if (!user) return res.status(404).send('Not Found');
+        if (!user.avatar) return res.status(404).send('Not Found');
         fs.unlink(user.avatar, function(err) {
             if (err) return res.status(500).json(err);
             user.avatar=null;

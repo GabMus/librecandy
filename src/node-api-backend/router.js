@@ -229,7 +229,7 @@ router.route('/users/:username/avatar').post(auth.isAuthenticated,
         }
         models.User.findOne({'username': req.params.username}, function(err, user) {
             if (err) return res.json(err);
-
+            if (!user) return res.status(404).send('Not Found');
             if (req.file.mimetype.substr(0,6)!='image/')
                 return res.status(422).json({
                     success: false,

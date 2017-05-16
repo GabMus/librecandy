@@ -13,7 +13,7 @@ var config = {
         'application/x-bzip2',
         'application/x-gzip'
     ],
-    treat_categories = [
+    treat_categories: [
         'Icons',
         'GTK',
         'Qt',

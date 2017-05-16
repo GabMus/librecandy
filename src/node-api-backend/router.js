@@ -899,7 +899,7 @@ router.route('/treats/:pkgname/comments/:commentid').put(auth.isAuthenticated, f
                 });
             }
         }
-        if (!comment) return res.sendStatus(404);;
+        if (!comment) return res.sendStatus(404);
         return res.status(500).json({success: false, error: 'Unexpected server error'});
     });
 });

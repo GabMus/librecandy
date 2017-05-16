@@ -355,6 +355,11 @@ router.route('/treats/categories').get(function(req, res) {
 });
 
 router.route('/treats/categories/:category').get(function(req, res) {
+    if (!req.params.category in config.treat_categories)
+    return res.json({
+        success: false,
+        error: 'Invalid treat category'
+    });
     models.Treat.find({'category': req.params.category}, null, {sort: '-first_pub_datetime'}, function(err, treats) {
         if (!treats) return res.signal(404).send('Not Found');
         if (err) return res.json(err);
@@ -372,6 +377,11 @@ router.route('/treats/categories/:category').get(function(req, res) {
 });
 
 router.route('/treats/categories/:category/orderby/rating').get(function(req, res) {
+    if (!req.params.category in config.treat_categories)
+    return res.json({
+        success: false,
+        error: 'Invalid treat category'
+    });
     models.Treat.find({'category': req.params.category}).sort({'total_rating': -1, 'first_pub_datetime': -1}).exec(function(err, treats) {
         if (!treats) return res.signal(404).send('Not Found');
         if (err) return res.json(err);

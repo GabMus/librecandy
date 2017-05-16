@@ -915,7 +915,7 @@ router.route('/treats/:pkgname/ratings').post(auth.isAuthenticated, function(req
             error: 'Rating value not provided'
         });
         rating.value = req.body.rating;
-        treat.comments.unshift(rating);
+        treat.ratings.unshift(rating);
         var rating_rawtotal = 0;
         var rating_count = treat.ratings.length;
         for (i in treat.ratings) {

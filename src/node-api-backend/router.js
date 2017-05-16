@@ -83,7 +83,30 @@ function verify_user_action_authorized(user, requested_username, callback) { // 
 function verify_treat_action_authorized(user, treat_pkgname, callback) {
     models.Treat.findOne({'package_name': treat_pkgname}, function(err, treat) {
         if (err) return callback(err, null);
-        if (!treat) return callback();
+        if (!treat) return callback(404, null);
+        if (user.username != treat.author) {
+            if (!user.is_superuser) {
+                return callback(403, null);
+            }
+        }
+        return callback(null, treat);
+    });
+}
+
+// callback(err)
+function resize_mv(filepath, n_dirpath, n_filename, width, callback) { // no height to match original aspect ratio
+    height = (typeof height !== 'undefined') ?  height : '';
+    fse.mkdirs(n_dirpath function(err) {
+        if (err) return callback(err);
+        imagic.convert([
+            filepath,
+            '-resize',
+            width + 'x',
+            n_filename
+        ], function(err, stdout) {
+            if (err) return callback(err);
+            callback(null);
+        });
     });
 }
 
@@ -695,10 +718,7 @@ router.route('/treats/:pkgname/screenshots').post(auth.isAuthenticated,
                             ], function (err, stdout) {
                                 if (err) {
                                     console.log(err);
-                                    return res.status(500).json({
-                                        success: false,
-                                        error: err
-                                    });
+                                    return res.sendStatus(500);
                                 }
                                 var scrot_obj = new models.TreatScreenshot();
                                 scrot_obj.file = screenshot_path;
@@ -825,7 +845,7 @@ router.route('/treats/:pkgname/comments').post(auth.isAuthenticated, function(re
             error: 'Comment content not provided'
         });
         comment.content = req.body.content;
-        treat.unshift(comment);
+        treat.comments.unshift(comment);
         treat.save(function(err) {
             if (err) return res.json(err);
             return res.json({success: true, error: null, treat: treat});
@@ -895,7 +915,7 @@ router.route('/treats/:pkgname/ratings').post(auth.isAuthenticated, function(req
             error: 'Rating value not provided'
         });
         rating.value = req.body.rating;
-        treat.unshift(rating);
+        treat.comments.unshift(rating);
         var rating_rawtotal = 0;
         var rating_count = treat.ratings.length;
         for (i in treat.ratings) {

@@ -509,9 +509,11 @@ router.route('/treats/:pkgname/versions/:version')
                     }
                 }
                 var detail = null;
+                var index = null;
                 for (i in treat.details) {
                     if (treat.details[i].version == req.params.version) {
                         detail = treat.details[i];
+                        index = i;
                         break;
                     }
                 }
@@ -532,6 +534,7 @@ router.route('/treats/:pkgname/versions/:version')
                         error: 'is_deprecated must be either \'true\' or \'false\''
                     });
                 }
+                treat.detail[index] = detail;
                 treat.save(function(err) {
                     if (err) return res.json(err);
                     return res.json({message: 'success', error: null, treat: treat});

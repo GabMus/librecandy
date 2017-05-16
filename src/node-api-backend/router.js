@@ -427,7 +427,9 @@ router.route('/treats/:pkgname').get(function(req, res) {
     // verify that the treat belongs to the authenticated user
     models.Treat.findOne({'package_name': req.params.pkgname}, function(err, treat) {
         if (err) return res.json(err);
+
         if (!treat) return res.status(404).send('Not Found');
+
         if (req.user.username != treat.author) {
             if (!req.user.is_superuser) {
                 return res.status(403).send('Forbidden');
@@ -440,13 +442,13 @@ router.route('/treats/:pkgname').get(function(req, res) {
                 treat.details.splice(i, 1);
             });
         }
+        models.Treat.remove({'package_name': req.params.pkgname},
+            function(err, treat) {
+                if (err) return res.json(err);
+                res.json(API_SUCCESS_MSG);
+            }
+        );
     });
-    models.Treat.remove({'package_name': req.params.pkgname},
-        function(err, treat) {
-            if (err) return res.json(err);
-            res.json(API_SUCCESS_MSG);
-        }
-    );
 }).put(auth.isAuthenticated, function(req, res) { // TODO: implement update as add/remove details
     // verify that the treat belongs to the authenticated user
     models.Treat.findOne({'package_name': req.params.pkgname}, function(err, treat) {

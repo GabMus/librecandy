@@ -333,7 +333,7 @@ router.route('/treats').get(function(req, res) {
             success: false,
             error: 'Treat names cannot contain the `_` (underscore) or `.` (dot) characters'
         });
-    if (!req.body.category in config.treat_categories)
+    if (!(req.body.category in config.treat_categories))
         return res.json({
             success: false,
             error: 'Invalid treat category'
@@ -355,7 +355,7 @@ router.route('/treats/categories').get(function(req, res) {
 });
 
 router.route('/treats/categories/:category').get(function(req, res) {
-    if (!req.params.category in config.treat_categories)
+    if (!(req.params.category in config.treat_categories))
         return res.json({
             success: false,
             error: 'Invalid treat category'
@@ -377,7 +377,7 @@ router.route('/treats/categories/:category').get(function(req, res) {
 });
 
 router.route('/treats/categories/:category/orderby/rating').get(function(req, res) {
-    if (!req.params.category in config.treat_categories)
+    if (!(req.params.category in config.treat_categories))
         return res.json({
             success: false,
             error: 'Invalid treat category'
@@ -567,7 +567,7 @@ router.route('/treats/:pkgname/versions/:version/file').post(auth.isAuthenticate
                 if (!detail) {
                     return res.status(404).send('Not Found');
                 }
-                if (!req.file.mimetype in config.treat_mimetypes) {
+                if (!(req.file.mimetype in config.treat_mimetypes)) {
                     fs.unlink(req.file.path, function(err) {
                         if (err) console.log(err);
                         res.status(422).json({success: false, error: 'The loaded file is not a supported archive', treat: treat});

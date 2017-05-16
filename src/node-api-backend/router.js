@@ -21,7 +21,7 @@ function make_user_safe(user) {
     return {
         username: user.username,
         realname: user.realname,
-        avatar: user.avatar, //TODO: implement avatar first
+        avatar: user.avatar,
         email: user.email,
         bio: user.bio,
         signup_datetime: user.signup_datetime
@@ -114,7 +114,6 @@ router.route('/superuser').post(function(req, res) {
     user.password = req.body.password;
     user.is_superuser = true;
     if (req.body.realname) user.realname = req.body.realname;
-    //if (req.body.avatar) user.avatar = req.body.avatar; // TODO: implement avatar loading
     if (req.body.password) user.password = req.body.password;
     if (req.body.bio) user.bio = req.body.bio;
 
@@ -136,7 +135,6 @@ router.route('/users').post(function(req, res) {
     user.email = req.body.email;
     user.password = req.body.password;
     if (req.body.realname) user.realname = req.body.realname;
-    //if (req.body.avatar) user.avatar = req.body.avatar; // TODO: implement avatar loading
     if (req.body.password) user.password = req.body.password;
     if (req.body.bio) user.bio = req.body.bio;
 
@@ -219,7 +217,6 @@ router.route('/users/:username').get(function(req, res){
     );
 });
 
-// TODO: complete using https://www.npmjs.com/package/multer
 router.route('/users/:username/avatar').post(auth.isAuthenticated,
     multer_upload.single('avatar'), function(req, res) {
         // if the user making the request isn't the requested user
@@ -333,7 +330,7 @@ router.route('/treats').get(function(req, res) {
             success: false,
             error: 'Treat names cannot contain the `_` (underscore) or `.` (dot) characters'
         });
-    if (!config.treat_categories.includes(req.body.category)) // TODO returns true even if condition is false???
+    if (!config.treat_categories.includes(req.body.category))
         return res.json({
             success: false,
             error: 'Invalid treat category'
@@ -449,7 +446,7 @@ router.route('/treats/:pkgname').get(function(req, res) {
             }
         );
     });
-}).put(auth.isAuthenticated, function(req, res) { // TODO: implement update as add/remove details
+}).put(auth.isAuthenticated, function(req, res) {
     // verify that the treat belongs to the authenticated user
     models.Treat.findOne({'package_name': req.params.pkgname}, function(err, treat) {
         if (err) return res.json(err);

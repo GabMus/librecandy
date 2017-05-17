@@ -265,8 +265,7 @@ router.route('/users/:username/avatar').post(auth.isAuthenticated,
         }
         if (!req.file) return res.json({
             success: false,
-            error: 'You must pass a valid image file as multipart/form-data',
-            treat: treat
+            error: 'You must pass a valid image file as multipart/form-data'
         });
         if (req.file.mimetype.substr(0,6)!='image/')
         return res.status(422).json({

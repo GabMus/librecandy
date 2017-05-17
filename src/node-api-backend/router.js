@@ -928,13 +928,19 @@ router.route('/treats/:pkgname/ratings').post(auth.isAuthenticated, function(req
     models.Treat.findOne({'package_name': req.params.pkgname}, function(err, treat) {
         if (err) return res.json(err);
         if (!treat) return res.sendStatus(404);
+        var n_rating_value = parseInt(req.body.rating);
+        if (n_rating_value < 1 || n_rating_value > 10) return res.json({
+            success: false,
+            error: 'Rating must be >= 1 and <= 10',
+            treat: treat
+        });
         var rating = new models.TreatRating();
         rating.author = req.user.username;
         if (!req.body.rating) return res.json({
             success: false,
             error: 'Rating value not provided'
         });
-        rating.value = req.body.rating;
+        rating.value = n_rating_value;
         treat.ratings.unshift(rating);
         var rating_rawtotal = 0;
         var rating_count = treat.ratings.length;

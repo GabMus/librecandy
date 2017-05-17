@@ -929,7 +929,7 @@ router.route('/treats/:pkgname/ratings').post(auth.isAuthenticated, function(req
         if (err) return res.json(err);
         if (!treat) return res.sendStatus(404);
         var rating = null;
-        if (!treat.ratings.length) for (i in treat.ratings) {
+        for (i in [...Array(treat.ratings.length).keys()]) {
             if (treat.ratings[i].author == req.user.author) {
                 rating = treat.ratings[i];
                 break;

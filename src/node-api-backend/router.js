@@ -954,10 +954,15 @@ router.route('/treats/:pkgname/ratings').post(auth.isAuthenticated, function(req
         console.log(treat);
         var rating_rawtotal = 0;
         var rating_count = treat.ratings.length;
-        for (i in [...Array(rating_count).keys()]) {
-            rating_rawtotal = rating_rawtotal + treat.ratings[i].value;
+        if (rating_count > 1) {
+            for (i in [...Array(rating_count).keys()]) {
+                rating_rawtotal = rating_rawtotal + treat.ratings[i].value;
+            }
+            treat.total_rating = Math.floor((rating_rawtotal/rating_count)+0.5);
         }
-        treat.total_rating = Math.floor((rating_rawtotal/rating_count)+0.5);
+        else {
+            treat.total_rating = n_rating_value;
+        }
         treat.save(function(err) {
             if (err) return res.json(err);
             return res.json({success: true, error: null, treat: treat});

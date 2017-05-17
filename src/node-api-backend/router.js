@@ -627,7 +627,7 @@ router.route('/treats/:pkgname/versions/:version/file').post(auth.isAuthenticate
                 });
                 if (!config.treat_mimetypes.includes(req.file.mimetype)) {
                     fs.unlinkSync(req.file.path);
-                    res.status(422).json({success: false, error: 'The loaded file is not a supported archive', treat: treat});
+                    return res.status(422).json({success: false, error: 'The loaded file is not a supported archive', treat: treat});
                 }
                 if (req.user.username != treat.author) {
                     if (!req.user.is_superuser) {

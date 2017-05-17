@@ -930,7 +930,7 @@ router.route('/treats/:pkgname/ratings').post(auth.isAuthenticated, function(req
         if (!treat) return res.sendStatus(404);
         var rating = null;
         for (i in treat.ratings) {
-            if (treat.ratings[i]._id == req.params.ratingid) {
+            if (treat.ratings[i].author == req.user.author) {
                 rating = treat.ratings[i];
                 break;
             }
@@ -939,6 +939,7 @@ router.route('/treats/:pkgname/ratings').post(auth.isAuthenticated, function(req
             rating = new models.TreatRating();
             rating.author = req.user.username;
             treat.ratings.unshift(rating);
+            console.log("buddello");
         }
         var n_rating_value = parseInt(req.body.rating);
         if (n_rating_value < 1 || n_rating_value > 10) return res.json({
@@ -951,7 +952,6 @@ router.route('/treats/:pkgname/ratings').post(auth.isAuthenticated, function(req
             error: 'Rating value not provided'
         });
         rating.value = n_rating_value;
-        console.log(treat);
         var rating_rawtotal = 0;
         var rating_count = treat.ratings.length;
         if (rating_count > 1) {

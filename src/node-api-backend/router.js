@@ -700,7 +700,7 @@ router.route('/treats/:pkgname/screenshots').post(auth.isAuthenticated,
             {'package_name': req.params.pkgname},
             function(err, treat) {
                 if (err) return res.json(err);
-                f (!treat) return res.sendStatus(404);
+                if (!treat) return res.sendStatus(404);
                 if (req.user.username != treat.author) {
                     if (!req.user.is_superuser) {
                         return res.sendStatus(403);
@@ -724,7 +724,7 @@ router.route('/treats/:pkgname/screenshots').post(auth.isAuthenticated,
                 );
                 var screenshot_filename = treat.name+'_screenshot'+
                     treat.screenshots.length+'_'+Date.now()+'.png';
-                fse.mkdirs('screenshot_dir_path', function(err) {
+                fse.mkdirs(screenshot_dir_path, function(err) {
                     console.log(err);
                     var screenshot_path = screenshot_dir_path+
                         '/'+screenshot_filename;

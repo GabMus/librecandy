@@ -46,7 +46,9 @@ function make_treat_file_path(username, treat, detail, originalname) {
         '/'+treat.name+'_'+detail.version+get_file_ext(originalname);
 }
 function make_treat_screenshot_path(username, treat, detail) {
-    return make_treat_base_path(username, treat, detail)+
+    return config.media_path +
+        '/users/'+username +
+        '/'+treat.package_name+
         '/screenshots/';
 }
 

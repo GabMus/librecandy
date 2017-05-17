@@ -928,20 +928,29 @@ router.route('/treats/:pkgname/ratings').post(auth.isAuthenticated, function(req
     models.Treat.findOne({'package_name': req.params.pkgname}, function(err, treat) {
         if (err) return res.json(err);
         if (!treat) return res.sendStatus(404);
+        var rating = null;
+        for (i in treat.ratings) {
+            if (treat.ratings[i]._id == req.params.ratingid) {
+                rating = treat.ratings[i];
+                break;
+            }
+        }
+        if (!rating) {
+            rating = new models.TreatRating();
+            rating.author = req.user.username;
+            treat.ratings.unshift(rating);
+        }
         var n_rating_value = parseInt(req.body.rating);
         if (n_rating_value < 1 || n_rating_value > 10) return res.json({
             success: false,
             error: 'Rating must be >= 1 and <= 10',
             treat: treat
         });
-        var rating = new models.TreatRating();
-        rating.author = req.user.username;
         if (!req.body.rating) return res.json({
             success: false,
             error: 'Rating value not provided'
         });
         rating.value = n_rating_value;
-        treat.ratings.unshift(rating);
         console.log(treat);
         var rating_rawtotal = 0;
         var rating_count = treat.ratings.length;
@@ -968,6 +977,12 @@ router.route('/treats/:pkgname/ratings/:ratingid').put(auth.isAuthenticated, fun
             }
         }
         if (!rating) return res.sendStatus(404);
+        var n_rating_value = parseInt(req.body.rating);
+        if (n_rating_value < 1 || n_rating_value > 10) return res.json({
+            success: false,
+            error: 'Rating must be >= 1 and <= 10',
+            treat: treat
+        });
         if (rating.author != req.user.username) {
             if (!req.user.is_superuser) {
                 return res.sendStatus(403);
@@ -977,7 +992,7 @@ router.route('/treats/:pkgname/ratings/:ratingid').put(auth.isAuthenticated, fun
             success: false,
             error: 'Comment content not provided'
         });
-        rating.value = req.body.rating;
+        rating.value = n_rating_value;
         var rating_rawtotal = 0;
         var rating_count = treat.ratings.length;
         for (i in [...Array(rating_count).keys()]) {

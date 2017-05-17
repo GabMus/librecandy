@@ -20,14 +20,9 @@ export default class CustomDrawer extends React.Component {
   render() {
     return (
       <div>
-        <IconMenu
-          iconButtonElement={
-            <IconButton>
-              <NavigationMenu />
-            </IconButton>
-          }
-          onTouchTap={() => this.handleToggle()}
-        />
+        <IconButton onTouchTap={() => this.handleToggle()} >
+          <NavigationMenu />
+        </IconButton>
         <Drawer open={this.state.open} docked={false} onRequestChange={((open) => this.setState({open}))}  >
           <MenuItem>Menu Item</MenuItem>
           <MenuItem>Menu Item 2</MenuItem>

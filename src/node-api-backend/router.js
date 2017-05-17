@@ -565,10 +565,10 @@ router.route('/treats/:pkgname/versions/:version')
                     error: 'is_deprecated body value not passed'
                 });
                 if (req.body.is_deprecated == 'true') {
-                    treat.details[index].version.is_deprecated = true;
+                    detail.is_deprecated = true;
                 }
                 else if (req.body.is_deprecated == 'false') {
-                    treat.details[index].version.is_deprecated = false;
+                    detail.is_deprecated = false;
                 }
                 else {
                     return res.json({
@@ -576,7 +576,6 @@ router.route('/treats/:pkgname/versions/:version')
                         error: 'is_deprecated must be either \'true\' or \'false\''
                     });
                 }
-                treat.details[index] = detail;
                 treat.save(function(err) {
                     if (err) return res.json(err);
                     return res.json({success: true, error: null, treat: treat});

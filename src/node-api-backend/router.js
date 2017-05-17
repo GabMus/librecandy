@@ -700,6 +700,7 @@ router.route('/treats/:pkgname/screenshots').post(auth.isAuthenticated,
             {'package_name': req.params.pkgname},
             function(err, treat) {
                 if (err) return res.json(err);
+                f (!treat) return res.sendStatus(404);
                 if (req.user.username != treat.author) {
                     if (!req.user.is_superuser) {
                         return res.sendStatus(403);

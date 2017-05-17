@@ -256,7 +256,6 @@ router.route('/users/:username').get(function(req, res){
         }
     );
 });
-
 router.route('/users/:username/avatar').post(auth.isAuthenticated,
     multer_upload.single('avatar'), function(req, res) {
         // if the user making the request isn't the requested user
@@ -264,17 +263,21 @@ router.route('/users/:username/avatar').post(auth.isAuthenticated,
             // OR if the user isn't a superuser
             if (!req.user.is_superuser) return res.sendStatus(403);
         }
+        if (!req.file) return res.json({
+            success: false,
+            error: 'You must pass a valid image file as multipart/form-data',
+            treat: treat
+        });
+        if (req.file.mimetype.substr(0,6)!='image/')
+        return res.status(422).json({
+            success: false,
+            error: 'File is not an image (' + req.file.mimetype + ')'
+        });
         models.User.findOne({'username': req.params.username}, function(err, user) {
             if (err) return res.json(err);
             if (!user) return res.sendStatus(404);
-            if (req.file.mimetype.substr(0,6)!='image/')
-                return res.status(422).json({
-                    success: false,
-                    error: 'File is not an image (' + req.file.mimetype + ')'
-                });
             var user_avatar_dir = config.media_path + 'users/' + user.username;
-            var rel_user_avatar_dir = './media/users/' + user.username;
-            mkdirp(rel_user_avatar_dir, function(err, results) {
+            fse.mkdirs(user_avatar_dir, function(err, results) {
                 if (err) {
                     console.log(err);
                     return res.status(500).json({
@@ -684,6 +687,16 @@ router.route('/treats/:pkgname/versions/:version/file').post(auth.isAuthenticate
 router.route('/treats/:pkgname/screenshots').post(auth.isAuthenticated,
     multer_upload.single('screenshot'), function(req, res) {
         // if the user making the request isn't the requested user
+        if (!req.file) return res.json({
+            success: false,
+            error: 'You must pass a valid image file as multipart/form-data',
+            treat: treat
+        });
+        if (req.file.mimetype.substr(0,6)!='image/')
+            return res.status(422).json({
+                success: false,
+                error: 'File is not an image (' + req.file.mimetype + ')'
+            });
         models.Treat.findOne(
             {'package_name': req.params.pkgname},
             function(err, treat) {

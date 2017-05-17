@@ -642,13 +642,17 @@ router.route('/treats/:pkgname/versions/:version/file').post(auth.isAuthenticate
                     }
                 }
                 if (!detail) return res.sendStatus(404);
-
                 var treat_file_path = make_treat_file_path(
                     req.user.username,
                     treat,
                     detail,
                     req.file.originalname
                 );
+                if (fs.existsSync(treat_file_path)) return res.json({
+                    success: false,
+                    error: 'File already exists for this version. If you want to update, create a new version',
+                    treat: treat
+                });
                 var treat_file_dir = make_treat_base_path(
                     req.user.username,
                     treat,

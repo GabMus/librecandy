@@ -688,8 +688,7 @@ router.route('/treats/:pkgname/screenshots').post(auth.isAuthenticated,
         // if the user making the request isn't the requested user
         if (!req.file) return res.json({
             success: false,
-            error: 'You must pass a valid image file as multipart/form-data',
-            treat: treat
+            error: 'You must pass a valid image file as multipart/form-data'
         });
         if (req.file.mimetype.substr(0,6)!='image/')
             return res.status(422).json({
@@ -795,6 +794,7 @@ router.route('/treats/:pkgname/screenshots/:scrotfilename').put(auth.isAuthentic
         {'package_name': req.params.pkgname},
         function(err, treat) {
             if (err) return res.json(err);
+            if (!treat) return res.sendStatus(404);
             if (req.user.username != treat.author) {
                 if (!req.user.is_superuser) {
                     return res.sendStatus(403);
@@ -806,9 +806,7 @@ router.route('/treats/:pkgname/screenshots/:scrotfilename').put(auth.isAuthentic
                     scrot = treat.screenshots[i];
                 }
             }
-            if (!scrot) {
-                return res.sendStatus(404);
-            }
+            if (!scrot) return res.sendStatus(404);
             for (i in treat.screenshots) {
                 if (treat.screenshots[i]!=scrot) {
                     treat.screenshots[i].is_main = false;

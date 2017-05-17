@@ -942,9 +942,10 @@ router.route('/treats/:pkgname/ratings').post(auth.isAuthenticated, function(req
         });
         rating.value = n_rating_value;
         treat.ratings.unshift(rating);
+        console.log(treat);
         var rating_rawtotal = 0;
         var rating_count = treat.ratings.length;
-        for (i in treat.ratings) {
+        for (i in [...Array(rating_count).keys()]) {
             rating_rawtotal = rating_rawtotal + treat.ratings[i].value;
         }
         treat.total_rating = Math.floor((rating_rawtotal/rating_count)+0.5);

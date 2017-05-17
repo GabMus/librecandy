@@ -1025,14 +1025,14 @@ router.route('/treats/:pkgname/ratings/:ratingid').put(auth.isAuthenticated, fun
                     rating_rawtotal = rating_rawtotal + treat.ratings[i].value;
                 }
                 treat.total_rating = Math.floor((rating_rawtotal/rating_count)+0.5);
-                treat.save(function(err) {
-                    if (err) return res.json(err);
-                    return res.json({success: true, error: null, treat: treat});
-                });
+                break;
             }
         }
         if (!rating) return res.sendStatus(404);
-        return res.sendStatus(500);
+        treat.save(function(err) {
+            if (err) return res.json(err);
+            return res.json({success: true, error: null, treat: treat});
+        });
     });
 });
 

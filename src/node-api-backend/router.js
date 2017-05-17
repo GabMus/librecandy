@@ -929,7 +929,7 @@ router.route('/treats/:pkgname/ratings').post(auth.isAuthenticated, function(req
         if (err) return res.json(err);
         if (!treat) return res.sendStatus(404);
         var rating = null;
-        for (i in treat.ratings) {
+        if (!treat.ratings.length) for (i in treat.ratings) {
             if (treat.ratings[i].author == req.user.author) {
                 rating = treat.ratings[i];
                 break;
@@ -939,7 +939,6 @@ router.route('/treats/:pkgname/ratings').post(auth.isAuthenticated, function(req
             rating = new models.TreatRating();
             rating.author = req.user.username;
             treat.ratings.unshift(rating);
-            console.log("buddello");
         }
         var n_rating_value = parseInt(req.body.rating);
         if (n_rating_value < 1 || n_rating_value > 10) return res.json({

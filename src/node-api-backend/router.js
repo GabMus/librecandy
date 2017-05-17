@@ -855,6 +855,7 @@ router.route('/treats/:pkgname/screenshots/:scrotfilename').put(auth.isAuthentic
 router.route('/treats/:pkgname/comments').post(auth.isAuthenticated, function(req, res) {
     models.Treat.findOne({'package_name': req.params.pkgname}, function(err, treat) {
         if (err) return res.json(err);
+        if (!treat) return res.sendStatus(404);
         var comment = new models.TreatComment();
         comment.author = req.user.username;
         if (!req.body.content) return res.json({
@@ -873,6 +874,7 @@ router.route('/treats/:pkgname/comments').post(auth.isAuthenticated, function(re
 router.route('/treats/:pkgname/comments/:commentid').put(auth.isAuthenticated, function(req,res) {
     models.Treat.findOne({'package_name': req.params.pkgname}, function(err, treat) {
         if (err) return res.json(err);
+        if (!treat) return res.sendStatus(404);
         var comment = null;
         for (i in treat.comments) {
             if (treat.comments[i]._id == req.params.commentid) {
@@ -899,6 +901,7 @@ router.route('/treats/:pkgname/comments/:commentid').put(auth.isAuthenticated, f
 }).delete(auth.isAuthenticated, function(req,res) {
     models.Treat.findOne({'package_name': req.params.pkgname}, function(err, treat) {
         if (err) return res.json(err);
+        if (!treat) return res.sendStatus(404);
         var comment = null;
         for (i in treat.comments) {
             if (treat.comments[i]._id == req.params.commentid) {

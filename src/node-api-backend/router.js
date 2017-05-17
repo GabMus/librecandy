@@ -650,7 +650,7 @@ router.route('/treats/:pkgname/versions/:version/file').post(auth.isAuthenticate
                 );
                 if (fs.existsSync(treat_file_path)) return res.json({
                     success: false,
-                    error: 'File already exists for this version. If you want to update, create a new version',
+                    error: 'File already exists for this version. If you want to update, create a new version or delete this one and re-create it',
                     treat: treat
                 });
                 var treat_file_dir = make_treat_base_path(

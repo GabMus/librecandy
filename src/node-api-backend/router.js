@@ -598,8 +598,8 @@ router.route('/treats/:pkgname/versions/:version')
                 var detail = null;
                 for (i in treat.details) {
                     if (treat.details[i].version == req.params.version) {
-                        fs.unlinkSync(treat.details[i].file);
-                        if (err) return res.status(500).json(err);
+                        if (treat.details[i].file)
+                            fs.unlinkSync(treat.details[i].file);
                         treat.details.splice(i, 1);
                     }
                 }

@@ -621,8 +621,10 @@ router.route('/treats/:pkgname/versions/:version/file').post(auth.isAuthenticate
                 if (err) return res.json(err);
                 if (!req.file) return res.json({
                     success: false,
-                    error: 'You must pass a valid archive (.tar.gz, .zip, ...) file as multipart/form-data'
+                    error: 'You must pass a valid archive (.tar.gz, .zip, ...) file as multipart/form-data',
+                    treat: treat
                 });
+                if (!treat) return res.sendStatus(404);
                 if (req.user.username != treat.author) {
                     if (!req.user.is_superuser) {
                         return res.sendStatus(403);
@@ -635,14 +637,10 @@ router.route('/treats/:pkgname/versions/:version/file').post(auth.isAuthenticate
                         break;
                     }
                 }
-                if (!detail) {
-                    return res.sendStatus(404);
-                }
+                if (!detail) return res.sendStatus(404);
                 if (!config.treat_mimetypes.includes(req.file.mimetype)) {
-                    fs.unlink(req.file.path, function(err) {
-                        if (err) console.log(err);
-                        res.status(422).json({success: false, error: 'The loaded file is not a supported archive', treat: treat});
-                    });
+                    fs.unlinkSync(req.file.path);
+                    res.status(422).json({success: false, error: 'The loaded file is not a supported archive', treat: treat});
                 }
 
                 var treat_file_path = make_treat_file_path(

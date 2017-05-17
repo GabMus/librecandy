@@ -1021,10 +1021,15 @@ router.route('/treats/:pkgname/ratings/:ratingid').put(auth.isAuthenticated, fun
                 treat.ratings.splice(i,1);
                 var rating_rawtotal = 0;
                 var rating_count = treat.ratings.length;
-                for (i in [...Array(rating_count).keys()]) {
-                    rating_rawtotal = rating_rawtotal + treat.ratings[i].value;
+                if (rating_count) {
+                    for (i in [...Array(rating_count).keys()]) {
+                        rating_rawtotal = rating_rawtotal + treat.ratings[i].value;
+                    }
+                    treat.total_rating = Math.floor((rating_rawtotal/rating_count)+0.5);
                 }
-                treat.total_rating = Math.floor((rating_rawtotal/rating_count)+0.5);
+                else {
+                    treat.total_rating = 0;
+                }
                 break;
             }
         }

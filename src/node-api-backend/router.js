@@ -619,6 +619,10 @@ router.route('/treats/:pkgname/versions/:version/file').post(auth.isAuthenticate
             {'package_name': req.params.pkgname},
             function(err, treat) {
                 if (err) return res.json(err);
+                if (!req.file) return res.json({
+                    success: false,
+                    error: 'You must pass a valid archive (.tar.gz, .zip, ...) file as multipart/form-data'
+                });
                 if (req.user.username != treat.author) {
                     if (!req.user.is_superuser) {
                         return res.sendStatus(403);

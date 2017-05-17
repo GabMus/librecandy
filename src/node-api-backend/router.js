@@ -565,10 +565,10 @@ router.route('/treats/:pkgname/versions/:version')
                     error: 'is_deprecated body value not passed'
                 });
                 if (req.body.is_deprecated == 'true') {
-                    detail.version.is_deprecated = true;
+                    treat.details[index].version.is_deprecated = true;
                 }
                 else if (req.body.is_deprecated == 'false') {
-                    detail.version.is_deprecated = false;
+                    treat.details[index].version.is_deprecated = false;
                 }
                 else {
                     return res.json({
@@ -824,6 +824,7 @@ router.route('/treats/:pkgname/screenshots/:scrotfilename').put(auth.isAuthentic
         {'package_name': req.params.pkgname},
         function(err, treat) {
             if (err) return res.json(err);
+            if (!treat) return res.sendStatus(404);
             if (req.user.username != treat.author) {
                 if (!req.user.is_superuser) {
                     return res.sendStatus(403);
@@ -835,7 +836,7 @@ router.route('/treats/:pkgname/screenshots/:scrotfilename').put(auth.isAuthentic
                     scrot = treat.screenshots[i];
                     fs.unlink(scrot.file);
                     treat.screenshots.splice(i, 1);
-                    if (treat.screenshots.length != 0) {
+                    if (treat.screenshots.length != 0 && scrot.is_main) {
                         treat.screenshots[0].is_main = true;
                     }
                     break

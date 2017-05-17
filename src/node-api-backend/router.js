@@ -96,7 +96,7 @@ function verify_treat_action_authorized(user, treat_pkgname, callback) {
 // callback(err)
 function resize_mv(filepath, n_dirpath, n_filename, width, callback) { // no height to match original aspect ratio
     height = (typeof height !== 'undefined') ?  height : '';
-    fse.mkdirs(n_dirpath function(err) {
+    fse.mkdirs(n_dirpath, function(err) {
         if (err) return callback(err);
         imagic.convert([
             filepath,
@@ -142,7 +142,7 @@ router.route('/authenticate').post(auth.isAuthenticatedBasic, function(req,res) 
 });
 
 router.route('/superuser').post(function(req, res) {
-    if (true) return res.sendStatus(403);; // NOTE: DISABLE IN PRODUCTION!
+    if (true) return res.sendStatus(403); // NOTE: DISABLE IN PRODUCTION!
     var user = new models.User();
     user.username = req.body.username;
     if (req.body.username.includes('.'))
@@ -186,7 +186,7 @@ router.route('/users').post(function(req, res) {
 }).get(auth.isAuthenticated, function(req, res) {
     // can only use this function as superuser
     if (!req.user.is_superuser)
-        return res.sendStatus(403);;
+        return res.sendStatus(403);
     models.User.find(function(err, users) {
         if (err) return res.json(err);
         var offset=0;
@@ -213,7 +213,7 @@ router.route('/users').post(function(req, res) {
 router.route('/users/:username').get(function(req, res){
     models.User.findOne({'username': req.params.username}, function(err, user) {
         if (err) return res.json(err);
-        if (!user) return res.sendStatus(404);;
+        if (!user) return res.sendStatus(404);
         res.json(make_user_safe(user));
     });
 }).put(auth.isAuthenticated, function(req, res) {
@@ -221,11 +221,11 @@ router.route('/users/:username').get(function(req, res){
     if ((req.params.username != req.user.username)) {
         // OR if the user isn't a superuser
         if (!req.user.is_superuser)
-            return res.sendStatus(403);;
+            return res.sendStatus(403);
     }
     models.User.findOne({'username': req.params.username}, function(err, user) {
         if (err) return res.json(err);
-        if (!user) return res.sendStatus(404);;
+        if (!user) return res.sendStatus(404);
 
         if (req.body.realname) {
             user.realname = req.body.realname;
@@ -246,7 +246,7 @@ router.route('/users/:username').get(function(req, res){
     if ((req.params.username != req.user.username)) {
         // OR if the user isn't a superuser
         if (!req.user.is_superuser)
-            return res.sendStatus(403);;
+            return res.sendStatus(403);
     }
     models.User.remove(
         {username: req.params.username},
@@ -262,11 +262,11 @@ router.route('/users/:username/avatar').post(auth.isAuthenticated,
         // if the user making the request isn't the requested user
         if (req.params.username != req.user.username) {
             // OR if the user isn't a superuser
-            if (!req.user.is_superuser) return res.sendStatus(403);;
+            if (!req.user.is_superuser) return res.sendStatus(403);
         }
         models.User.findOne({'username': req.params.username}, function(err, user) {
             if (err) return res.json(err);
-            if (!user) return res.sendStatus(404);;
+            if (!user) return res.sendStatus(404);
             if (req.file.mimetype.substr(0,6)!='image/')
                 return res.status(422).json({
                     success: false,
@@ -314,13 +314,13 @@ router.route('/users/:username/avatar').post(auth.isAuthenticated,
     // if the user making the request isn't the requested user
     if (req.params.username != req.user.username) {
         // OR if the user isn't a superuser
-        if (!req.user.is_superuser) return res.sendStatus(403);;
+        if (!req.user.is_superuser) return res.sendStatus(403);
     }
 
     models.User.findOne({'username': req.params.username}, function(err, user) {
         if (err) return res.json(err);
-        if (!user) return res.sendStatus(404);;
-        if (!user.avatar) return res.sendStatus(404);;
+        if (!user) return res.sendStatus(404);
+        if (!user.avatar) return res.sendStatus(404);
         fs.unlink(user.avatar, function(err) {
             if (err) return res.status(500).json(err);
             user.avatar=null;
@@ -456,7 +456,7 @@ router.route('/treats/:pkgname').get(function(req, res) {
     models.Treat.findOne({'package_name': req.params.pkgname},
         function(err, treat) {
             if (err) return res.json(err);
-            if (!treat) return res.sendStatus(404);;
+            if (!treat) return res.sendStatus(404);
             res.json(treat);
         }
     );
@@ -465,11 +465,11 @@ router.route('/treats/:pkgname').get(function(req, res) {
     models.Treat.findOne({'package_name': req.params.pkgname}, function(err, treat) {
         if (err) return res.json(err);
 
-        if (!treat) return res.sendStatus(404);;
+        if (!treat) return res.sendStatus(404);
 
         if (req.user.username != treat.author) {
             if (!req.user.is_superuser) {
-                return res.sendStatus(403);;
+                return res.sendStatus(403);
             }
         }
         for (i in treat.details) {
@@ -490,10 +490,10 @@ router.route('/treats/:pkgname').get(function(req, res) {
     // verify that the treat belongs to the authenticated user
     models.Treat.findOne({'package_name': req.params.pkgname}, function(err, treat) {
         if (err) return res.json(err);
-        if (!treat) return res.sendStatus(404);;
+        if (!treat) return res.sendStatus(404);
         if (req.user.username != treat.author) {
             if (!req.user.is_superuser) {
-                return res.sendStatus(403);;
+                return res.sendStatus(403);
             }
         }
         if (req.body.description) treat.description = req.body.description;
@@ -510,10 +510,10 @@ router.route('/treats/:pkgname/versions') // aka detail
             {'package_name': req.params.pkgname},
             function(err, treat) {
                 if (err) return res.json(err);
-                if (!treat) return res.sendStatus(404);;
+                if (!treat) return res.sendStatus(404);
                 if (req.user.username != treat.author)
                     if (!req.user.is_superuser)
-                        return res.sendStatus(403);;
+                        return res.sendStatus(403);
 
                 var detail = new models.TreatDetail();
                 if (!req.body.version) return res.json({success: false, error: 'Version not provided'});
@@ -542,10 +542,10 @@ router.route('/treats/:pkgname/versions/:version')
             {'package_name': req.params.pkgname},
             function(err, treat) {
                 if (err) return res.json(err);
-                if (!treat) return res.sendStatus(404);;
+                if (!treat) return res.sendStatus(404);
                 if (req.user.username != treat.author) {
                     if (!req.user.is_superuser) {
-                        return res.sendStatus(403);;
+                        return res.sendStatus(403);
                     }
                 }
                 var detail = null;
@@ -557,7 +557,7 @@ router.route('/treats/:pkgname/versions/:version')
                         break;
                     }
                 }
-                if (!detail) return res.sendStatus(404);;
+                if (!detail) return res.sendStatus(404);
                 if (!req.body.is_deprecated) return res.json({
                     success: false,
                     error: 'is_deprecated body value not passed'
@@ -588,10 +588,10 @@ router.route('/treats/:pkgname/versions/:version')
             {'package_name': req.params.pkgname},
             function(err, treat) {
                 if (err) return res.json(err);
-                if (!treat) return res.sendStatus(404);;
+                if (!treat) return res.sendStatus(404);
                 if (req.user.username != treat.author) {
                     if (!req.user.is_superuser) {
-                        return res.sendStatus(403);;
+                        return res.sendStatus(403);
                     }
                 }
                 var detail = null;
@@ -621,7 +621,7 @@ router.route('/treats/:pkgname/versions/:version/file').post(auth.isAuthenticate
                 if (err) return res.json(err);
                 if (req.user.username != treat.author) {
                     if (!req.user.is_superuser) {
-                        return res.sendStatus(403);;
+                        return res.sendStatus(403);
                     }
                 }
                 var detail = null;
@@ -632,7 +632,7 @@ router.route('/treats/:pkgname/versions/:version/file').post(auth.isAuthenticate
                     }
                 }
                 if (!detail) {
-                    return res.sendStatus(404);;
+                    return res.sendStatus(404);
                 }
                 if (!config.treat_mimetypes.includes(req.file.mimetype)) {
                     fs.unlink(req.file.path, function(err) {
@@ -684,7 +684,7 @@ router.route('/treats/:pkgname/screenshots').post(auth.isAuthenticated,
                 if (err) return res.json(err);
                 if (req.user.username != treat.author) {
                     if (!req.user.is_superuser) {
-                        return res.sendStatus(403);;
+                        return res.sendStatus(403);
                     }
                 }
                 var detail = null;
@@ -695,7 +695,7 @@ router.route('/treats/:pkgname/screenshots').post(auth.isAuthenticated,
                     }
                 }
                 if (!detail) {
-                    return res.sendStatus(404);;
+                    return res.sendStatus(404);
                 }
 
                 var screenshot_dir_path = make_treat_screenshot_path(
@@ -778,7 +778,7 @@ router.route('/treats/:pkgname/screenshots/:scrotfilename').put(auth.isAuthentic
             if (err) return res.json(err);
             if (req.user.username != treat.author) {
                 if (!req.user.is_superuser) {
-                    return res.sendStatus(403);;
+                    return res.sendStatus(403);
                 }
             }
             var scrot = null;
@@ -788,7 +788,7 @@ router.route('/treats/:pkgname/screenshots/:scrotfilename').put(auth.isAuthentic
                 }
             }
             if (!scrot) {
-                return res.sendStatus(404);;
+                return res.sendStatus(404);
             }
             for (i in treat.screenshots) {
                 if (treat.screenshots[i]!=scrot) {
@@ -809,7 +809,7 @@ router.route('/treats/:pkgname/screenshots/:scrotfilename').put(auth.isAuthentic
             if (err) return res.json(err);
             if (req.user.username != treat.author) {
                 if (!req.user.is_superuser) {
-                    return res.sendStatus(403);;
+                    return res.sendStatus(403);
                 }
             }
             var scrot = null;
@@ -825,7 +825,7 @@ router.route('/treats/:pkgname/screenshots/:scrotfilename').put(auth.isAuthentic
                 }
             }
             if (!scrot) {
-                return res.sendStatus(404);;
+                return res.sendStatus(404);
             }
             treat.save(function(err) {
                 if (err) return res.json(err);
@@ -863,10 +863,10 @@ router.route('/treats/:pkgname/comments/:commentid').put(auth.isAuthenticated, f
                 break;
             }
         }
-        if (!comment) return res.sendStatus(404);;
+        if (!comment) return res.sendStatus(404);
         if (comment.author != req.user.username) {
             if (!req.user.is_superuser) {
-                return res.sendStatus(403);;
+                return res.sendStatus(403);
             }
         }
         if (!req.body.content) return res.json({
@@ -888,7 +888,7 @@ router.route('/treats/:pkgname/comments/:commentid').put(auth.isAuthenticated, f
                 comment = treat.comments[i];
                 if (comment.author != req.user.username) {
                     if (!req.user.is_superuser) {
-                        return res.sendStatus(403);;
+                        return res.sendStatus(403);
                     }
                 }
                 // delete comment
@@ -940,10 +940,10 @@ router.route('/treats/:pkgname/ratings/:ratingid').put(auth.isAuthenticated, fun
                 break;
             }
         }
-        if (!rating) return res.sendStatus(404);;
+        if (!rating) return res.sendStatus(404);
         if (rating.author != req.user.username) {
             if (!req.user.is_superuser) {
-                return res.sendStatus(403);;
+                return res.sendStatus(403);
             }
         }
         if (!req.body.rating) return res.json({
@@ -972,7 +972,7 @@ router.route('/treats/:pkgname/ratings/:ratingid').put(auth.isAuthenticated, fun
                 rating = treat.ratings[i];
                 if (rating.author != req.user.username) {
                     if (!req.user.is_superuser) {
-                        return res.sendStatus(403);;
+                        return res.sendStatus(403);
                     }
                 }
                 // delete rating
@@ -989,7 +989,7 @@ router.route('/treats/:pkgname/ratings/:ratingid').put(auth.isAuthenticated, fun
                 });
             }
         }
-        if (!rating) return res.sendStatus(404);;
+        if (!rating) return res.sendStatus(404);
         return res.sendStatus(500);
     });
 });

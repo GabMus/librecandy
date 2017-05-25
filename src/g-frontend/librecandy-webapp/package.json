@@ -1,0 +1,25 @@
+{
+  "name": "librecandy-webapp",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "aphrodite": "^1.2.1",
+    "material-ui": "^0.18.1",
+    "react": "^15.5.4",
+    "react-dom": "^15.5.4",
+    "react-flexbox-grid-aphrodite": "^1.0.3",
+    "react-image-gallery": "^0.8.0",
+    "react-markdown": "^2.5.0",
+    "react-stars": "^2.1.0",
+    "react-tap-event-plugin": "^2.0.1"
+  },
+  "devDependencies": {
+    "react-scripts": "1.0.5"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}

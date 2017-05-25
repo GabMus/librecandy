@@ -1,0 +1,90 @@
+@import "../node_modules/react-image-gallery/styles/css/image-gallery.css";
+@import url('https://fonts.googleapis.com/css?family=Roboto:100,300,400,400i,500,500i,700,700i');
+
+.App {
+  /*text-align: center;*/
+  width: 100%;
+  height: 100vh;
+  font-family: 'Roboto', sans-serif;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 80px;
+}
+
+.App-header {
+  background-color: #222;
+  height: 150px;
+  padding: 20px;
+  color: white;
+}
+
+.App-intro {
+  font-size: large;
+}
+
+.screenshot {
+    width: 100%;
+    height: 100%;
+    max-width: 1280px;
+    min-width: 300px;
+    background-color: #263238;
+}
+
+.screenshot img {
+    object-fit: scale-down;
+    width: 100%;
+    height: 60vh;
+}
+
+.fullbleedcard {
+    /*margin: auto;*/
+    width: 100%;
+    max-width: 1280px;
+    min-width: 300px;
+    margin-bottom: 24px;
+}
+
+.loginregistercard {
+    max-width: 450px;
+    min-width: 300px;
+    margin: auto;
+    padding-bottom: '0px';
+}
+
+.CandyRegisterOrLogin {
+    margin: 24px 12px 12px 12px;
+}
+
+.treatdescription {
+    text-align: justify;
+}
+
+.commentcontent {
+    margin: -15px 15px 0px 30px;
+    text-align: justify;
+}
+
+pre, code {
+    background-color: #263238;
+    color: #EEEEEE;
+    border-radius: 4px;
+}
+
+pre {
+    padding: 4px 4px 4px 4px;
+    overflow: scroll;
+    border: 1px #BDBDBD solid;
+}
+
+.sectionHeaderContainer {
+    margin: 24px 0 12px 10vw;
+    display: block;
+}
+
+.sectionHeader {
+    font-weight: 300;
+    font-size: 25pt;
+    line-height: 48px;
+}

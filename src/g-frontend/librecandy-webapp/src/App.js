@@ -25,6 +25,7 @@ import CandyRegisterOrLogin from './components/CandyRegisterOrLogin';
 import CandyHorizontalCardview from './components/CandyHorizontalCardview';
 import CandyUserView from './components/CandyUserView';
 //import CandyUserCard from './components/CandyUserCard';
+import CandyInfiniteScrollPage from './components/CandyInfiniteScrollPage';
 
 import SocialWhatshotIcon from 'material-ui/svg-icons/social/whatshot';
 import ToggleStarIcon from 'material-ui/svg-icons/toggle/star';
@@ -43,7 +44,21 @@ const candyTheme = getMuiTheme({
 });
 
 class App extends Component {
+    constructor(props) {
+        super(props);
+        this.props = props;
+        this.state = {
+            apiServer: props.apiServer,
+            userLogged: false,
+        };
+    }
+
+    componentDidMount() { // called when the rendering is done
+        //fetch(this.)
+    }
+
     render() {
+
         let sectionHeaderIconStyle = {
             width: '48px',
             height: '48px',
@@ -55,6 +70,10 @@ class App extends Component {
                 <MuiThemeProvider muiTheme={candyTheme}>
                     <div>
                         <CandyToolbar></CandyToolbar>
+
+                        <CandyInfiniteScrollPage
+                            
+                        />
 
                         {/*}<CandyUserView />*/}
 

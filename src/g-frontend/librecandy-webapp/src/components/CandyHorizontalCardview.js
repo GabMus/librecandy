@@ -51,22 +51,24 @@ class CandyHorizontalCardview extends Component {
             )
         }
         return (
-            <div className='CandyHorizontalCardview'>
+            <div className='CandyHorizontalCardview' style={{margin: 'auto', display: 'block'}}>
 
                 {sectionLabelHeader}
                 <div style={{
                     display: 'flex',
                     flexWrap: 'wrap',
-                    alignItem: 'center',
-                    justifyContent: 'center',
+                    alignItems: 'left',
+                    alignContent: 'left',
+                    justifyContent: 'space-around'
                 }}>
-                    {this.state.treats.map((treat, iter) => {
+                    {this.props.treats.map((treat, iter) => {
                         return (<CandyTreatCard
                             treatname={treat.name}
                             treatrating={treat.total_rating}
                             treatpic={treat.screenshots[0].file}
                             treatauthor={treat.author}
                             treatcategory={treat.category}
+                            key={iter}
                         />);
                     })}
                     {seemoreOrNothing}

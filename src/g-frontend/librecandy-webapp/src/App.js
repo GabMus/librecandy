@@ -31,6 +31,10 @@ import SocialWhatshotIcon from 'material-ui/svg-icons/social/whatshot';
 import ToggleStarIcon from 'material-ui/svg-icons/toggle/star';
 import ActionEventIcon from 'material-ui/svg-icons/action/event';
 
+import CandyHomeView from './components/CandyHomeView';
+
+import { Switch, Route } from 'react-router-dom'
+
 const candyTheme = getMuiTheme({
     palette: {
         primary1Color: pink300,
@@ -69,11 +73,16 @@ class App extends Component {
             <div className='App'>
                 <MuiThemeProvider muiTheme={candyTheme}>
                     <div>
-                        <CandyToolbar></CandyToolbar>
+                        <CandyToolbar userLogged={this.state.userLogged}></CandyToolbar>
+                        <Switch>
+                            <Route exact path='/' component={CandyHomeView} />
+                            <Route exact path='/login' component={CandyRegisterOrLogin} />
+                            {/*<Route path='/roster' component={Roster}/>
+                            <Route path='/schedule' component={Schedule}/>*/}
+                        </Switch>
+                        {/*<CandyInfiniteScrollPage
 
-                        <CandyInfiniteScrollPage
-                            
-                        />
+                        />*/}
 
                         {/*}<CandyUserView />*/}
 

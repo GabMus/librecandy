@@ -85,6 +85,12 @@ pre {
 
 .sectionHeader {
     font-weight: 300;
-    font-size: 25pt;
+    font-size: 23pt;
     line-height: 48px;
+}
+
+.link, a {
+    text-decoration: none;
+    outline: none;
+    margin: 0 0 0 0 !important;
 }

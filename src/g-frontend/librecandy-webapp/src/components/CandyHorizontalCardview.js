@@ -21,7 +21,7 @@ class CandyHorizontalCardview extends Component {
     render() {
         let palette = this.props.muiTheme.palette;
         let seemoreOrNothing = null;
-        if (this.props.seemore !== false) {
+        if (this.props.seemore !== false && this.props.treats) {
             seemoreOrNothing = (<RaisedButton
                 label="See more"
                 style={{
@@ -61,7 +61,7 @@ class CandyHorizontalCardview extends Component {
                     alignContent: 'left',
                     justifyContent: 'space-around'
                 }}>
-                    {this.props.treats.map((treat, iter) => {
+                    {(this.props.treats && this.props.treats.map((treat, iter) => {
                         return (<CandyTreatCard
                             treatname={treat.name}
                             treatrating={treat.total_rating}
@@ -70,7 +70,7 @@ class CandyHorizontalCardview extends Component {
                             treatcategory={treat.category}
                             key={iter}
                         />);
-                    })}
+                    })) || <h2>Nothing here!</h2>}
                     {seemoreOrNothing}
 
                 </div>

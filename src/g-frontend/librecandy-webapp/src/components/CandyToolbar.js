@@ -16,13 +16,14 @@ import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui
 import muiThemeable from 'material-ui/styles/muiThemeable';
 
 import CandyDrawer from './CandyDrawer';
+import { Link, Route } from 'react-router-dom'
 
 class CandyToolbar extends Component {
     constructor(props) {
         super(props);
         this.props=props;
         this.state = {
-            userLogged: false,
+            userLogged: this.props.userLogged,
             searchbarActive: false,
             open: false,
         };
@@ -37,7 +38,7 @@ class CandyToolbar extends Component {
     render() {
         let palette = this.props.muiTheme.palette;
         let loginOrMenu = null;
-        if (this.state.userLogged || true) {
+        if (this.state.userLogged) {
             loginOrMenu = (
                 <IconMenu iconButtonElement={
                     <IconButton touch={true}>
@@ -65,7 +66,8 @@ class CandyToolbar extends Component {
                     style={{
                         color: palette.alternateTextColor
                     }}
-                    onTouchTap={() => {console.log('login action');}}>
+                    containerElement={<Link to='/login' className='link' />}
+                    >
                 </FlatButton>
             );
         }
@@ -80,9 +82,12 @@ class CandyToolbar extends Component {
                         <IconButton touch={true} onTouchTap={this.toggleChildDrawer.bind(this)}>
                             <NavigationMenuIcon color={palette.alternateTextColor} />
                         </IconButton>
-                        <ToolbarTitle text='Librecandy' style={{
-                            color: palette.alternateTextColor
-                        }} />
+                        <Link to='/' className='link'>
+                            <ToolbarTitle text='Librecandy' style={{
+                                color: palette.alternateTextColor
+                                }}
+                            />
+                        </Link>
                     </ToolbarGroup>
                     <ToolbarGroup lastChild={true}>
                         <IconButton touch={true} onTouchTap={() => {console.log('search action');}}>

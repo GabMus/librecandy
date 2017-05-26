@@ -47,10 +47,18 @@ class CandyTreatCard extends Component {
                     margin: 'auto',
                     width: '250px',
                     maxWidth: '250px',
-                    height: '290px'
+                    minHeight: '250px',
+                    maxHeight: '290px'
                 }}>
                     <CardMedia>
-                        <img src={this.state.treatpic} />
+                        <img
+                            style={{
+                                objectFit: 'cover',
+                                width: '250px',
+                                height: '140px'
+                            }}
+                            src={this.state.treatpic}
+                        />
                     </CardMedia>
                     <div>
                         <CardTitle

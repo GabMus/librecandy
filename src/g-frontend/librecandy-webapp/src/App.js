@@ -23,6 +23,8 @@ import CandyTreatView from './components/CandyTreatView';
 import CandyRegisterOrLogin from './components/CandyRegisterOrLogin';
 //tmp
 import CandyHorizontalCardview from './components/CandyHorizontalCardview';
+import CandyUserView from './components/CandyUserView';
+//import CandyUserCard from './components/CandyUserCard';
 
 import SocialWhatshotIcon from 'material-ui/svg-icons/social/whatshot';
 import ToggleStarIcon from 'material-ui/svg-icons/toggle/star';
@@ -53,6 +55,8 @@ class App extends Component {
                 <MuiThemeProvider muiTheme={candyTheme}>
                     <div>
                         <CandyToolbar></CandyToolbar>
+
+                        {/*}<CandyUserView />*/}
 
                         {/*}<CandyTreatView
                             treatdescription={'# Asymmetrical drinking vinegar la croix\n\ncardigan cornhole tattooed brooklyn sartorial\n\n`heirloom coloring book put a bird` on it plaid **ethical**\n\n flexitarian truffaut. Sartorial cloud bread bespoke \n\n```\ntypewriter. Taiyaki iceland freegan actually twee mixtape.\nVenmo craft beer chillwave, cronut sartorial\nbespoke offal neutra narwhal\nfour dollar toast hashtag migas ennui actually.\n```\n\n## Skateboard shabby chic everyday carry prism chillwave.\n\n Try-hard pour-over woke, ramps edison bulb health goth cronut semiotics pork belly lomo activated charcoal gochujang flexitarian hoodie jean shorts. Listicle master cleanse quinoa, mlkshk humblebrag williamsburg thundercats affogato marfa yr +1 swag keytar.'}

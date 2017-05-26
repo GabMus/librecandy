@@ -7,6 +7,7 @@ var router = require('./router.js');
 var mongoose = require('mongoose');
 var morgan = require('morgan');
 var passport = require('passport');
+var cors = require('cors');
 // var models = require('./models/librecandyModels.js') // already in router
 var config = require('./config.js');
 
@@ -28,9 +29,11 @@ app.set('superSecret', SECRET);
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
+
 // use morgan to log requests to the console
 // when in production, redirect the log to the log server
 app.use(morgan('dev'));
+app.use(cors());
 
 // use passport for authentication
 app.use(passport.initialize());

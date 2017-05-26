@@ -175,7 +175,6 @@ router.route('/users').post(function(req, res) {
             error: 'Usernames cannot contain the `.` (dot) character'
         });
     user.email = req.body.email;
-    user.password = req.body.password;
     if (req.body.realname) user.realname = req.body.realname;
     if (req.body.password) user.password = req.body.password;
     if (req.body.bio) user.bio = req.body.bio;

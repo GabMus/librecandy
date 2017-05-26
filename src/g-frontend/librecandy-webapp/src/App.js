@@ -69,6 +69,7 @@ class App extends Component {
             float: 'left',
             marginRight: '12px'
         };
+        console.log(document.cookie);
         return (
             <div className='App'>
                 <MuiThemeProvider muiTheme={candyTheme}>
@@ -76,7 +77,7 @@ class App extends Component {
                         <CandyToolbar userLogged={this.state.userLogged}></CandyToolbar>
                         <Switch>
                             <Route exact path='/' component={CandyHomeView} />
-                            <Route exact path='/login' component={CandyRegisterOrLogin} />
+                            <Route exact path='/login' apiServer={this.props.apiServer} component={() => <CandyRegisterOrLogin apiServer={this.state.apiServer} />} />
                             {/*<Route path='/roster' component={Roster}/>
                             <Route path='/schedule' component={Schedule}/>*/}
                         </Switch>

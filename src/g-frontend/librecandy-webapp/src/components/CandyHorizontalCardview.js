@@ -14,7 +14,6 @@ class CandyHorizontalCardview extends Component {
         this.state = {
             leftIcon: this.props.leftIcon || (<div />),
             label: this.props.label || null,
-            treats: this.props.treats || [],
         };
     }
 
@@ -50,6 +49,7 @@ class CandyHorizontalCardview extends Component {
                 </div>
             )
         }
+        console.log(this.props);
         return (
             <div className='CandyHorizontalCardview' style={{margin: 'auto', display: 'block'}}>
 
@@ -62,10 +62,14 @@ class CandyHorizontalCardview extends Component {
                     justifyContent: 'space-around'
                 }}>
                     {(this.props.treats && this.props.treats.map((treat, iter) => {
+                        let pic=null;
+                        if (treat.screenshots) {
+                            pic=treat.screenshots[0];
+                        }
                         return (<CandyTreatCard
                             treatname={treat.name}
                             treatrating={treat.total_rating}
-                            treatpic={treat.screenshots[0].file}
+                            treatpic={pic}
                             treatauthor={treat.author}
                             treatcategory={treat.category}
                             key={iter}

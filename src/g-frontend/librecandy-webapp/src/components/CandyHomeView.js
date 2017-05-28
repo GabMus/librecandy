@@ -23,14 +23,99 @@ class CandyHomeView extends Component {
     constructor(props) {
         super(props);
         this.props = props;
+        this.getCookie = (cname) => {
+            var name = cname + "=";
+            var ca = document.cookie.split(';');
+            for(var i=0; i<ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0)==' ') c = c.substring(1);
+                if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
+            }
+            return "";
+        };
         this.state = {
             apiServer: props.apiServer,
             userLogged: false,
+            latestTreats: [],
+            mostratedTreats: [],
+            hotTreats: [],
+            userToken: this.getCookie('JWT_AUTH')
         };
     }
 
     componentDidMount() { // called when the rendering is done
         //fetch(this.)
+        let headers = {
+            'Access-Control-Allow-Origin':'*',
+        };
+        if (this.state.userToken) {
+            headers['Authorization'] = `JWT ${this.state.userToken}`;
+        }
+        let request = {
+            method: 'GET',
+            mode: 'cors',
+            headers: headers,
+        };
+        fetch(`${this.props.apiServer}/treats?limit=5&offset=0`, request)
+            .then(response => {
+                //console.log(response);
+                if (response.ok) {
+                    return response.json();
+                }
+                else {
+                    return response;
+                }
+            })
+            .then(data => {
+                if (data.status) {
+                    console.log('Error');
+                }
+                else {
+                    this.setState({latestTreats: data.treats});
+                    //console.log(this.state.latestTreats.treats[0]);
+                }
+            }
+        );
+        fetch(`${this.props.apiServer}/treats/orderby/rating?limit=5&offset=0`, request)
+            .then(response => {
+                //console.log(response);
+                if (response.ok) {
+                    return response.json();
+                }
+                else {
+                    return response;
+                }
+            })
+            .then(data => {
+                if (data.status) {
+                    console.log('Error');
+                }
+                else {
+                    this.setState({mostratedTreats: data.treats});
+                    //console.log(this.state.latestTreats.treats[0]);
+                }
+            }
+        );
+        fetch(`${this.props.apiServer}/treats?limit=5&offset=0`, request) // TODO: implement HOT request
+            .then(response => {
+                //console.log(response);
+                if (response.ok) {
+                    return response.json();
+                }
+                else {
+                    return response;
+                }
+            })
+            .then(data => {
+                if (data.status) {
+                    console.log('Error');
+                }
+                else {
+                    this.setState({hotTreats: data.treats});
+                    //console.log(this.state.latestTreats.treats[0]);
+                }
+            }
+        );
     }
 
     render() {
@@ -45,16 +130,31 @@ class CandyHomeView extends Component {
             <div className='CandyHomeView'>
                 <div>
                     <CandyHorizontalCardview
+                        treats={this.state.hotTreats}
                         label={'What\'s hot'}
-                        leftIcon={<SocialWhatshotIcon style={sectionHeaderIconStyle} />}
+                        leftIcon={
+                            <SocialWhatshotIcon
+                                style={sectionHeaderIconStyle}
+                            />
+                        }
                     ></CandyHorizontalCardview>
                     <CandyHorizontalCardview
+                        treats={this.state.mostratedTreats}
                         label={'Most popular'}
-                        leftIcon={<ToggleStarIcon style={sectionHeaderIconStyle} />}
+                        leftIcon={
+                            <ToggleStarIcon
+                                style={sectionHeaderIconStyle}
+                            />
+                        }
                     ></CandyHorizontalCardview>
                     <CandyHorizontalCardview
+                        treats={this.state.latestTreats}
                         label={'Latest'}
-                        leftIcon={<ActionEventIcon style={sectionHeaderIconStyle} />}
+                        leftIcon={
+                            <ActionEventIcon
+                                style={sectionHeaderIconStyle}
+                            />
+                        }
                     ></CandyHorizontalCardview>
                 </div>
             </div>

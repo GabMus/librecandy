@@ -7,6 +7,8 @@ import Divider from 'material-ui/Divider';
 import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
 
+const base64 = require('base-64');
+
 class CandyRegisterOrLogin extends Component {
     constructor(props) {
         super(props);
@@ -16,6 +18,8 @@ class CandyRegisterOrLogin extends Component {
             registeropen: false,
             loginUsername: '',
             loginPassword: '',
+
+            loginError: '',
 
             registerUsername: '',
             registerRealname: '',
@@ -33,9 +37,44 @@ class CandyRegisterOrLogin extends Component {
             paddingTop: '0px',
         };
 
+        let loginErrorDisplay = null;
+        if (this.state.loginError) {
+            loginErrorDisplay = (
+                <div style={{padding: '6px auto 6px auto', backgroundColor: 'rgba(255,0,0,.1)', color: 'red', textAlign: 'center'}}>
+                    <h2>{this.state.loginError}</h2>
+                </div>
+            );
+        }
+
         let doLogin = () => {
-            console.log(this.state.loginUsername);
-            console.log(this.state.loginPassword);
+            if (!this.state.loginUsername) return;
+            if (!this.state.loginPassword) return;
+            let request = {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Authorization': 'Basic ' + base64.encode(`${this.state.loginUsername}:${this.state.loginPassword}`),
+                    'Access-Control-Allow-Origin':'*'
+                }
+            };
+            fetch(`${this.props.apiServer}/authenticate`, request)
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    }
+                    else {
+                        return response;
+                    }
+                })
+                .then(data => {
+                    if (data.status && data.status == 401) {
+                        this.setState({loginError: 'Username or password invalid'});
+                    }
+                    else {
+                        document.cookie=`JWT_AUTH=${data.token}`;
+                    }
+                }
+            );
         }
 
         let doRegister = () => {
@@ -53,7 +92,7 @@ class CandyRegisterOrLogin extends Component {
                     'Access-Control-Allow-Origin':'*'
                 },
                 body: `username=${this.state.registerUsername}&email=${this.state.registerEmail}&password=${this.state.registerPassword}&realname=${this.state.registerRealname}&bio=${this.state.registerBio}`
-            }
+            };
             fetch(`${this.props.apiServer}/users`, request)
                 .then(response => {
                     console.log(response);
@@ -71,6 +110,7 @@ class CandyRegisterOrLogin extends Component {
                             onTouchTap={() => {this.setState({loginopen: !this.state.loginopen, registeropen: !this.state.registeropen}); console.log('test');}}
                             nestedItems={[
                                 (<div>
+                                    {loginErrorDisplay}
                                     <ListItem style={loginRegisterListItemStyle}
                                         disabled={true}
                                         primaryText={

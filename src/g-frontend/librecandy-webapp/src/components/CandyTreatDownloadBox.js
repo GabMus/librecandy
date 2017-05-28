@@ -11,68 +11,60 @@ class CandyTreatDownloadBox extends Component {
         super(props);
         this.props=props;
         this.state = {
-            versions: props.versions || [
-                { // test data
-                    version: '1.1',
-                    pub_datetime: 'May 24th, 2017',
-                    is_deprecated: false
-                },
-                {
-                    version: '1.0',
-                    pub_datetime: 'May 20th, 2017',
-                    is_deprecated: false
-                },
-                {
-                    version: '0.8',
-                    pub_datetime: 'April 2nd, 2017',
-                    is_deprecated: true
-                },
-                {
-                    version: '0.5',
-                    pub_datetime: 'February 20th, 2017',
-                    is_deprecated: true
-                }
-            ],
+            versions: props.versions,
         };
     }
 
     render() {
         let palette = this.props.muiTheme.palette;
         let deprecatedItems = [];
+
+        let downloadsItems = null;
+        if (this.state.versions) {
+            downloadsItems = (
+                <List style={{paddingBottom: '0px'}}>
+                    <Divider />
+                    {
+                        this.state.versions.map((version, iter) => {
+                            let listitem = (
+                                    <ListItem
+                                        rightIcon={<FileFileDownloadIcon />}
+                                        primaryText={version.version}
+                                        secondaryText={new Date(version.pub_datetime).toDateString()}
+                                        onTouchTap={() => {console.log('download this plz');}}
+                                        key={iter}
+                                    />
+                            );
+                            if (!version.is_deprecated) {
+                                return listitem;
+                            }
+                            else {
+                                deprecatedItems.push(listitem);
+                            }
+                        })
+                    }
+                    {() => {
+                        if (deprecatedItems) {
+                            <ListItem
+                                primaryText="Older versions"
+                                initiallyOpen={false}
+                                primaryTogglesNestedList={true}
+                                nestedItems={deprecatedItems}
+                            />}
+                        }}
+                </List>
+            )
+        }
+        else {
+            downloadsItems = (<h3 style={{textAlign: 'center', paddingBottom: '24px'}}>No versions available yet</h3>)
+        }
         return (
             <div className='CandyTreatDownloadBox'>
                 <Card className='fullbleedcard'>
                     <CardTitle
                         title='Downloads'
                     />
-                    <List style={{paddingBottom: '0px'}}>
-                        <Divider />
-                        {
-                            this.state.versions.map((version, iter) => {
-                                let listitem = (
-                                        <ListItem
-                                            rightIcon={<FileFileDownloadIcon />}
-                                            primaryText={version.version}
-                                            secondaryText={version.pub_datetime}
-                                            onTouchTap={() => {console.log('download this plz');}}
-                                            key={iter}
-                                        />
-                                );
-                                if (!version.is_deprecated) {
-                                    return listitem;
-                                }
-                                else {
-                                    deprecatedItems.push(listitem);
-                                }
-                            })
-                        }
-                        <ListItem
-                            primaryText="Older versions"
-                            initiallyOpen={false}
-                            primaryTogglesNestedList={true}
-                            nestedItems={deprecatedItems}
-                        />
-                    </List>
+                    {downloadsItems}
                 </Card>
             </div>
         );

@@ -15,19 +15,9 @@ class CandyTreatCommentsBox extends Component {
         this.props=props;
         this.state = {
             newComment: '',
-            userLogged: props.userLogged || true,
-            comments: props.comments || [
-                { // test data
-                    author: 'gabmus',
-                    pub_datetime: 'May 24th, 2017, 10:17',
-                    content: 'Lorem ipsum dolor sit amet'
-                },
-                { // test data
-                    author: 'xmey95',
-                    pub_datetime: 'May 24th, 2017, 9:43',
-                    content: 'Some other shit I wont bother coming up with'
-                },
-            ],
+            userToken: props.userToken,
+            comments: props.comments,
+            pkgname: props.pkgname,
         };
     }
 
@@ -38,6 +28,47 @@ class CandyTreatCommentsBox extends Component {
     }
 
     sendComment = (event) => {
+        let headers = {
+            'Access-Control-Allow-Origin':'*',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        };
+        if (this.state.userToken) {
+            headers['Authorization'] = `JWT ${this.state.userToken}`;
+        }
+        else {
+            console.log('User not logged');
+            return;
+        }
+        let request = {
+            method: 'POST',
+            mode: 'cors',
+            headers: headers,
+            body: {
+                content: this.state.newComment
+            }
+        };
+        console.log(this.state.pkgname);
+        fetch(`${this.props.apiServer}/treats/${this.state.pkgname}/comments`, request)
+            .then(response => {
+                //console.log(response);
+                if (response.ok) {
+                    return response.json();
+                }
+                else {
+                    return response;
+                }
+            })
+            .then(data => {
+                if (data.status) {
+                    console.log('Error');
+                    console.log(data);
+                }
+                else {
+                    this.setState({comments: data.treat.comments});
+                    //console.log(this.state.latestTreats.treats[0]);
+                }
+            }
+        );
         console.log(this.state.newComment);
         // TODO: send comment and reload(?) page
     }
@@ -45,7 +76,7 @@ class CandyTreatCommentsBox extends Component {
     render() {
         let palette = this.props.muiTheme.palette;
         let commentOrLogin = null;
-        if (this.state.userLogged) {
+        if (this.state.userToken) {
             commentOrLogin = (
                 <div>
                     <TextField
@@ -64,7 +95,11 @@ class CandyTreatCommentsBox extends Component {
             );
         }
         else {
-            commentOrLogin = (<span style={{fontSize: '14pt'}}>Login or register to comment</span>);
+            commentOrLogin = (<h3>Login or register to comment</h3>);
+        }
+        let noCommentLabel=null;
+        if (this.state.comments.length <= 0) {
+            noCommentLabel = (<h3 style={{textAlign: 'center', paddingBottom: '24px'}}>Be the first one to comment!</h3>)
         }
         return (
             <div className='CandyTreatCommentsBox'>
@@ -97,6 +132,7 @@ class CandyTreatCommentsBox extends Component {
                                 );
                             })
                         }
+                        {noCommentLabel}
                     </List>
                 </Card>
             </div>

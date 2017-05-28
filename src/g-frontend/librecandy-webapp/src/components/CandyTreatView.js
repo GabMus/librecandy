@@ -21,6 +21,9 @@ class CandyTreatView extends Component {
         super(props);
         this.props=props;
         this.state = {
+            treat: null,
+            author: null,
+            userToken: this.props.userToken,
             treatname: props.treatname || 'TREAT_NAME',
             treatdescription: props.treatdescription || 'TREAT_DESC',
             treatrating: props.treatrating || 0,
@@ -30,12 +33,48 @@ class CandyTreatView extends Component {
             treatcategory: props.treatcategory || 'GTK',
             treatcomments: props.treatcomments || [],
         };
+
+        let headers = {
+            'Access-Control-Allow-Origin':'*',
+        };
+        if (this.state.userToken) {
+            headers['Authorization'] = `JWT ${this.state.userToken}`;
+        }
+        let request = {
+            method: 'GET',
+            mode: 'cors',
+            headers: headers,
+        };
+        fetch(`${this.props.apiServer}/treats/${this.props.match.params.pkgname}`, request)
+            .then(response => {
+                //console.log(response);
+                if (response.ok) {
+                    return response.json();
+                }
+                else {
+                    return response;
+                }
+            })
+            .then(data => {
+                if (data.status) {
+                    console.log('Error');
+                }
+                else {
+                    this.setState({treat: data.treat, author: data.author});
+                    //console.log(this.state.latestTreats.treats[0]);
+                }
+            }
+        );
     }
 
     submitRating = (newRating) => {
         newRating = newRating*2;
         console.log(newRating);
         //TODO: send rating and reload(?) page
+    }
+
+    componentDidMount() { // called when the rendering is done
+        //fetch(this.)
     }
 
     render() {
@@ -45,7 +84,12 @@ class CandyTreatView extends Component {
             width: '24px',
             float: 'left'
         }
-        switch (this.state.treatcategory) {
+        if (!this.state.treat) {
+            return (
+                <h2>Nothing here!</h2>
+            )
+        }
+        switch (this.state.treat.category) {
             case 'GTK':
                 categoryBlock = (
                     <div style={{lineHeight: '24px'}}>
@@ -107,13 +151,13 @@ class CandyTreatView extends Component {
                         <Col xs={12} md={8} lg={8}>
                             <Card className='fullbleedcard'>
                                 <CardHeader
-                                    title={this.state.treatauthor}
-                                    subtitle='Subtitle'
-                                    avatar=''
+                                    title={this.state.author.realname || this.state.author.username}
+                                    subtitle={this.state.author.realname && this.state.author.username}
+                                    avatar={this.state.author.avatar || ''}
                                 />
 
                                 <CardTitle
-                                    title={this.state.treatname}
+                                    title={this.state.treat.name}
                                     subtitle={categoryBlock}
                                 />
                                 <CardText>
@@ -134,7 +178,7 @@ class CandyTreatView extends Component {
                                     </div>
                                     <div style={{marginTop: '24px'}}>
                                         <ReactMarkdown
-                                            source={this.state.treatdescription}
+                                            source={this.state.treat.description}
                                             className='treatdescription'
                                         />
                                     </div>
@@ -142,10 +186,16 @@ class CandyTreatView extends Component {
                             </Card>
                         </Col>
                         <Col xs={12} md={4} lg={4}>
-                            <CandyTreatDownloadBox />
+                            <CandyTreatDownloadBox
+                                versions={this.state.treat.details}
+                            />
                         </Col>
                         <Col xs={12}>
-                            <CandyTreatCommentsBox />
+                            <CandyTreatCommentsBox
+                                userToken={this.state.userToken}
+                                comments={this.state.treat.comments}
+                                pkgname={this.state.treat.package_name}
+                            />
                         </Col>
                     </Row>
                 </Grid>

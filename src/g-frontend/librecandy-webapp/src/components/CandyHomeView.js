@@ -23,23 +23,13 @@ class CandyHomeView extends Component {
     constructor(props) {
         super(props);
         this.props = props;
-        this.getCookie = (cname) => {
-            var name = cname + "=";
-            var ca = document.cookie.split(';');
-            for(var i=0; i<ca.length; i++) {
-                var c = ca[i];
-                while (c.charAt(0)==' ') c = c.substring(1);
-                if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
-            }
-            return "";
-        };
         this.state = {
             apiServer: props.apiServer,
             userLogged: false,
             latestTreats: [],
             mostratedTreats: [],
             hotTreats: [],
-            userToken: this.getCookie('JWT_AUTH')
+            userToken: this.props.userToken
         };
     }
 

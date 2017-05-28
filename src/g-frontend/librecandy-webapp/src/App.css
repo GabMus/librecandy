@@ -78,3 +78,18 @@ pre {
     outline: none;
     margin: 0 0 0 0 !important;
 }
+
+.treatCardOverlay {
+    position: absolute;
+    border-radius: 2px;
+    width: 250px;
+    height: 250px;
+    background-color: #000;
+    opacity: 0;
+    z-index: 9;
+    transition: .5s ease;
+}
+
+.treatCardOverlay:hover {
+    opacity: .2;
+}

@@ -460,7 +460,11 @@ router.route('/treats/:pkgname').get(function(req, res) {
         function(err, treat) {
             if (err) return res.json(err);
             if (!treat) return res.sendStatus(404);
-            res.json(treat);
+            models.User.findOne({'username': treat.author}, function(err, user) {
+                if (err) return res.json(err);
+                if (!user) return res.sendStatus(404);
+                res.json({treat: treat, author: make_user_safe(user)});
+            });
         }
     );
 }).delete(auth.isAuthenticated, function(req, res) {

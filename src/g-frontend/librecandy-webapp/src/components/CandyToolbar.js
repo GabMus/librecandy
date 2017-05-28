@@ -16,14 +16,14 @@ import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui
 import muiThemeable from 'material-ui/styles/muiThemeable';
 
 import CandyDrawer from './CandyDrawer';
-import { Link, Route } from 'react-router-dom'
+import { Link } from 'react-router-dom';
 
 class CandyToolbar extends Component {
     constructor(props) {
         super(props);
         this.props=props;
         this.state = {
-            userLogged: this.props.userLogged,
+            userToken: this.props.userToken,
             searchbarActive: false,
             open: false,
         };
@@ -38,7 +38,7 @@ class CandyToolbar extends Component {
     render() {
         let palette = this.props.muiTheme.palette;
         let loginOrMenu = null;
-        if (this.state.userLogged) {
+        if (this.state.userToken) {
             loginOrMenu = (
                 <IconMenu iconButtonElement={
                     <IconButton touch={true}>

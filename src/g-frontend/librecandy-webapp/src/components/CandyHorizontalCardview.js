@@ -49,7 +49,6 @@ class CandyHorizontalCardview extends Component {
                 </div>
             )
         }
-        console.log(this.props);
         return (
             <div className='CandyHorizontalCardview' style={{margin: 'auto', display: 'block'}}>
 
@@ -67,6 +66,7 @@ class CandyHorizontalCardview extends Component {
                             pic=treat.screenshots[0];
                         }
                         return (<CandyTreatCard
+                            treat={treat}
                             treatname={treat.name}
                             treatrating={treat.total_rating}
                             treatpic={pic}

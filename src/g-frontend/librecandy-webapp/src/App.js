@@ -51,9 +51,19 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.props = props;
+        this.getCookie = (cname) => {
+            var name = cname + "=";
+            var ca = document.cookie.split(';');
+            for(var i=0; i<ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0)==' ') c = c.substring(1);
+                if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
+            }
+            return "";
+        };
         this.state = {
             apiServer: props.apiServer,
-            userLogged: false,
+            userToken: this.getCookie('JWT_AUTH'),
         };
     }
 
@@ -73,13 +83,22 @@ class App extends Component {
             <div className='App'>
                 <MuiThemeProvider muiTheme={candyTheme}>
                     <div>
-                        <CandyToolbar userLogged={this.state.userLogged}></CandyToolbar>
+                        <CandyToolbar userToken={this.state.userToken}></CandyToolbar>
                         <Switch>
                             <Route exact path='/' component={
-                                () => <CandyHomeView apiServer={this.props.apiServer} />
+                                () => <CandyHomeView
+                                    userToken={this.state.userToken}
+                                    apiServer={this.props.apiServer} />
                             } />
                             <Route exact path='/login' component={
-                                () => <CandyRegisterOrLogin apiServer={this.state.apiServer} />
+                                () => <CandyRegisterOrLogin
+                                    userToken={this.state.userToken}
+                                    apiServer={this.state.apiServer} />
+                            } />
+                            <Route exact path={`/treat/:pkgname`} component={
+                                (params) => <CandyTreatView {...params}
+                                    userToken={this.state.userToken}
+                                    apiServer={this.state.apiServer} />
                             } />
                             {/*<Route path='/roster' component={Roster}/>
                             <Route path='/schedule' component={Schedule}/>*/}

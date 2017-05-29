@@ -24,7 +24,6 @@ class CandyToolbar extends Component {
         this.props=props;
         this.state = {
             userToken: this.props.userToken,
-            searchbarActive: false,
             open: false,
         };
     }

@@ -390,6 +390,30 @@ router.route('/treats').get(function(req, res) {
     });
 });
 
+router.route('/search').get(function(req, res) {
+    if (!req.param('title')) {
+        return res.json({
+            success: false,
+            error: 'Title parameter not provided'
+        });
+    }
+    titleRe = new RegExp(req.param('title'), "i")
+    models.Treat.find({"name": titleRe}, null, {sort: '-first_pub_datetime'}, function(err, treats) {
+        if (err) return res.json(err);
+        var offset=0;
+        var limit=20;
+        //Title, Category, Description, Author, stringa di ricerca
+        if (req.param('offset')) {
+            offset=parseInt(req.param('offset'));
+        }
+        if (req.param('limit')) {
+            limit=parseInt(req.param('limit'));
+        }
+        var treats_filter = treats.slice(offset, offset+limit);
+        res.json({treats: treats_filter, offset: offset, limit: limit});
+    });
+});
+
 router.route('/treats/categories').get(function(req, res) {
     res.json({categories: config.treat_categories});
 });
@@ -1064,5 +1088,7 @@ router.route('/treats/:pkgname/ratings/:ratingid').put(auth.isAuthenticated, fun
         });
     });
 });
+
+
 
 module.exports = router;

@@ -14,7 +14,7 @@ import DropDownMenu from 'material-ui/DropDownMenu';
 import FlatButton from 'material-ui/FlatButton';
 import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-
+import CandySearch from './CandySearch';
 import CandyDrawer from './CandyDrawer';
 import { Link } from 'react-router-dom';
 
@@ -90,9 +90,7 @@ class CandyToolbar extends Component {
                         </Link>
                     </ToolbarGroup>
                     <ToolbarGroup lastChild={true}>
-                        <IconButton touch={true} onTouchTap={() => {console.log('search action');}}>
-                            <ActionSearchIcon color={palette.alternateTextColor} />
-                        </IconButton>
+                        <CandySearch/>
                         {loginOrMenu}
                     </ToolbarGroup>
                 </Toolbar>

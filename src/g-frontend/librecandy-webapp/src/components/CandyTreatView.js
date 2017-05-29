@@ -24,6 +24,7 @@ class CandyTreatView extends Component {
             treat: null,
             author: null,
             userToken: this.props.userToken,
+            userRating: null,
             treatname: props.treatname || 'TREAT_NAME',
             treatdescription: props.treatdescription || 'TREAT_DESC',
             treatrating: props.treatrating || 0,
@@ -67,17 +68,91 @@ class CandyTreatView extends Component {
         );
     }
 
-    submitRating = (newRating) => {
-        newRating = newRating*2;
-        console.log(newRating);
-        //TODO: send rating and reload(?) page
+    updateUserRating = () => {
+        let headers = {
+            'Access-Control-Allow-Origin':'*',
+        };
+        if (this.state.userToken) {
+            headers['Authorization'] = `JWT ${this.state.userToken}`;
+        }
+        let request = {
+            method: 'GET',
+            mode: 'cors',
+            headers: headers,
+        };
+        fetch(`${this.props.apiServer}/treats/${this.props.match.params.pkgname}/ratings/fromuser`, request)
+            .then(response => {
+                //console.log(response);
+                if (response.ok) {
+                    return response.json();
+                }
+                else {
+                    return response;
+                }
+            })
+            .then(data => {
+                if (data.status) {
+                    console.log('Error');
+                }
+                else {
+                    this.setState({userRating: data.rating});
+                    //console.log(this.state.latestTreats.treats[0]);
+                }
+            }
+        );
     }
 
-    componentDidMount() { // called when the rendering is done
-        //fetch(this.)
+    submitRating = (newRating) => {
+        newRating = newRating*2;
+        let headers = {
+            'Access-Control-Allow-Origin':'*',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        };
+        if (this.state.userToken) {
+            headers['Authorization'] = `JWT ${this.state.userToken}`;
+        }
+        else {
+            console.log('User not logged');
+            return;
+        }
+        let body = `rating=${newRating}`;
+        console.log(body);
+        let request = {
+            method: 'POST',
+            mode: 'cors',
+            headers: headers,
+            body: body
+        };
+        // TODO fix rating update for userRating
+        fetch(`${this.props.apiServer}/treats/${this.state.treat.package_name}/ratings`, request)
+            .then(response => {
+                //console.log(response);
+                if (response.ok) {
+                    return response.json();
+                }
+                else {
+                    return response;
+                }
+            })
+            .then(data => {
+                if (data.status) {
+                    console.log('Error');
+                    console.log(data);
+                }
+                else {
+                    this.setState({treat: data.treat});
+                    this.updateUserRating();
+                    //this.setState({comments: data.treat.comments});
+                    //console.log(this.state.latestTreats.treats[0]);
+                }
+            }
+        );
     }
 
     render() {
+        if (!this.state.userRating) {
+            this.updateUserRating();
+        }
         let palette = this.props.muiTheme.palette;
         let categoryBlock = null;
         let categoryIconStyle = {
@@ -166,15 +241,16 @@ class CandyTreatView extends Component {
                                         <ReactStars
                                             count={5}
                                             style={{display: 'block', float: 'left'}}
+                                            edit={!!this.state.userToken}
                                             onChange={this.submitRating}
                                             size={24}
                                             color2={palette.accent1Color}
-                                            value={this.state.treatuserrating}
+                                            value={this.state.userRating/2}
                                         />
                                     </div>
                                     <div style={{lineHeight: '14px', display: 'block', paddingBottom: '24px'}}>
                                         <ToggleStarIcon color={palette.iconGrey} style={{width: '14px', height: '14px', float: 'left'}} />
-                                        <span style={{float: 'left', paddingLeft: '7px'}}>{this.state.treatrating/2}</span>
+                                        <span style={{float: 'left', paddingLeft: '7px'}}>{this.state.treat.total_rating/2}</span>
                                     </div>
                                     <div style={{marginTop: '24px'}}>
                                         <ReactMarkdown
@@ -194,6 +270,7 @@ class CandyTreatView extends Component {
                             <CandyTreatCommentsBox
                                 userToken={this.state.userToken}
                                 comments={this.state.treat.comments}
+                                apiServer={this.props.apiServer}
                                 pkgname={this.state.treat.package_name}
                             />
                         </Col>

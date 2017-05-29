@@ -1,6 +1,6 @@
 var config = {
     secret: 'notsosecretsecret',
-    database: 'mongodb://localhost:27017/node-api-backend',
+    database: 'localhost:27017',
     jwt_refresh_time: 3600000, // 1 hour
     media_upload: '/tmp/librecandy/uploads/',
     media_path: __dirname+'/media/',

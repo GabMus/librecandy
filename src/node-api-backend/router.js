@@ -929,22 +929,23 @@ router.route('/treats/:pkgname/comments/:commentid').put(auth.isAuthenticated, f
     });
 });
 
+router.route('/treats/:pkgname/ratings/fromuser').get(auth.isAuthenticated, function(req, res) {
+    models.Treat.findOne({'package_name': req.params.pkgname}, function(err, treat) {
+        if (err) return res.json(err);
+        if (!treat) return res.sendStatus(404);
+        for (i in [...Array(treat.ratings.length).keys()]) {
+            if (treat.ratings[i].author == req.user.username) {
+                return res.json({success: true, error: null, treat: treat, rating: treat.ratings[i].value});
+            }
+        }
+        return es.json({success: true, error: null, message: 'The user did not rate yet', treat: treat, rating: 0});
+    });
+});
+
 router.route('/treats/:pkgname/ratings').post(auth.isAuthenticated, function(req, res) {
     models.Treat.findOne({'package_name': req.params.pkgname}, function(err, treat) {
         if (err) return res.json(err);
         if (!treat) return res.sendStatus(404);
-        var rating = null;
-        for (i in [...Array(treat.ratings.length).keys()]) {
-            if (treat.ratings[i].author == req.user.author) {
-                rating = treat.ratings[i];
-                break;
-            }
-        }
-        if (!rating) {
-            rating = new models.TreatRating();
-            rating.author = req.user.username;
-            treat.ratings.unshift(rating);
-        }
         var n_rating_value = parseInt(req.body.rating);
         if (n_rating_value < 1 || n_rating_value > 10) return res.json({
             success: false,
@@ -955,8 +956,22 @@ router.route('/treats/:pkgname/ratings').post(auth.isAuthenticated, function(req
             success: false,
             error: 'Rating value not provided'
         });
-        rating.value = n_rating_value;
+        var rating = null;
+        for (i in [...Array(treat.ratings.length).keys()]) {
+            if (treat.ratings[i].author == req.user.username) {
+                treat.ratings[i].value = n_rating_value;
+                rating = treat.ratings[i];
+                break;
+            }
+        }
+        if (!rating) {
+            rating = new models.TreatRating();
+            rating.author = req.user.username;
+            rating.value = n_rating_value;
+            treat.ratings.unshift(rating);
+        }
         var rating_rawtotal = 0;
+
         var rating_count = treat.ratings.length;
         if (rating_count > 1) {
             for (i in [...Array(rating_count).keys()]) {

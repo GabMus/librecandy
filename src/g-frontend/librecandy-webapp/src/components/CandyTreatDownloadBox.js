@@ -20,7 +20,7 @@ class CandyTreatDownloadBox extends Component {
         let deprecatedItems = [];
 
         let downloadsItems = null;
-        if (this.state.versions) {
+        if (this.state.versions && this.state.versions.length > 0) {
             downloadsItems = (
                 <List style={{paddingBottom: '0px'}}>
                     <Divider />

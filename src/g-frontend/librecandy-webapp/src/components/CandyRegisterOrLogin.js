@@ -107,7 +107,7 @@ class CandyRegisterOrLogin extends Component {
                         <ListItem
                             primaryText={<span style={{fontSize: '18pt'}}>Login</span>}
                             open={this.state.loginopen}
-                            onTouchTap={() => {this.setState({loginopen: !this.state.loginopen, registeropen: !this.state.registeropen}); console.log('test');}}
+                            onTouchTap={() => {this.setState({loginopen: !this.state.loginopen, registeropen: !this.state.registeropen});}}
                             nestedItems={[
                                 (<div>
                                     {loginErrorDisplay}

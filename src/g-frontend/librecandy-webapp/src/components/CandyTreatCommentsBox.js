@@ -9,6 +9,9 @@ import ReactMarkdown from 'react-markdown';
 import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
 
+import IconButton from 'material-ui/IconButton';
+import ActionDeleteForeverIcon from 'material-ui/svg-icons/action/delete-forever'
+
 class CandyTreatCommentsBox extends Component {
     constructor(props) {
         super(props);
@@ -39,15 +42,14 @@ class CandyTreatCommentsBox extends Component {
             console.log('User not logged');
             return;
         }
+        let body = `content=${this.state.newComment}`;
+        console.log(body);
         let request = {
             method: 'POST',
             mode: 'cors',
             headers: headers,
-            body: {
-                content: this.state.newComment
-            }
+            body: body
         };
-        console.log(this.state.pkgname);
         fetch(`${this.props.apiServer}/treats/${this.state.pkgname}/comments`, request)
             .then(response => {
                 //console.log(response);
@@ -65,11 +67,11 @@ class CandyTreatCommentsBox extends Component {
                 }
                 else {
                     this.setState({comments: data.treat.comments});
+                    document.getElementById('newCommentTextField').value='';
                     //console.log(this.state.latestTreats.treats[0]);
                 }
             }
         );
-        console.log(this.state.newComment);
         // TODO: send comment and reload(?) page
     }
 
@@ -80,6 +82,7 @@ class CandyTreatCommentsBox extends Component {
             commentOrLogin = (
                 <div>
                     <TextField
+                        id='newCommentTextField'
                         hintText='Write a new comment'
                         multiLine={true}
                         fullWidth={true}
@@ -119,9 +122,16 @@ class CandyTreatCommentsBox extends Component {
                                         <ListItem
                                             leftAvatar={<Avatar>{comment.author[0].toUpperCase()}</Avatar>}
                                             primaryText={comment.author}
-                                            secondaryText={comment.pub_datetime}
+                                            secondaryText={new Date(comment.pub_datetime).toDateString()}
                                             disabled={true}
                                             key={iter}
+                                            rightIconButton={
+                                                <IconButton
+                                                    touch={true}
+                                                    onTouchTap={() => {console.log('delete');}}>
+                                                    <ActionDeleteForeverIcon color={palette.iconGrey}/>
+                                                </IconButton>
+                                            }
                                         />
                                         <ReactMarkdown
                                             source={comment.content}

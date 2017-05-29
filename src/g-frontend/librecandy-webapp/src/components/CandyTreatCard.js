@@ -90,7 +90,6 @@ class CandyTreatCard extends Component {
                             <ReactStars
                                 style={{float: 'left'}}
                                 count={5}
-                                onChange={(newRating) => {console.log(newRating*2)}}
                                 size={24}
                                 color2={palette.accent1Color}
                                 value={this.state.treat.rating/2}

@@ -1,0 +1,16 @@
+#!/bin/bash
+SESSION=$USER
+
+tmux -2 new-session -d -s $SESSION
+tmux split-window -h
+tmux select-pane -t 0
+tmux resize-pane -U 8
+tmux split-window -v
+tmux select-pane -t 0
+tmux send-keys "cd node-api-backend && ./startmongo.sh" C-m
+tmux select-pane -t 1
+tmux send-keys "cd node-api-backend && node server.js" C-m
+tmux select-pane -t 2
+tmux send-keys "cd g-frontend/librecandy-webapp && yarn start" C-m
+
+tmux -2 attach-session -t $SESSION

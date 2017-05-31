@@ -328,7 +328,7 @@ router.route('/users/:username/avatar').post(auth.isAuthenticated,
                       }
                     });
                     console.log('avatar: imagemagick:' + stdout);
-                    user.avatar = user_avatar_path;
+                    user.avatar = user_avatar_dir + '/avatar.png';
                     // remove file in /tmp
                     fs.unlink(req.file.path, function(err) {
                         if (err) console.log(err);

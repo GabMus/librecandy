@@ -39,8 +39,6 @@ function make_user_safe(user) {
     }
 }
 
-
-//Modify for production ->
 function make_treat_base_path(username, treat, detail) {
     return config.media_path +
         '/users/'+username +
@@ -64,7 +62,6 @@ function make_treat_screenshot_path(username, treat, detail) {
         '/'+treat.package_name+
         '/screenshots/';
 }
-//<-- END
 
 function treat2pkgname(treat) {
     var pkgname = 'org.' +
@@ -271,8 +268,6 @@ router.route('/users/:username').get(function(req, res){
         }
     );
 });
-
-//Modify for production ->
 router.route('/users/:username/avatar').post(auth.isAuthenticated,
     multer_upload.single('avatar'), function(req, res) {
         // if the user making the request isn't the requested user
@@ -350,8 +345,6 @@ router.route('/users/:username/avatar').post(auth.isAuthenticated,
         });
     });
 });
-
-//<-- END
 
 router.route('/users/:username/treats').get(function(req, res) {
     models.Treat.find({'author': req.params.username}, function(err, treats) {
@@ -466,7 +459,7 @@ router.route('/treats/categories/:category/orderby/rating').get(function(req, re
         });
     models.Treat.find({'category': req.params.category}).sort({'total_rating': -1, 'first_pub_datetime': -1}).exec(function(err, treats) {
         if (!treats) return res.sendStatus(404);
-        if (Modify for production ->err) return res.json(err);
+        if (err) return res.json(err);
         var offset=0;
         var limit=20;
         if (req.param('offset')) {
@@ -509,7 +502,6 @@ router.route('/treats/:pkgname').get(function(req, res) {
             });
         }
     );
-//Modify for production ->
 }).delete(auth.isAuthenticated, function(req, res) {
     // verify that the treat belongs to the authenticated user
     models.Treat.findOne({'package_name': req.params.pkgname}, function(err, treat) {
@@ -536,7 +528,6 @@ router.route('/treats/:pkgname').get(function(req, res) {
             }
         );
     });
-//<-- END
 }).put(auth.isAuthenticated, function(req, res) {
     // verify that the treat belongs to the authenticated user
     models.Treat.findOne({'package_name': req.params.pkgname}, function(err, treat) {
@@ -633,7 +624,6 @@ router.route('/treats/:pkgname/versions/:version')
         );
     }
 )
-//Modify for production ->
     .delete(auth.isAuthenticated, function(req, res) {
         models.Treat.findOne(
             {'package_name': req.params.pkgname},
@@ -837,7 +827,6 @@ router.route('/treats/:pkgname/screenshots').post(auth.isAuthenticated,
         );
     }
 );
-//<-- END
 
 router.route('/treats/:pkgname/screenshots/:scrotfilename').put(auth.isAuthenticated, function(req, res) {
     models.Treat.findOne(
@@ -869,8 +858,6 @@ router.route('/treats/:pkgname/screenshots/:scrotfilename').put(auth.isAuthentic
             });
         }
     );
-
-//Modify for production ->
 }).delete(auth.isAuthenticated, function(req, res) {
     models.Treat.findOne(
         {'package_name': req.params.pkgname},
@@ -904,7 +891,6 @@ router.route('/treats/:pkgname/screenshots/:scrotfilename').put(auth.isAuthentic
         }
     );
 });
-//<-- END
 
 router.route('/treats/:pkgname/comments').post(auth.isAuthenticated, function(req, res) {
     models.Treat.findOne({'package_name': req.params.pkgname}, function(err, treat) {

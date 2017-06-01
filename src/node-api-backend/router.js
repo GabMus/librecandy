@@ -17,15 +17,27 @@ imagic.convert.path = '/usr/bin/convert';
 //Azure Storage API and Configuration
 var azure = require('azure-storage');
 process.env.AZURE_STORAGE_CONNECTION_STRING = config.media_storage;
-var fileService = azure.createFileService();
-fileService.createShareIfNotExists(config.share_name, function(error, result, response) {
+var blobService = azure.createBlobService();
+blobService.createContainerIfNotExists(config.container_avatar, {
+  publicAccessLevel: 'blob'
+}, function(error, result, response) {
   if (!error) {
-      fileService.createDirectoryIfNotExists(config.share_name, config.media_path, function(error, result, response) {
-        if (!error) {
-          console.log("All settings are ready")
+          console.log("Avatars container ready")
         }
-      });
-  }
+});
+blobService.createContainerIfNotExists(config.container_screenshot, {
+  publicAccessLevel: 'blob'
+}, function(error, result, response) {
+  if (!error) {
+          console.log("Screenshots container ready")
+        }
+});
+blobService.createContainerIfNotExists(config.container_treat, {
+  publicAccessLevel: 'blob'
+}, function(error, result, response) {
+  if (!error) {
+          console.log("Treats container ready")
+        }
 });
 
 var multer_upload = multer({dest: config.media_upload});
@@ -292,9 +304,8 @@ router.route('/users/:username/avatar').post(auth.isAuthenticated,
         models.User.findOne({'username': req.params.username}, function(err, user) {
             if (err) return res.json(err);
             if (!user) return res.sendStatus(404);
-            var user_avatar_dir = config.media_path + '/' + user.username;
-            var user_avatar_dir_tmp = 'media/avatars/';
-            fse.mkdirs(user_avatar_dir_tmp, function(err, results) {
+            var user_avatar_dir = 'media/avatars/';
+            fse.mkdirs(user_avatar_dir, function(err, results) {
                 if (err) {
                     console.log(err);
                     return res.status(500).json({
@@ -303,7 +314,7 @@ router.route('/users/:username/avatar').post(auth.isAuthenticated,
                     });
                 }
                 //TODO: tmp folder for img magick
-                var user_avatar_path = user_avatar_dir_tmp + '/' + user.username + '.png';
+                var user_avatar_path = user_avatar_dir + '/' + user.username + '.png';
                 imagic.convert([
                     req.file.path, // original image
                     '-resize', // option
@@ -317,19 +328,16 @@ router.route('/users/:username/avatar').post(auth.isAuthenticated,
                             error: err
                         });
                     }
-                    fileService.createDirectoryIfNotExists(config.share_name, user_avatar_dir, function(err, result, response) {
-                      if(!err){
-                        fileService.createFileFromLocalFile(config.share_name, user_avatar_dir, 'avatar.png', user_avatar_path, function(error, result, response){
-                          if(!error){
-                            fs.unlink(user_avatar_path, function(err) {
-                              if (err) console.log(err);
-                            });
-                          }
+                    blobService.createBlockBlobFromLocalFile(config.container_avatar, user.username + '.png', user_avatar_path, function(error, result, response){
+                      if(!error){
+                        fs.unlink(user_avatar_path, function(err) {
+                          if (err) console.log(err);
                         });
                       }
                     });
+
                     console.log('avatar: imagemagick:' + stdout);
-                    user.avatar = user_avatar_dir + '/avatar.png';
+                    user.avatar = 'https://librecandystorage.blob.core.windows.net/avatars/' + user.username + '.png';
                     // remove file in /tmp
                     fs.unlink(req.file.path, function(err) {
                         if (err) console.log(err);

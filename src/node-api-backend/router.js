@@ -14,6 +14,7 @@ var imagesize = require('image-size');
 imagic.convert.path = '/usr/bin/convert';
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 //Azure Storage API and Configuration
 var azure = require('azure-storage');
 process.env.AZURE_STORAGE_CONNECTION_STRING = config.media_storage;
@@ -28,6 +29,8 @@ fileService.createShareIfNotExists(config.share_name, function(error, result, re
   }
 });
 
+=======
+>>>>>>> parent of 923f4ab... Started Storage Deployment
 =======
 >>>>>>> parent of 923f4ab... Started Storage Deployment
 var multer_upload = multer({dest: config.media_upload});

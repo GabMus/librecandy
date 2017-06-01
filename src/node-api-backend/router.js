@@ -15,11 +15,14 @@ imagic.convert.path = '/usr/bin/convert';
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 //Azure Storage API and Configuration
 var azure = require('azure-storage');
 process.env.AZURE_STORAGE_CONNECTION_STRING = 'DefaultEndpointsProtocol=https;AccountName=librecandystorage;AccountKey=fLsRGnUnsteIRD1ZJ+BpLtXjKF6QnMROtbCbSAuvW+TV/im0DlmSEWHtsweQu7vFC94V7mhL9x0s6UEzsNntqw==;EndpointSuffix=core.windows.net'
 var fileService = azure.createFileService();
 
+=======
+>>>>>>> parent of 923f4ab... Started Storage Deployment
 =======
 >>>>>>> parent of 923f4ab... Started Storage Deployment
 =======

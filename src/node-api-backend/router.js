@@ -17,17 +17,8 @@ imagic.convert.path = '/usr/bin/convert';
 <<<<<<< HEAD
 //Azure Storage API and Configuration
 var azure = require('azure-storage');
-process.env.AZURE_STORAGE_CONNECTION_STRING = config.media_storage;
+process.env.AZURE_STORAGE_CONNECTION_STRING = 'DefaultEndpointsProtocol=https;AccountName=librecandystorage;AccountKey=fLsRGnUnsteIRD1ZJ+BpLtXjKF6QnMROtbCbSAuvW+TV/im0DlmSEWHtsweQu7vFC94V7mhL9x0s6UEzsNntqw==;EndpointSuffix=core.windows.net'
 var fileService = azure.createFileService();
-fileService.createShareIfNotExists(config.share_name, function(error, result, response) {
-  if (!error) {
-      fileService.createDirectoryIfNotExists(config.share_name, config.media_path, function(error, result, response) {
-        if (!error) {
-          console.log("All settings are ready")
-        }
-      });
-  }
-});
 
 =======
 >>>>>>> parent of 923f4ab... Started Storage Deployment
@@ -48,6 +39,8 @@ function make_user_safe(user) {
     }
 }
 
+
+//Modify for production ->
 function make_treat_base_path(username, treat, detail) {
     return config.media_path +
         '/users/'+username +
@@ -71,6 +64,7 @@ function make_treat_screenshot_path(username, treat, detail) {
         '/'+treat.package_name+
         '/screenshots/';
 }
+//<-- END
 
 function treat2pkgname(treat) {
     var pkgname = 'org.' +
@@ -278,6 +272,7 @@ router.route('/users/:username').get(function(req, res){
     );
 });
 
+//Modify for production ->
 router.route('/users/:username/avatar').post(auth.isAuthenticated,
     multer_upload.single('avatar'), function(req, res) {
         // if the user making the request isn't the requested user
@@ -297,9 +292,8 @@ router.route('/users/:username/avatar').post(auth.isAuthenticated,
         models.User.findOne({'username': req.params.username}, function(err, user) {
             if (err) return res.json(err);
             if (!user) return res.sendStatus(404);
-            var user_avatar_dir = config.media_path + '/' + user.username;
-            var user_avatar_dir_tmp = 'media/avatars/';
-            fse.mkdirs(user_avatar_dir_tmp, function(err, results) {
+            var user_avatar_dir = config.media_path + 'users/' + user.username;
+            fse.mkdirs(user_avatar_dir, function(err, results) {
                 if (err) {
                     console.log(err);
                     return res.status(500).json({
@@ -307,8 +301,7 @@ router.route('/users/:username/avatar').post(auth.isAuthenticated,
                         error: err
                     });
                 }
-                //TODO: tmp folder for img magick
-                var user_avatar_path = user_avatar_dir_tmp + '/' + user.username + '.png';
+                var user_avatar_path = user_avatar_dir + '/avatar.png';
                 imagic.convert([
                     req.file.path, // original image
                     '-resize', // option
@@ -322,17 +315,6 @@ router.route('/users/:username/avatar').post(auth.isAuthenticated,
                             error: err
                         });
                     }
-                    fileService.createDirectoryIfNotExists(config.share_name, user_avatar_dir, function(err, result, response) {
-                      if(!err){
-                        fileService.createFileFromLocalFile(config.share_name, user_avatar_dir, 'avatar.png', user_avatar_path, function(error, result, response){
-                          if(!error){
-                            fs.unlink(user_avatar_path, function(err) {
-                              if (err) console.log(err);
-                            });
-                          }
-                        });
-                      }
-                    });
                     console.log('avatar: imagemagick:' + stdout);
                     user.avatar = user_avatar_path;
                     // remove file in /tmp
@@ -347,7 +329,6 @@ router.route('/users/:username/avatar').post(auth.isAuthenticated,
                 });
             });
         });
-//Modify for production -->
 }).delete(auth.isAuthenticated, function(req, res) {
     // if the user making the request isn't the requested user
     if (req.params.username != req.user.username) {
@@ -485,7 +466,7 @@ router.route('/treats/categories/:category/orderby/rating').get(function(req, re
         });
     models.Treat.find({'category': req.params.category}).sort({'total_rating': -1, 'first_pub_datetime': -1}).exec(function(err, treats) {
         if (!treats) return res.sendStatus(404);
-        if (err) return res.json(err);
+        if (Modify for production ->err) return res.json(err);
         var offset=0;
         var limit=20;
         if (req.param('offset')) {

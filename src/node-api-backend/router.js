@@ -13,6 +13,7 @@ var fse = require('fs-extra');
 var imagesize = require('image-size');
 imagic.convert.path = '/usr/bin/convert';
 
+
 //Azure Storage API and Configuration
 var azure = require('azure-storage');
 process.env.AZURE_STORAGE_CONNECTION_STRING = config.media_storage;

@@ -337,7 +337,7 @@ router.route('/users/:username/avatar').post(auth.isAuthenticated,
                     });
 
                     console.log('avatar: imagemagick:' + stdout);
-                    user.avatar = 'https://librecandystorage.blob.core.windows.net/avatars/' + user.username + '.png';
+                    user.avatar = config.endpoint_avatar + user.username + '.png';
                     // remove file in /tmp
                     fs.unlink(req.file.path, function(err) {
                         if (err) console.log(err);

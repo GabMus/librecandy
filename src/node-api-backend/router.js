@@ -350,7 +350,7 @@ router.route('/users/:username/avatar').post(auth.isAuthenticated,
                 });
             });
         });
-//Modify for production -->
+
 }).delete(auth.isAuthenticated, function(req, res) {
     // if the user making the request isn't the requested user
     if (req.params.username != req.user.username) {
@@ -362,7 +362,7 @@ router.route('/users/:username/avatar').post(auth.isAuthenticated,
         if (err) return res.json(err);
         if (!user) return res.sendStatus(404);
         if (!user.avatar) return res.sendStatus(404);
-        fs.unlink(user.avatar, function(err) {
+        blobService.deleteBlob(config.container_avatar, user.username + '.png', function(err, response) {
             if (err) return res.status(500).json(err);
             user.avatar=null;
             user.save(function(err) {
@@ -372,8 +372,6 @@ router.route('/users/:username/avatar').post(auth.isAuthenticated,
         });
     });
 });
-
-//<-- END
 
 router.route('/users/:username/treats').get(function(req, res) {
     models.Treat.find({'author': req.params.username}, function(err, treats) {

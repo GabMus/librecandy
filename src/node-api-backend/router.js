@@ -760,28 +760,11 @@ router.route('/treats/:pkgname/screenshots').post(auth.isAuthenticated,
                         return res.sendStatus(403);
                     }
                 }
-                var detail = null;
-                for (i in treat.details) {
-                    if (treat.details[i].version == req.params.version) {
-                        detail = treat.details[i];
-                        break;
-                    }
-                }
-                if (!detail) {
-                    return res.sendStatus(404);
-                }
-
-                var screenshot_dir_path = make_treat_screenshot_path(
-                    req.user.username,
-                    treat,
-                    detail
-                );
                 var screenshot_filename = treat.name+'_screenshot'+
                     treat.screenshots.length+'_'+Date.now()+'.png';
-                fse.mkdirs(screenshot_dir_path, function(err) {
-                    console.log(err);
+                    var screenshot_dir_path = 'media/screenshots/';
                     var screenshot_path = screenshot_dir_path+
-                        '/'+screenshot_filename;
+                        screenshot_filename;
                         if (imagesize(req.file.path).width > 1920) {
                             imagic.convert([
                                 req.file.path, // original image
@@ -793,8 +776,15 @@ router.route('/treats/:pkgname/screenshots').post(auth.isAuthenticated,
                                     console.log(err);
                                     return res.sendStatus(500);
                                 }
+                                blobService.createBlockBlobFromLocalFile(config.container_screenshot, screenshot_filename, screenshot_path, function(error, result, response){
+                                  if(!error){
+                                    fs.unlink(screenshot_path, function(err) {
+                                      if (err) console.log(err);
+                                    });
+                                  }
+                                });
                                 var scrot_obj = new models.TreatScreenshot();
-                                scrot_obj.file = screenshot_path;
+                                scrot_obj.file = config.endpoint_screenshot + screenshot_filename;
                                 scrot_obj.filename = screenshot_filename;
                                 if (treat.screenshots.length == 0)
                                     scrot_obj.is_main = true;
@@ -821,8 +811,15 @@ router.route('/treats/:pkgname/screenshots').post(auth.isAuthenticated,
                                         error: err
                                     });
                                 }
+                                blobService.createBlockBlobFromLocalFile(config.container_screenshot, screenshot_filename, screenshot_path, function(error, result, response){
+                                  if(!error){
+                                    fs.unlink(screenshot_path, function(err) {
+                                      if (err) console.log(err);
+                                    });
+                                  }
+                                });
                                 var scrot_obj = new models.TreatScreenshot();
-                                scrot_obj.file = screenshot_path;
+                                scrot_obj.file = config.endpoint_screenshot + screenshot_filename;
                                 scrot_obj.filename = screenshot_filename;
                                 if (treat.screenshots.length == 0)
                                     scrot_obj.is_main = true;
@@ -837,8 +834,6 @@ router.route('/treats/:pkgname/screenshots').post(auth.isAuthenticated,
                                 });
                             });
                         }
-                    }
-                );
             }
         );
     }

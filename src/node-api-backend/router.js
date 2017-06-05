@@ -529,7 +529,6 @@ router.route('/treats/:pkgname').get(function(req, res) {
             });
         }
     );
-//Modify for production ->
 }).delete(auth.isAuthenticated, function(req, res) {
     // verify that the treat belongs to the authenticated user
     models.Treat.findOne({'package_name': req.params.pkgname}, function(err, treat) {
@@ -544,7 +543,8 @@ router.route('/treats/:pkgname').get(function(req, res) {
         }
         for (i in treat.details) {
             if (!treat.details[i] || !treat.details[i].file) break;
-            fs.unlink(treat.details[i].file, function(err) {
+            file_name = treat.details[i].file.substr(config.endpoint_treat.length);
+            blobService.deleteBlob(config.container_treat, file_name, function(err, response) {
                 if (err) return res.status(500).json(err);
                 treat.details.splice(i, 1);
             });
@@ -556,7 +556,6 @@ router.route('/treats/:pkgname').get(function(req, res) {
             }
         );
     });
-//<-- END
 }).put(auth.isAuthenticated, function(req, res) {
     // verify that the treat belongs to the authenticated user
     models.Treat.findOne({'package_name': req.params.pkgname}, function(err, treat) {

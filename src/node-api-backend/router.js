@@ -652,7 +652,6 @@ router.route('/treats/:pkgname/versions/:version')
         );
     }
 )
-//Modify for production ->
     .delete(auth.isAuthenticated, function(req, res) {
         models.Treat.findOne(
             {'package_name': req.params.pkgname},
@@ -667,8 +666,14 @@ router.route('/treats/:pkgname/versions/:version')
                 var detail = null;
                 for (i in treat.details) {
                     if (treat.details[i].version == req.params.version) {
-                        if (treat.details[i].file)
-                            fs.unlinkSync(treat.details[i].file);
+                        if (treat.details[i].file){
+                          file_name = treat.details[i].file.substr(config.endpoint_treat.length);
+                          blobService.deleteBlob(config.container_treat, file_name, function(err, response) {
+                            if(!err){
+                              console.log("File " + file_name + "deleted from Storage");
+                            }
+                          });
+                        }
                         treat.details.splice(i, 1);
                     }
                 }
@@ -682,6 +687,7 @@ router.route('/treats/:pkgname/versions/:version')
     }
 );
 
+//Modify for production ->
 router.route('/treats/:pkgname/versions/:version/file').post(auth.isAuthenticated,
     multer_upload.single('versionfile'), function(req, res) {
         // if the user making the request isn't the requested user

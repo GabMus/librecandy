@@ -1,0 +1,9 @@
+VM:
+- Librecandyb: VM che contiene il server del backend. La configurazione comprende SSL, HTTPS e Reverse Proxy. Per lo sviluppo abbiamo utilizzato il framework Node.js + Express.js.
+- Librecandydb: VM che contiene il DB. Il DBMS è non relazionale (MongoDB).
+Storage:
+- librecandystorage: Storage utilizzato per immagazzinare i media files della nostra web app. La scrittura sullo storage è affidata solo ed esclusivamente al backend che ha le credenziali di accesso private. Il contenuto può essere letto anche all' esterno tramite l'url del file. Per fare ciò che il contenuto fosse visibile in modalità READ-ACCESS-ONLY abbiamo utilizzato la modalità blob, predisposta (si pensa) proprio a questo scopo. Per lo sviluppo delle API abbiamo utilizzato il modulo di Node.js sviluppato da Microsoft che facilita la gestione dello storage fornendoci un wrapper per le api che ci permette di richiamarle utilizzando dei metodi.
+- librecandystoragelog: Storage utilizzato per immagazzinare i log provenienti da entrambi i servizi di log Analytics.
+LOG Analytics:
+- librecandyblog: Log service per il server backend (Librecandyb).
+- librecandydblog: Log service per il DB MongoDB (Librecandydb).

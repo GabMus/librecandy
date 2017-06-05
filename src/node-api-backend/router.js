@@ -55,22 +55,12 @@ function make_user_safe(user) {
     }
 }
 
-function make_treat_base_path(username, treat, detail) {
-    return config.media_path +
-        '/users/'+username +
-        '/'+treat.package_name+
-        '/'+detail.version;
-}
 function get_file_ext(filename) {
     var parts = filename.split('.');
     if (parts[parts.length-2]=='tar') {
         return '.tar.' + parts[parts.length-1];
     }
     return '.' + parts[parts.length-1];
-}
-function make_treat_file_path(username, treat, detail, originalname) {
-    return make_treat_base_path(username, treat, detail)+
-        '/'+treat.name+'_'+detail.version+get_file_ext(originalname);
 }
 function make_treat_screenshot_path(username, treat, detail) {
     return config.media_path +
@@ -687,7 +677,7 @@ router.route('/treats/:pkgname/versions/:version')
     }
 );
 
-//Modify for production ->
+
 router.route('/treats/:pkgname/versions/:version/file').post(auth.isAuthenticated,
     multer_upload.single('versionfile'), function(req, res) {
         // if the user making the request isn't the requested user
@@ -718,32 +708,23 @@ router.route('/treats/:pkgname/versions/:version/file').post(auth.isAuthenticate
                     }
                 }
                 if (!detail) return res.sendStatus(404);
-                var treat_file_path = make_treat_file_path(
-                    req.user.username,
-                    treat,
-                    detail,
-                    req.file.originalname
-                );
-                if (fs.existsSync(treat_file_path)) return res.json({
+                if (detail.file) return res.json({
                     success: false,
                     error: 'File already exists for this version. If you want to update, create a new version or delete this one and re-create it',
                     treat: treat
                 });
-                var treat_file_dir = make_treat_base_path(
-                    req.user.username,
-                    treat,
-                    detail
-                );
-                mv(req.file.path, treat_file_path, {mkdirp: true},
-                    function(err, results) {
+                var filename_treat = req.params.pkgname + req.params.version + get_file_ext(req.file.originalname);
+                blobService.createBlockBlobFromLocalFile(config.container_treat, filename_treat, req.file.path,
+                    function(err, results, response) {
                         if (err) {
+                            console.log("entro")
                             console.log(err);
                             return res.status(500).json({
                                 success: false,
                                 error: err
                             });
                         }
-                        detail.file = treat_file_path;
+                        detail.file = config.endpoint_treat + filename_treat;
                         treat.save(function(err) {
                             if (err) return res.json(err);
                             return res.json({success: true, error: null, treat: treat});
@@ -756,7 +737,7 @@ router.route('/treats/:pkgname/versions/:version/file').post(auth.isAuthenticate
 );
 
 
-
+//Modify for production ->
 router.route('/treats/:pkgname/screenshots').post(auth.isAuthenticated,
     multer_upload.single('screenshot'), function(req, res) {
         // if the user making the request isn't the requested user
@@ -895,7 +876,6 @@ router.route('/treats/:pkgname/screenshots/:scrotfilename').put(auth.isAuthentic
         }
     );
 
-//Modify for production ->
 }).delete(auth.isAuthenticated, function(req, res) {
     models.Treat.findOne(
         {'package_name': req.params.pkgname},
@@ -910,8 +890,12 @@ router.route('/treats/:pkgname/screenshots/:scrotfilename').put(auth.isAuthentic
             var scrot = null;
             for (i in treat.screenshots) {
                 if (treat.screenshots[i].filename == req.params.scrotfilename) {
-                    scrot = treat.screenshots[i];
-                    fs.unlink(scrot.file);
+                    file_name = treat.screenshots[i].file.substr(config.endpoint_screenshot.length);
+                    blobService.deleteBlob(config.container_screenshot, file_name, function(err, response) {
+                      if(!err){
+                        console.log("File " + file_name + "deleted from Storage");
+                      }
+                    });
                     treat.screenshots.splice(i, 1);
                     if (treat.screenshots.length != 0 && scrot.is_main) {
                         treat.screenshots[0].is_main = true;
@@ -929,7 +913,6 @@ router.route('/treats/:pkgname/screenshots/:scrotfilename').put(auth.isAuthentic
         }
     );
 });
-//<-- END
 
 router.route('/treats/:pkgname/comments').post(auth.isAuthenticated, function(req, res) {
     models.Treat.findOne({'package_name': req.params.pkgname}, function(err, treat) {

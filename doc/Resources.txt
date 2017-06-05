@@ -7,3 +7,4 @@ Storage:
 LOG Analytics:
 - librecandyblog: Log service per il server backend (Librecandyb).
 - librecandydblog: Log service per il DB MongoDB (Librecandydb).
+Sono stati utilizzati due servizi di log per rendere più semplice la lettura delle statistiche ed evitare che si mischino i log di due VM che gestiscono due servizi differenti.

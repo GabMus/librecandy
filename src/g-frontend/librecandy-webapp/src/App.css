@@ -37,6 +37,14 @@
     padding-bottom: '0px';
 }
 
+.candycreatetreat {
+    padding:20px;
+    max-width: 450px;
+    min-width: 300px;
+    margin: auto;
+    padding-bottom: '0px';
+}
+
 .CandyRegisterOrLogin {
     margin: 24px 12px 12px 12px;
 }

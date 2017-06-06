@@ -15,6 +15,7 @@ import {
 
 import CandyToolbar from './components/CandyToolbar';
 
+import CandyCreateTreat from './components/CandyCreateTreat';
 // tmp
 import CandyTreatCard from './components/CandyTreatCard';
 //tmp
@@ -92,6 +93,11 @@ class App extends Component {
                             } />
                             <Route exact path='/login' component={
                                 () => <CandyRegisterOrLogin
+                                    userToken={this.state.userToken}
+                                    apiServer={this.state.apiServer} />
+                            } />
+                            <Route exact path='/insert' component={
+                                () => <CandyCreateTreat
                                     userToken={this.state.userToken}
                                     apiServer={this.state.apiServer} />
                             } />

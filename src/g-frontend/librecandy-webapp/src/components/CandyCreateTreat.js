@@ -146,12 +146,14 @@ class CandyCreateTreat extends React.Component {
 
   getStepContent(stepIndex) {
     switch (stepIndex) {
-      case 0:
+      case 0: //Apparently those returns in case statements are necessary. With break it won't work
         return(
           this.getTreatCreationForm()
         );
       case 1:
-          return(this.getScreenshotUploaderForm());
+        return(
+          this.getScreenshotUploaderForm()
+        );
 
       case 2:
         return (

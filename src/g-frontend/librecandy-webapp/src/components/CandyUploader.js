@@ -12,6 +12,7 @@ import {GridList, GridTile} from 'material-ui/GridList';
 import IconButton from 'material-ui/IconButton';
 import Subheader from 'material-ui/Subheader';
 import StarBorder from 'material-ui/svg-icons/toggle/star-border';
+import ContentClear from 'material-ui/svg-icons/content/clear';
 import '../App.css';
 
 class CandyUploader extends Component{
@@ -44,12 +45,12 @@ class CandyUploader extends Component{
             cellHeight={180}
             style={styles.gridList}
           >
+
           {this.state.files.map((image, id) => {
             console.log('id: '+id);
             return(
               <GridTile key={id} style={{padding:40}}>
-                <span onClick={() => this.handleRemoveButtonClick(id)}className='removeImageButton'>X</span>
-
+                <ContentClear onClick={() => this.handleRemoveButtonClick(id)} className='removeImageButton'/>
                 <img className='previewImage' src={image.preview} />
               </GridTile>
             );

@@ -962,7 +962,7 @@ router.route('/treats/:pkgname/ratings/fromuser').get(auth.isAuthenticated, func
                 return res.json({success: true, error: null, treat: treat, rating: treat.ratings[i].value});
             }
         }
-        return es.json({success: true, error: null, message: 'The user did not rate yet', treat: treat, rating: 0});
+        return res.json({success: true, error: null, message: 'The user did not rate yet', treat: treat, rating: 0});
     });
 });
 

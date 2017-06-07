@@ -30,6 +30,7 @@ class CandyCreateTreat extends React.Component {
       treatName: '',
       treatDescription: '',
       treatVersion: '',
+      treatCategory: '',
       fileName: '',
       pathFile: '',
       loading: false,
@@ -69,8 +70,7 @@ class CandyCreateTreat extends React.Component {
                 'Access-Control-Allow-Origin':'*'
             },
             body: `name=${this.state.treatName}
-                  &author=aaa
-                  &category=abc
+                  &category=${this.state.treatCategory}
                   &description=${this.state.treatDescription}`
 
         }
@@ -116,8 +116,8 @@ class CandyCreateTreat extends React.Component {
 
       floatingLabelText="Description"
       multiLine={true}
-      rows={3}
       fullWidth={true}
+      rows={3}
       onChange={(event, valueDescription) => {
           this.setState({
               treatDescription: valueDescription
@@ -129,6 +129,11 @@ class CandyCreateTreat extends React.Component {
     </div>
   )
 
+  getScreenshotUploaderForm = () => (
+    <div>
+      <CandyUploader label='Upload images'/>
+    </div>
+  )
   /*handlePrev = () => {
     const {stepIndex} = this.state;
     if (!this.state.loading) {
@@ -146,7 +151,7 @@ class CandyCreateTreat extends React.Component {
           this.getTreatCreationForm()
         );
       case 1:
-          //this.getScreenshotUploaderForm()
+          return(this.getScreenshotUploaderForm());
 
       case 2:
         return (
@@ -210,13 +215,13 @@ class CandyCreateTreat extends React.Component {
       <div style={{width: '100%', maxWidth: 700, margin: 'auto'}}>
         <Stepper activeStep={stepIndex}>
           <Step>
-            <StepLabel>Select campaign settings</StepLabel>
+            <StepLabel>Create your treat</StepLabel>
           </Step>
           <Step>
-            <StepLabel>Create an ad group</StepLabel>
+            <StepLabel>Put screenshots image</StepLabel>
           </Step>
           <Step>
-            <StepLabel>Create an ad</StepLabel>
+            <StepLabel>Upload your file</StepLabel>
           </Step>
         </Stepper>
         <ExpandTransition loading={loading} open={true}>

@@ -6,56 +6,78 @@ import Divider from 'material-ui/Divider';
 import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
 import CandyFilePreview from './CandyFilePreview';
+import Dropzone from 'react-dropzone';
+import { Image } from 'material-ui-image';
+import {GridList, GridTile} from 'material-ui/GridList';
+import IconButton from 'material-ui/IconButton';
+import Subheader from 'material-ui/Subheader';
+import StarBorder from 'material-ui/svg-icons/toggle/star-border';
+import '../App.css';
+
 class CandyUploader extends Component{
   constructor(props){
     super(props);
     this.state = {
       files: [],
-      removeSelection: (id) => {
-        let newState = Object.assign([], this.state.files);
-        if(newState.length === 1)
-          newState = []
-        this.setState({files: newState.splice(id, id)})
-      }
-
     }
   }
   renderSelectedFiles = () => {
     console.log(this.state.files)
   }
 
-  handleFileSelect = (e) => {
+  onDrop = (files) => {
     this.setState({
-      files: this.state.files.concat(e.target.value)
-    })
+      files: this.state.files.concat(files)
+    });
   }
 
+  handleRemoveButtonClick = (id) => {
+    this.setState({
+      files: this.state.files.filter((element, i) => {return id !== i })
+    })
+  }
   render(){
     return(
-      <div>
-        <FlatButton label={this.props.label} primary={true}>
-          <input id="imageButton" style={styles.exampleImageInput} type="file" accept="*"
-            onChange={this.handleFileSelect} />
+      <div >
+        <div>
+          <GridList
+            cellHeight={180}
+            style={styles.gridList}
+          >
+          {this.state.files.map((image, id) => {
+            console.log('id: '+id);
+            return(
+              <GridTile key={id} style={{padding:40}}>
+                <span onClick={() => this.handleRemoveButtonClick(id)}className='removeImageButton'>X</span>
 
-        </FlatButton>
-        {this.state.files.map((file, id) => {
-          return <CandyFilePreview key={id} id={id} fileName={file} onRemove={this.state.removeSelection}/>
-        })}
+                <img className='previewImage' src={image.preview} />
+              </GridTile>
+            );
+          })
+          }
+
+        </GridList>
+
         </div>
+        <Dropzone onDrop={this.onDrop} className='candyUploader'>
+          <p>Try dropping some files here, or click to select files to upload.</p>
+        </Dropzone>
+
+      </div>
     );
   }
 }
-let styles = {
-  exampleImageInput: {
-  cursor: 'pointer',
-  position: 'absolute',
-  top: '0',
-  bottom: '0',
-  right: '0',
-  left: '0',
-  width: '100%',
-  height:'100',
-  opacity: '0'
-  }
-}
+const styles = {
+  root: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent: 'space-around',
+  },
+  gridList: {
+    width: '99%',
+    height: 300,
+    marginBottom:20,
+    overflowY: 'auto',
+  },
+};
 export default muiThemeable()(CandyUploader)

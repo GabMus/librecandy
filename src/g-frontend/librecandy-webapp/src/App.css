@@ -101,3 +101,15 @@ pre {
 .treatCardOverlay:hover {
     opacity: .2;
 }
+
+.candyUploader{
+  width:99%;
+
+  text-align: center;
+  border: 1px solid black;
+}
+
+.removeImageButton{
+  position: absolute;
+  
+}

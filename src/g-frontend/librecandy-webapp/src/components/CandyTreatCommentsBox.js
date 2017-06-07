@@ -35,8 +35,8 @@ class CandyTreatCommentsBox extends Component {
             'Access-Control-Allow-Origin':'*',
             'Content-Type': 'application/x-www-form-urlencoded'
         };
-        if (this.state.userToken) {
-            headers['Authorization'] = `JWT ${this.state.userToken}`;
+        if (this.props.userToken) {
+            headers['Authorization'] = `JWT ${this.props.userToken}`;
         }
         else {
             console.log('User not logged');

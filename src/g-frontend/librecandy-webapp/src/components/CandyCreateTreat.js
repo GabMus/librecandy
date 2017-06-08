@@ -33,6 +33,7 @@ class CandyCreateTreat extends React.Component {
       treatVersion: '',
       treatCategory: '',
       treatCategories: [],
+      treatPackageName: '',
       fileName: '',
       pathFile: '',
       loading: false,
@@ -83,9 +84,13 @@ class CandyCreateTreat extends React.Component {
             body: body
         };
         fetch(`${this.props.apiServer}/treats`,request)
-        .then(response =>{
+        .then(response => {
           console.log(this.props.userToken)
-          console.log(response)
+          return response.json();
+        })
+        .then(data => {
+          this.setState({treatPackageName: data.treat.package_name})
+          //console.log(data.treat.package_name)
         })
         break;
       default:
@@ -141,7 +146,7 @@ class CandyCreateTreat extends React.Component {
     return (
 
     <div>
-      <CandyUploader label='Upload images'/>
+      <CandyUploader apiServer={this.props.apiServer} packageName={this.state.treatPackageName} label='Upload images'/>
     </div>
   )}
   /*handlePrev = () => {

@@ -14,7 +14,8 @@ import {
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import ExpandTransition from 'material-ui/internal/ExpandTransition';
-
+import DropDownMenu from 'material-ui/DropDownMenu';
+import MenuItem from 'material-ui/MenuItem'
 
 function checkURL(filename) {
   return(filename.match(/\.(jpeg|jpg|gif|png)$/) != null);
@@ -31,6 +32,7 @@ class CandyCreateTreat extends React.Component {
       treatDescription: '',
       treatVersion: '',
       treatCategory: '',
+      treatCategories: [],
       fileName: '',
       pathFile: '',
       loading: false,
@@ -39,17 +41,17 @@ class CandyCreateTreat extends React.Component {
     }
   }
 
-  handleFileInput = (e) =>{
-    console.log(e.target);
-    if(checkURL(e.target.value))
+  componentWillMount(){
+    fetch(`${this.props.apiServer}/treats/categories`)
+    .then(response => {
+      return response.json()
+    })
+    .then(data => {
+      console.log('componentWillMount')
       this.setState({
-              fileName: e.target.value.split("\\").pop(),
-              pathFile: e.target.value
-            })
-    else
-      this.setState({
-        fileName: 'Choose a valid image'
+        treatCategories: data.categories
       })
+    })
   }
 
   dummyAsync = (cb) => {
@@ -62,20 +64,27 @@ class CandyCreateTreat extends React.Component {
     const {stepIndex} = this.state;
     switch (this.state.stepIndex) {
       case 0:
+        let headers = {
+            'Access-Control-Allow-Origin':'*',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        };
+        if (this.props.userToken) {
+            headers['Authorization'] = `JWT ${this.props.userToken}`;
+        }
+        else {
+            console.log('User not logged');
+            return;
+        }
+        let body = `name=${this.state.treatName}&category=${this.state.treatCategory}&description=${this.state.treatDescription}`
         let request = {
             method: 'POST',
             mode: 'cors',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Access-Control-Allow-Origin':'*'
-            },
-            body: `name=${this.state.treatName}
-                  &category=${this.state.treatCategory}
-                  &description=${this.state.treatDescription}`
-
-        }
+            headers: headers,
+            body: body
+        };
         fetch(`${this.props.apiServer}/treats`,request)
         .then(response =>{
+          console.log(this.props.userToken)
           console.log(response)
         })
         break;
@@ -91,6 +100,9 @@ class CandyCreateTreat extends React.Component {
     }
   };
 
+  handleChange = (event, index, treatCategory) => {
+    this.setState({treatCategory})
+  };
 
   getTreatCreationForm = () => (
     <div>
@@ -104,16 +116,6 @@ class CandyCreateTreat extends React.Component {
         }}
     />
     <TextField
-        floatingLabelText='Version'
-        fullWidth={true}
-        onChange={(event, valueVersion) => {
-            this.setState({
-                treatVersion: valueVersion
-            });
-        }}
-    />
-    <TextField
-
       floatingLabelText="Description"
       multiLine={true}
       fullWidth={true}
@@ -124,16 +126,24 @@ class CandyCreateTreat extends React.Component {
           });
       }}
     />
-    <FlatButton label='Create Treat' primary={true}>
-    </FlatButton>
+    <span>Category:</span> <DropDownMenu value={this.state.treatCategory} onChange={this.handleChange}>
+          {this.state.treatCategories.map((category, index) => {
+            console.log('Category: '+category)
+            return <MenuItem key={index} value={category} primaryText={category} />
+          })}
+    </DropDownMenu>
+
     </div>
   )
 
-  getScreenshotUploaderForm = () => (
+  getScreenshotUploaderForm = () => {
+    console.log(this.state.treatCategories)
+    return (
+
     <div>
       <CandyUploader label='Upload images'/>
     </div>
-  )
+  )}
   /*handlePrev = () => {
     const {stepIndex} = this.state;
     if (!this.state.loading) {

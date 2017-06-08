@@ -118,7 +118,7 @@ class CandyTreatCommentsBox extends Component {
                         {
                             this.state.comments.map((comment, iter) => {
                                 return (
-                                    <div>
+                                    <div key={iter}>
                                         <ListItem
                                             leftAvatar={<Avatar>{comment.author[0].toUpperCase()}</Avatar>}
                                             primaryText={comment.author}

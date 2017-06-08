@@ -68,7 +68,6 @@ function make_treat_screenshot_path(username, treat, detail) {
         '/'+treat.package_name+
         '/screenshots/';
 }
-
 function treat2pkgname(treat) {
     var pkgname = 'org.' +
         treat.author + '.' +
@@ -737,7 +736,6 @@ router.route('/treats/:pkgname/versions/:version/file').post(auth.isAuthenticate
 );
 
 
-//Modify for production ->
 router.route('/treats/:pkgname/screenshots').post(auth.isAuthenticated,
     multer_upload.single('screenshot'), function(req, res) {
         // if the user making the request isn't the requested user
@@ -838,7 +836,6 @@ router.route('/treats/:pkgname/screenshots').post(auth.isAuthenticated,
         );
     }
 );
-//<-- END
 
 router.route('/treats/:pkgname/screenshots/:scrotfilename').put(auth.isAuthenticated, function(req, res) {
     models.Treat.findOne(

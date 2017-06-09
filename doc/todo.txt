@@ -1,1 +1,27 @@
+HOME
+
+- See More
+- Style modification
+
+ALTRI
+- Logout
+
+DRAWER
+
+- Richieste (Link to)
+
+TOOLBAR
+
+- Search
+- Richieste (Link to)
+
+PROFILO
+
+- Tutto
+
+TREAT
+
+- unlock rating
+- eliminazione commento
+- profilo utente -> commenti
 

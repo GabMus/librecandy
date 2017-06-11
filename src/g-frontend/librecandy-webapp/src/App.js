@@ -96,13 +96,18 @@ class App extends Component {
                                     userToken={this.state.userToken}
                                     apiServer={this.state.apiServer} />
                             } />
-                            <Route exact path='/insert' component={
+                            <Route exact path='/newtreat' component={
                                 () => <CandyCreateTreat
                                     userToken={this.state.userToken}
                                     apiServer={this.state.apiServer} />
                             } />
                             <Route exact path={`/treat/:pkgname`} component={
                                 (params) => <CandyTreatView {...params}
+                                    userToken={this.state.userToken}
+                                    apiServer={this.state.apiServer} />
+                            } />
+                            <Route exact path={`/users/:username`} component={
+                                (params) => <CandyUserView {...params}
                                     userToken={this.state.userToken}
                                     apiServer={this.state.apiServer} />
                             } />

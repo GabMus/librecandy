@@ -56,7 +56,7 @@ class CandyToolbar extends Component {
                         onTouchTap={() => {console.log('menu item selected');}}
                         leftIcon={<SocialPersonIcon />} />
                     <MenuItem primaryText='Logout'
-                        onTouchTap={() => {console.log('menu item selected');}}
+                        onTouchTap={() => {document.cookie='JWT_AUTH='}}
                         leftIcon={<ActionExitToAppIcon />} />
                 </IconMenu>
             );

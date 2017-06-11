@@ -245,7 +245,7 @@ class CandyCreateTreat extends React.Component {
     );
   }
 
-  renderStepControls(stepIndex) {
+  renderStepControls(stepIndex, canContinue=true) {
       return (
           <div style={{marginTop: 24, marginBottom: 12}}>
             <FlatButton
@@ -256,6 +256,7 @@ class CandyCreateTreat extends React.Component {
             />
             <RaisedButton
               label={stepIndex === 2 ? 'Finish' : 'Next'}
+              disabled={!canContinue}
               primary={true}
               onTouchTap={this.handleNext}
             />
@@ -275,7 +276,7 @@ class CandyCreateTreat extends React.Component {
             <StepContent>
                 <div style={contentStyle}>
                   <div>{this.getStepContent(0)}</div>
-                  {this.renderStepControls(0)}
+                  {this.renderStepControls(0, (this.state.treatName.length > 0 && this.state.treatDescription.length > 0))}
                 </div>
             </StepContent>
           </Step>

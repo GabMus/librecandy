@@ -236,7 +236,7 @@ class CandyTreatView extends Component {
                                     subtitle={categoryBlock}
                                 />
                                 <CardText>
-                                    <div style={{display: 'block', lineHeight: '16px', paddingBottom: '7px'}}>
+                                    <div style={{lineHeight: '16px', paddingBottom: '7px'}}>
                                         <span style={{float: 'left', paddingRight: '7px'}}>Rate</span>
                                         <ReactStars
                                             count={5}

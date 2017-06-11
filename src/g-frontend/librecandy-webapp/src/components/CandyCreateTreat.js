@@ -10,6 +10,7 @@ import {
   Step,
   Stepper,
   StepLabel,
+  StepContent
 } from 'material-ui/Stepper';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
@@ -131,12 +132,31 @@ class CandyCreateTreat extends React.Component {
           });
       }}
     />
-    <span>Category:</span> <DropDownMenu value={this.state.treatCategory} onChange={this.handleChange}>
-          {this.state.treatCategories.map((category, index) => {
-            console.log('Category: '+category)
-            return <MenuItem key={index} value={category} primaryText={category} />
-          })}
-    </DropDownMenu>
+    <div style={{
+        lineHeight: '54px',
+        padding: '24px 0 72px 0'
+    }}>
+        <span
+            style={{
+                float: 'left',
+            }}
+        >
+            Category:
+        </span>
+        <DropDownMenu
+            style={{
+                float: 'left',
+            }}
+            value={this.state.treatCategory}
+            onChange={this.handleChange}>
+            {
+                this.state.treatCategories.map((category, index) => {
+                    console.log('Category: '+category)
+                    return <MenuItem key={index} value={category} primaryText={category} />
+                })
+            }
+        </DropDownMenu>
+    </div>
 
     </div>
   )
@@ -225,25 +245,59 @@ class CandyCreateTreat extends React.Component {
     );
   }
 
+  renderStepControls(stepIndex) {
+      return (
+          <div style={{marginTop: 24, marginBottom: 12}}>
+            <FlatButton
+              label="Back"
+              disabled={stepIndex === 0}
+              onTouchTap={this.handlePrev}
+              style={{marginRight: 12}}
+            />
+            <RaisedButton
+              label={stepIndex === 2 ? 'Finish' : 'Next'}
+              primary={true}
+              onTouchTap={this.handleNext}
+            />
+          </div>
+      )
+  }
+
   render() {
     const {loading, stepIndex} = this.state;
+    const contentStyle = {margin: '0 16px', overflow: 'hidden'};
 
     return (
       <div style={{width: '100%', maxWidth: 700, margin: 'auto'}}>
-        <Stepper activeStep={stepIndex}>
+        <Stepper activeStep={stepIndex} orientation='vertical'>
           <Step>
             <StepLabel>Create your treat</StepLabel>
+            <StepContent>
+                <div style={contentStyle}>
+                  <div>{this.getStepContent(0)}</div>
+                  {this.renderStepControls(0)}
+                </div>
+            </StepContent>
           </Step>
           <Step>
             <StepLabel>Put screenshots image</StepLabel>
+            <StepContent>
+                <div style={contentStyle}>
+                  <div>{this.getStepContent(1)}</div>
+                  {this.renderStepControls(1)}
+                </div>
+            </StepContent>
           </Step>
           <Step>
             <StepLabel>Upload your file</StepLabel>
+            <StepContent>
+                <div style={contentStyle}>
+                  <div>{this.getStepContent(2)}</div>
+                  {this.renderStepControls(2)}
+                </div>
+            </StepContent>
           </Step>
         </Stepper>
-        <ExpandTransition loading={loading} open={true}>
-          {this.renderContent()}
-        </ExpandTransition>
       </div>
     );
   }

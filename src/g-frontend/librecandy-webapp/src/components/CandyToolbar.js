@@ -45,6 +45,8 @@ class CandyToolbar extends Component {
                     </IconButton>
                 }>
                     <MenuItem primaryText='New treat'
+                        linkButton
+                        containerElement={<Link to="/newtreat" />}
                         onTouchTap={() => {console.log('menu item selected');}}
                         leftIcon={<FileFileUploadIcon />} />
                     <MenuItem primaryText='My treats'

@@ -112,19 +112,139 @@ class App extends Component {
                                     userToken={this.state.userToken}
                                     apiServer={this.state.apiServer} />
                             } />
-                            <Route exact path={`/treats/mostpopular`} component={
+                            <Route exact path={`/mostpopular`} component={
                                 () => <CandyInfiniteScrollPage
                                     userToken={this.state.userToken}
                                     apiServer={this.state.apiServer}
                                     fetchurl='/treats/orderby/rating'
                                     label='Most Popular' />
                             } />
-                            <Route exact path={`/treats/latest`} component={
+                            <Route exact path={`/latest`} component={
                                 () => <CandyInfiniteScrollPage
                                     userToken={this.state.userToken}
                                     apiServer={this.state.apiServer}
                                     fetchurl='/treats'
                                     label='Latest' />
+                            } />
+                            <Route exact path={`/categories/Icons/whatshot`} component={
+                                () => <CandyInfiniteScrollPage
+                                    userToken={this.state.userToken}
+                                    apiServer={this.state.apiServer}
+                                    fetchurl='/treats/categories/Icons'
+                                    label='Icon packs' />
+                            } />
+                            <Route exact path={`/categories/Icons/latest`} component={
+                                () => <CandyInfiniteScrollPage
+                                    userToken={this.state.userToken}
+                                    apiServer={this.state.apiServer}
+                                    fetchurl='/treats/categories/Icons'
+                                    label='Icon packs' />
+                            } />
+                            <Route exact path={`/categories/Icons/mostpopular`} component={
+                                () => <CandyInfiniteScrollPage
+                                    userToken={this.state.userToken}
+                                    apiServer={this.state.apiServer}
+                                    fetchurl='/treats/categories/Icons/orderby/rating'
+                                    label='Icon packs' />
+                            } />
+
+                            <Route exact path={`/categories/GTK/whatshot`} component={
+                                () => <CandyInfiniteScrollPage
+                                    userToken={this.state.userToken}
+                                    apiServer={this.state.apiServer}
+                                    fetchurl='/treats/categories/GTK'
+                                    label='Gtk themes' />
+                            } />
+                            <Route exact path={`/categories/GTK/latest`} component={
+                                () => <CandyInfiniteScrollPage
+                                    userToken={this.state.userToken}
+                                    apiServer={this.state.apiServer}
+                                    fetchurl='/treats/categories/GTK'
+                                    label='Gtk themes' />
+                            } />
+                            <Route exact path={`/categories/GTK/mostpopular`} component={
+                                () => <CandyInfiniteScrollPage
+                                    userToken={this.state.userToken}
+                                    apiServer={this.state.apiServer}
+                                    fetchurl='/treats/categories/GTK/orderby/rating'
+                                    label='Gtk themes' />
+                            } />
+
+                            <Route exact path={`/categories/Qt/whatshot`} component={
+                                () => <CandyInfiniteScrollPage
+                                    userToken={this.state.userToken}
+                                    apiServer={this.state.apiServer}
+                                    fetchurl='/treats/categories/Qt'
+                                    label='Qt themes' />
+                            } />
+                            <Route exact path={`/categories/Qt/latest`} component={
+                                () => <CandyInfiniteScrollPage
+                                    userToken={this.state.userToken}
+                                    apiServer={this.state.apiServer}
+                                    fetchurl='/treats/categories/Qt'
+                                    label='Qt themes' />
+                            } />
+                            <Route exact path={`/categories/Qt/mostpopular`} component={
+                                () => <CandyInfiniteScrollPage
+                                    userToken={this.state.userToken}
+                                    apiServer={this.state.apiServer}
+                                    fetchurl='/treats/categories/Qt/orderby/rating'
+                                    label='Qt themes' />
+                            } />
+
+                            <Route exact path={`/categories/Wallpapers/whatshot`} component={
+                                () => <CandyInfiniteScrollPage
+                                    userToken={this.state.userToken}
+                                    apiServer={this.state.apiServer}
+                                    fetchurl='/treats/categories/Wallpapers'
+                                    label='Wallpapers' />
+                            } />
+                            <Route exact path={`/categories/Wallpapers/latest`} component={
+                                () => <CandyInfiniteScrollPage
+                                    userToken={this.state.userToken}
+                                    apiServer={this.state.apiServer}
+                                    fetchurl='/treats/categories/Wallpapers'
+                                    label='Wallpapers' />
+                            } />
+                            <Route exact path={`/categories/Wallpapers/mostpopular`} component={
+                                () => <CandyInfiniteScrollPage
+                                    userToken={this.state.userToken}
+                                    apiServer={this.state.apiServer}
+                                    fetchurl='/treats/categories/Wallpapers/orderby/rating'
+                                    label='Wallpapers' />
+                            } />
+
+                            <Route exact path={`/categories/Icons`} component={
+                                () => <CandyHomeView
+                                    userToken={this.state.userToken}
+                                    apiServer={this.state.apiServer}
+                                    fetchurl='/treats/categories/Icons'
+                                    target='/categories/Icons'
+                                    label='Icon packs' />
+                            } />
+                            <Route exact path={`/categories/GTK`} component={
+                                () => <CandyHomeView
+                                    userToken={this.state.userToken}
+                                    apiServer={this.state.apiServer}
+                                    fetchurl='/treats/categories/GTK'
+                                    target='/categories/GTK'
+                                    label='Gtk themes' />
+                            } />
+                            <Route exact path={`/categories/Qt`} component={
+                                () => <CandyHomeView
+                                    userToken={this.state.userToken}
+                                    apiServer={this.state.apiServer}
+                                    fetchurl='/treats/categories/Qt'
+                                    target='/categories/Qt'
+                                    label='Qt themes' />
+                            } />
+                            <Route exact path={`/categories/Wallpapers`} component={
+                                () => <CandyHomeView
+                                    userToken={this.state.userToken}
+                                    apiServer={this.state.apiServer}
+                                    fetchurl='/treats/categories/Wallpapers'
+                                    target='/categories/Wallpapers'
+                                    label='Wallpapers' />
                             } />
                             <Route exact path={`/*`} component={
                                 () => <Candy404 />

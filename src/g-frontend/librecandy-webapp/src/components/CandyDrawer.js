@@ -37,18 +37,26 @@ class CandyDrawer extends Component {
                     >
                         <img src='https://www.w3schools.com/w3images/fjords.jpg' width={250} />
                         <MenuItem onTouchTap={this.props.onToggleDrawer}
+                            linkButton
+                            containerElement={<Link to="/categories/GTK" />}
                             leftIcon={<GtkIcon />}>
                                 Gtk themes
                         </MenuItem>
                         <MenuItem onTouchTap={this.props.onToggleDrawer}
+                            linkButton
+                            containerElement={<Link to="/categories/Qt" />}
                             leftIcon={<QtIcon />}>
                                 Qt themes
                         </MenuItem>
                         <MenuItem onTouchTap={this.props.onToggleDrawer}
+                            linkButton
+                            containerElement={<Link to="/categories/Icons" />}
                             leftIcon={<MapsLayers />}>
                                 Icon packs
                         </MenuItem>
                         <MenuItem onTouchTap={this.props.onToggleDrawer}
+                            linkButton
+                            containerElement={<Link to="/categories/Wallpapers" />}
                             leftIcon={<ImageCollectionsIcon />}>
                                 Wallpapers
                         </MenuItem>
@@ -57,19 +65,19 @@ class CandyDrawer extends Component {
 
                         <MenuItem onTouchTap={this.props.onToggleDrawer}
                             linkButton
-                            containerElement={<Link to="/treats/whatshot" />}
+                            containerElement={<Link to="/whatshot" />}
                             leftIcon={<SocialWhatshot />}>
                                 What's hot
                         </MenuItem>
                         <MenuItem onTouchTap={this.props.onToggleDrawer}
                             linkButton
-                            containerElement={<Link to="/treats/mostpopular" />}
+                            containerElement={<Link to="/mostpopular" />}
                             leftIcon={<ToggleStarIcon />}>
                                 Most popular
                         </MenuItem>
                         <MenuItem onTouchTap={this.props.onToggleDrawer}
                             linkButton
-                            containerElement={<Link to="/treats/latest" />}
+                            containerElement={<Link to="/latest" />}
                             leftIcon={<ActionEventIcon />}>
                                 Latest
                         </MenuItem>

@@ -92,7 +92,7 @@ class CandyTreatCard extends Component {
                                 count={5}
                                 size={24}
                                 color2={palette.accent1Color}
-                                value={this.state.treat.rating/2}
+                                value={this.state.treat.total_rating/2}
                                 edit={false} />
                         </div>
                     </div>

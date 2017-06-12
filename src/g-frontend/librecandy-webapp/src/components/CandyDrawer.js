@@ -10,6 +10,7 @@ import ImageCollectionsIcon from 'material-ui/svg-icons/image/collections';
 import SocialWhatshot from 'material-ui/svg-icons/social/whatshot';
 import ToggleStarIcon from 'material-ui/svg-icons/toggle/star';
 import ActionEventIcon from 'material-ui/svg-icons/action/event';
+import { Link } from 'react-router-dom';
 
 class CandyDrawer extends Component {
     constructor(props) {
@@ -55,14 +56,20 @@ class CandyDrawer extends Component {
                         <Divider />
 
                         <MenuItem onTouchTap={this.props.onToggleDrawer}
+                            linkButton
+                            containerElement={<Link to="/treats/whatshot" />}
                             leftIcon={<SocialWhatshot />}>
                                 What's hot
                         </MenuItem>
                         <MenuItem onTouchTap={this.props.onToggleDrawer}
+                            linkButton
+                            containerElement={<Link to="/treats/mostpopular" />}
                             leftIcon={<ToggleStarIcon />}>
-                                Most rated
+                                Most popular
                         </MenuItem>
                         <MenuItem onTouchTap={this.props.onToggleDrawer}
+                            linkButton
+                            containerElement={<Link to="/treats/latest" />}
                             leftIcon={<ActionEventIcon />}>
                                 Latest
                         </MenuItem>

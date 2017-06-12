@@ -8,6 +8,10 @@ import CandyHorizontalCardview from './CandyHorizontalCardview';
 
 import InfiniteScroll from 'react-infinite-scroller';
 
+import SocialWhatshotIcon from 'material-ui/svg-icons/social/whatshot';
+import ToggleStarIcon from 'material-ui/svg-icons/toggle/star';
+import ActionEventIcon from 'material-ui/svg-icons/action/event';
+
 class CandyInfiniteScrollPage extends Component {
     constructor(props) {
         super(props);
@@ -15,45 +19,78 @@ class CandyInfiniteScrollPage extends Component {
         this.state = {
             infiniteLoadingLock: true,
             label: this.props.label || 'VIEW_NAME',
-            leftIcon: this.props.leftIcon,
-            treats: this.props.treats || [
-            ]
+            treats: [],
+            fetchurl: this.props.fetchurl || `${this.props.apiServer}/treats`
         };
+        this.offset=0;
     }
 
 
     render() {
         let loadMoreFunc = () => {
             let oldtreats = this.state.treats.slice();
-            let newtreats = [{
-                name: 'Wall',
-                total_rating: 6,
-                screenshots: [{file: 'http://cdn.newsapi.com.au/image/v1/9fdbf585d17c95f7a31ccacdb6466af9'}],
-                author: 'gabmus',
-                category: 'Wallpapers'
-            },
-            {
-                name: 'Theme',
-                total_rating: 8,
-                screenshots: [{file: 'http://cdn.newsapi.com.au/image/v1/9fdbf585d17c95f7a31ccacdb6466af9'}],
-                author: 'gabmus',
-                category: 'GTK'
-            },
-            {
-                name: 'Iconium',
-                total_rating: 9,
-                screenshots: [{file: 'http://cdn.newsapi.com.au/image/v1/9fdbf585d17c95f7a31ccacdb6466af9'}],
-                author: 'gabmus',
-                category: 'Icons'
-            }];
-            this.setState({
-                infiniteLoadingLock: false,
-                treats: [...oldtreats, ...newtreats]
-            }, () => {
-                this.setState({infiniteLoadingLock: true})
-            });
+
+            let headers = {
+                'Access-Control-Allow-Origin':'*',
+            };
+            if (this.state.userToken) {
+                headers['Authorization'] = `JWT ${this.state.userToken}`;
+            }
+            let request = {
+                method: 'GET',
+                mode: 'cors',
+                headers: headers,
+            };
+            fetch(`${this.props.apiServer}/${this.state.fetchurl}?limit=10&offset=${this.offset}`, request)
+                .then(response => {
+                    //console.log(response);
+                    if (response.ok) {
+                        return response.json();
+                    }
+                    else {
+                        return response;
+                    }
+                })
+                .then(data => {
+                    if (data.status) {
+                        console.log('Error');
+                    }
+                    else {
+                        this.setState({
+                            infiniteLoadingLock: false,
+                            treats: [...oldtreats, ...data.treats]
+                        }, () => {
+                            this.offset=this.offset+10;
+                            if (data.treats.length!=0) {
+                                this.setState({infiniteLoadingLock: true})
+                            }
+                        });
+                        //console.log(this.state.latestTreats.treats[0]);
+                    }
+                }
+            );
         }
         let palette = this.props.muiTheme.palette;
+        let sectionHeaderIconStyle = {
+            width: '48px',
+            height: '48px',
+            float: 'left',
+            marginRight: '12px'
+        };
+        let leftIcon = null;
+        switch (this.state.label) {
+            case 'What\'s Hot':
+                leftIcon = (<SocialWhatshotIcon style={sectionHeaderIconStyle}/>);
+                break;
+            case 'Most Popular':
+                leftIcon = (<ToggleStarIcon style={sectionHeaderIconStyle}/>);
+                break;
+            case 'Latest':
+                leftIcon = (<ActionEventIcon style={sectionHeaderIconStyle}/>);
+                break;
+            default:
+                leftIcon = null;
+        }
         return (
             <div className='CandyInfiniteScrollPage' style={{ margin: '12px 12px 12px 12px' }}>
                 <InfiniteScroll
@@ -66,7 +103,7 @@ class CandyInfiniteScrollPage extends Component {
                         treats={this.state.treats}
                         seemore={false}
                         label={this.state.label}
-                        leftIcon={this.state.leftIcon}
+                        leftIcon={leftIcon}
                     />
                 </InfiniteScroll>
             </div>

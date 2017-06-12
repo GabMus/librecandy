@@ -127,6 +127,7 @@ class CandyHomeView extends Component {
                                 style={sectionHeaderIconStyle}
                             />
                         }
+                        seemorelink='/treats/whatshot'
                     ></CandyHorizontalCardview>
                     <CandyHorizontalCardview
                         treats={this.state.mostratedTreats}
@@ -136,6 +137,7 @@ class CandyHomeView extends Component {
                                 style={sectionHeaderIconStyle}
                             />
                         }
+                        seemorelink='/treats/mostpopular'
                     ></CandyHorizontalCardview>
                     <CandyHorizontalCardview
                         treats={this.state.latestTreats}
@@ -145,6 +147,7 @@ class CandyHomeView extends Component {
                                 style={sectionHeaderIconStyle}
                             />
                         }
+                        seemorelink='/treats/latest'
                     ></CandyHorizontalCardview>
                 </div>
             </div>

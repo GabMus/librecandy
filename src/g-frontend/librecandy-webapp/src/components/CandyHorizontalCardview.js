@@ -1,4 +1,4 @@
-import React, { Component, Link } from 'react';
+import React, { Component } from 'react';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 
 import Divider from 'material-ui/Divider';
@@ -6,6 +6,7 @@ import { Grid, Row, Col } from 'react-flexbox-grid-aphrodite';
 import CandyTreatCard from './CandyTreatCard';
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 import RaisedButton from 'material-ui/RaisedButton'
+import { Link } from 'react-router-dom';
 
 class CandyHorizontalCardview extends Component {
     constructor(props) {
@@ -36,6 +37,7 @@ class CandyHorizontalCardview extends Component {
                     lineHeight: '70px',
                     fontSize: '16pt'
                 }}
+                containerElement={<Link to={this.props.seemorelink} className='link' />}
             />);
         }
         let sectionLabelHeader = null;

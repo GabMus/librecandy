@@ -53,10 +53,12 @@ class CandyToolbar extends Component {
                         containerElement={<Link to="/newtreat" />}
                         onTouchTap={() => {console.log('menu item selected');}}
                         leftIcon={<FileFileUploadIcon />} />
-                    <MenuItem primaryText='My treats'
+                    {/*}<MenuItem primaryText='My treats'
                         onTouchTap={() => {console.log('menu item selected');}}
-                        leftIcon={<SocialCakeIcon />} />
+                        leftIcon={<SocialCakeIcon />} />*/}
                     <MenuItem primaryText='My account'
+                        linkButton
+                        containerElement={<Link to={`/users/${JSON.parse(atob(this.state.userToken.split('.')[1])).username}`} />}
                         onTouchTap={() => {console.log('menu item selected');}}
                         leftIcon={<SocialPersonIcon />} />
                     <MenuItem primaryText='Logout'

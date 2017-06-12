@@ -75,6 +75,39 @@ class CandyTreatCommentsBox extends Component {
         // TODO: send comment and reload(?) page
     }
 
+    getUserAvatar(username) {
+        let headers = {
+            'Access-Control-Allow-Origin':'*',
+        };
+        if (this.state.userToken) {
+            headers['Authorization'] = `JWT ${this.state.userToken}`;
+        }
+        let request = {
+            method: 'GET',
+            mode: 'cors',
+            headers: headers,
+        };
+        fetch(`${this.props.apiServer}/users/username`, request)
+            .then(response => {
+                //console.log(response);
+                if (response.ok) {
+                    return response.json();
+                }
+                else {
+                    return response;
+                }
+            })
+            .then(data => {
+                if (data.status) {
+                    console.log('Error');
+                }
+                else {
+                    return data.avatar
+                }
+            }
+        );
+    }
+
     render() {
         let palette = this.props.muiTheme.palette;
         let commentOrLogin = null;
@@ -120,7 +153,7 @@ class CandyTreatCommentsBox extends Component {
                                 return (
                                     <div key={iter}>
                                         <ListItem
-                                            leftAvatar={<Avatar>{comment.author[0].toUpperCase()}</Avatar>}
+                                            leftAvatar={<Avatar src={this.getUserAvatar(comment.author)}>{comment.author[0].toUpperCase()}</Avatar>}
                                             primaryText={comment.author}
                                             secondaryText={new Date(comment.pub_datetime).toDateString()}
                                             disabled={true}

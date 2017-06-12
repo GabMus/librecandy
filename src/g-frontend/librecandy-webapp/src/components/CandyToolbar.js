@@ -39,11 +39,15 @@ class CandyToolbar extends Component {
         let loginOrMenu = null;
         if (this.state.userToken) {
             loginOrMenu = (
-                <IconMenu iconButtonElement={
-                    <IconButton touch={true}>
-                        <NavigationMoreVertIcon color={palette.alternateTextColor} />
-                    </IconButton>
-                }>
+                <IconMenu
+                    iconButtonElement={
+                        <IconButton touch={true}>
+                            <NavigationMoreVertIcon color={palette.alternateTextColor} />
+                        </IconButton>
+                    }
+                    anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+                    targetOrigin={{horizontal: 'right', vertical: 'top'}}
+                >
                     <MenuItem primaryText='New treat'
                         linkButton
                         containerElement={<Link to="/newtreat" />}
@@ -91,7 +95,7 @@ class CandyToolbar extends Component {
                         </Link>
                     </ToolbarGroup>
                     <ToolbarGroup lastChild={true}>
-                        <CandySearch/>
+                        <CandySearch />
                         {loginOrMenu}
                     </ToolbarGroup>
                 </Toolbar>

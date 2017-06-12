@@ -23,7 +23,7 @@ class CandyTreatView extends Component {
         this.state = {
             treat: null,
             author: null,
-            userToken: this.props.userToken,
+            userToken: props.userToken,
             userRating: null,
             treatname: props.treatname || 'TREAT_NAME',
             treatdescription: props.treatdescription || 'TREAT_DESC',
@@ -34,6 +34,13 @@ class CandyTreatView extends Component {
             treatcategory: props.treatcategory || 'GTK',
             treatcomments: props.treatcomments || [],
         };
+    }
+
+    componentDidMount() {
+
+        if (!this.state.userRating) {
+            this.updateUserRating();
+        }
 
         let headers = {
             'Access-Control-Allow-Origin':'*',
@@ -149,10 +156,40 @@ class CandyTreatView extends Component {
         );
     }
 
-    render() {
-        if (!this.state.userRating) {
-            this.updateUserRating();
+    getUserAvatar(username) {
+        let headers = {
+            'Access-Control-Allow-Origin':'*',
+        };
+        if (this.state.userToken) {
+            headers['Authorization'] = `JWT ${this.state.userToken}`;
         }
+        let request = {
+            method: 'GET',
+            mode: 'cors',
+            headers: headers,
+        };
+        fetch(`${this.props.apiServer}/users/${this.state.treat.author}`, request)
+            .then(response => {
+                //console.log(response);
+                if (response.ok) {
+                    return response.json();
+                }
+                else {
+                    return response;
+                }
+            })
+            .then(data => {
+                if (data.status) {
+                    console.log('Error');
+                }
+                else {
+                    return data.avatar
+                }
+            }
+        );
+    }
+
+    render() {
         let palette = this.props.muiTheme.palette;
         let categoryBlock = null;
         let categoryIconStyle = {
@@ -213,7 +250,6 @@ class CandyTreatView extends Component {
                 originalClass: 'screenshot'
             });
         }
-
         return (
             <div className='CandyTreatView' style={{ margin: '12px 12px 12px 12px' }}>
                 <Grid>
@@ -228,7 +264,7 @@ class CandyTreatView extends Component {
                                 <CardHeader
                                     title={this.state.author.realname || this.state.author.username}
                                     subtitle={this.state.author.realname && this.state.author.username}
-                                    avatar={this.state.author.avatar || ''}
+                                    avatar={this.getUserAvatar(this.state.author.username) || ''}
                                 />
 
                                 <CardTitle
@@ -241,11 +277,11 @@ class CandyTreatView extends Component {
                                         <ReactStars
                                             count={5}
                                             style={{display: 'block', float: 'left'}}
-                                            edit={!!this.state.userToken}
                                             onChange={this.submitRating}
-                                            size={24}
                                             color2={palette.accent1Color}
+                                            size={24}
                                             value={this.state.userRating/2}
+                                            edit={!!this.state.userToken ? undefined : false}
                                         />
                                     </div>
                                     <div style={{lineHeight: '14px', display: 'block', paddingBottom: '24px'}}>

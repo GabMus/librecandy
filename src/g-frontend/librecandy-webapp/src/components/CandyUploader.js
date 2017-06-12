@@ -47,6 +47,7 @@ class CandyUploader extends Component{
           >
 
           {this.state.files.map((image, id) => {
+            console.log('image: ',image)
             console.log('id: '+id);
             return(
               <GridTile key={id} style={{padding:40}}>
@@ -60,7 +61,11 @@ class CandyUploader extends Component{
         </GridList>
 
         </div>
-        <Dropzone onDrop={this.onDrop} className='candyUploader'>
+        <Dropzone
+              onDrop={this.onDrop}
+              accept="image/*"
+              className='candyUploader'
+              >
           <p>Try dropping some files here, or click to select files to upload.</p>
         </Dropzone>
 

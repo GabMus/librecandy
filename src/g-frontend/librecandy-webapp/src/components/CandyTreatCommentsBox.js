@@ -21,6 +21,7 @@ class CandyTreatCommentsBox extends Component {
             userToken: props.userToken,
             comments: props.comments,
             pkgname: props.pkgname,
+            commentPostLock: true,
         };
     }
 
@@ -31,6 +32,7 @@ class CandyTreatCommentsBox extends Component {
     }
 
     sendComment = (event) => {
+        this.setState({commentPostLock: false});
         let headers = {
             'Access-Control-Allow-Origin':'*',
             'Content-Type': 'application/x-www-form-urlencoded'
@@ -43,7 +45,6 @@ class CandyTreatCommentsBox extends Component {
             return;
         }
         let body = `content=${this.state.newComment}`;
-        console.log(body);
         let request = {
             method: 'POST',
             mode: 'cors',
@@ -66,13 +67,53 @@ class CandyTreatCommentsBox extends Component {
                     console.log(data);
                 }
                 else {
-                    this.setState({comments: data.treat.comments});
+                    this.setState({comments: data.treat.comments, newComment: ''});
                     document.getElementById('newCommentTextField').value='';
+                    //console.log(this.state.latestTreats.treats[0]);
+                }
+                this.setState({commentPostLock: true});
+            }
+        );
+        // TODO: send comment and reload(?) page
+    }
+
+    deleteComment(commentid) {
+        let headers = {
+            'Access-Control-Allow-Origin':'*',
+        };
+        if (this.props.userToken) {
+            headers['Authorization'] = `JWT ${this.props.userToken}`;
+        }
+        else {
+            console.log('User not logged');
+            return;
+        }
+        let request = {
+            method: 'DELETE',
+            mode: 'cors',
+            headers: headers
+        };
+        fetch(`${this.props.apiServer}/treats/${this.state.pkgname}/comments/${commentid}`, request)
+            .then(response => {
+                //console.log(response);
+                if (response.ok) {
+                    return response.json();
+                }
+                else {
+                    return response;
+                }
+            })
+            .then(data => {
+                if (data.status) {
+                    console.log('Error');
+                    console.log(data);
+                }
+                else {
+                    this.setState({comments: data.treat.comments});
                     //console.log(this.state.latestTreats.treats[0]);
                 }
             }
         );
-        // TODO: send comment and reload(?) page
     }
 
     getUserAvatar(username) {
@@ -87,7 +128,7 @@ class CandyTreatCommentsBox extends Component {
             mode: 'cors',
             headers: headers,
         };
-        fetch(`${this.props.apiServer}/users/username`, request)
+        fetch(`${this.props.apiServer}/users/${username}`, request)
             .then(response => {
                 //console.log(response);
                 if (response.ok) {
@@ -124,7 +165,7 @@ class CandyTreatCommentsBox extends Component {
                     <FlatButton
                         label='Post'
                         primary={true}
-                        disabled={!this.state.newComment}
+                        disabled={!(this.state.newComment && this.state.commentPostLock)}
                         onTouchTap={this.sendComment}
                     />
                 </div>
@@ -161,7 +202,7 @@ class CandyTreatCommentsBox extends Component {
                                             rightIconButton={
                                                 <IconButton
                                                     touch={true}
-                                                    onTouchTap={() => {console.log('delete');}}>
+                                                    onTouchTap={() => {this.deleteComment(comment._id)}}>
                                                     <ActionDeleteForeverIcon color={palette.iconGrey}/>
                                                 </IconButton>
                                             }

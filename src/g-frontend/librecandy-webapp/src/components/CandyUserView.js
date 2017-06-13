@@ -24,71 +24,7 @@ class CandyUserView extends Component {
                 bio: '',
                 signup_datetime: ''
             },
-            treats: [], /*this.props.treats || [
-                {
-                    name: 'Wall',
-                    total_rating: 6,
-                    screenshots: [{file: 'http://cdn.newsapi.com.au/image/v1/9fdbf585d17c95f7a31ccacdb6466af9'}],
-                    author: 'gabmus',
-                    category: 'Wallpapers'
-                },
-                {
-                    name: 'Theme',
-                    total_rating: 8,
-                    screenshots: [{file: 'http://cdn.newsapi.com.au/image/v1/9fdbf585d17c95f7a31ccacdb6466af9'}],
-                    author: 'gabmus',
-                    category: 'GTK'
-                },
-                {
-                    name: 'Iconium',
-                    total_rating: 9,
-                    screenshots: [{file: 'http://cdn.newsapi.com.au/image/v1/9fdbf585d17c95f7a31ccacdb6466af9'}],
-                    author: 'gabmus',
-                    category: 'Icons'
-                },
-                {
-                    name: 'Wall',
-                    total_rating: 6,
-                    screenshots: [{file: 'http://cdn.newsapi.com.au/image/v1/9fdbf585d17c95f7a31ccacdb6466af9'}],
-                    author: 'gabmus',
-                    category: 'Wallpapers'
-                },
-                {
-                    name: 'Theme',
-                    total_rating: 8,
-                    screenshots: [{file: 'http://cdn.newsapi.com.au/image/v1/9fdbf585d17c95f7a31ccacdb6466af9'}],
-                    author: 'gabmus',
-                    category: 'GTK'
-                },
-                {
-                    name: 'Iconium',
-                    total_rating: 9,
-                    screenshots: [{file: 'http://cdn.newsapi.com.au/image/v1/9fdbf585d17c95f7a31ccacdb6466af9'}],
-                    author: 'gabmus',
-                    category: 'Icons'
-                },
-                {
-                    name: 'Wall',
-                    total_rating: 6,
-                    screenshots: [{file: 'http://cdn.newsapi.com.au/image/v1/9fdbf585d17c95f7a31ccacdb6466af9'}],
-                    author: 'gabmus',
-                    category: 'Wallpapers'
-                },
-                {
-                    name: 'Theme',
-                    total_rating: 8,
-                    screenshots: [{file: 'http://cdn.newsapi.com.au/image/v1/9fdbf585d17c95f7a31ccacdb6466af9'}],
-                    author: 'gabmus',
-                    category: 'GTK'
-                },
-                {
-                    name: 'Iconium',
-                    total_rating: 9,
-                    screenshots: [{file: 'http://cdn.newsapi.com.au/image/v1/9fdbf585d17c95f7a31ccacdb6466af9'}],
-                    author: 'gabmus',
-                    category: 'Icons'
-                },
-            ]*/
+            treats: [],
         };
     }
 
@@ -153,6 +89,8 @@ class CandyUserView extends Component {
                         <Col xs={12} md={4} lg={4}>
                             <CandyUserCard
                                 user={this.state.user}
+                                userToken={this.props.userToken}
+                                apiServer={this.props.apiServer}
                             />
                         </Col>
                         <Col xs={12} md={8} lg={8}>

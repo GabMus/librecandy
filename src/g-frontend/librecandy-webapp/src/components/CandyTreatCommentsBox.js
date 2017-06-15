@@ -191,6 +191,16 @@ class CandyTreatCommentsBox extends Component {
                         <Divider />
                         {
                             this.state.comments.map((comment, iter) => {
+                                let deleteiconbutton=null;
+                                if (comment.author == JSON.parse(atob(this.state.userToken.split('.')[1])).username) {
+                                    deleteiconbutton = (
+                                        <IconButton
+                                            touch={true}
+                                            onTouchTap={() => {this.deleteComment(comment._id)}}>
+                                            <ActionDeleteForeverIcon color={palette.iconGrey}/>
+                                        </IconButton>
+                                    );
+                                }
                                 return (
                                     <div key={iter}>
                                         <ListItem
@@ -200,11 +210,7 @@ class CandyTreatCommentsBox extends Component {
                                             disabled={true}
                                             key={iter}
                                             rightIconButton={
-                                                <IconButton
-                                                    touch={true}
-                                                    onTouchTap={() => {this.deleteComment(comment._id)}}>
-                                                    <ActionDeleteForeverIcon color={palette.iconGrey}/>
-                                                </IconButton>
+                                                deleteiconbutton
                                             }
                                         />
                                         <ReactMarkdown

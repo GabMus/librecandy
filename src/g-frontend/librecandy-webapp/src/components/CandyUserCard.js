@@ -105,7 +105,7 @@ class CandyUserCard extends Component {
                 <RaisedButton
                     label='Save'
                     secondary={true}
-                    onTouchTap={() => { //TODO: finish user save
+                    onTouchTap={() => {
                         let headers = {
                             'Access-Control-Allow-Origin':'*',
                             'Content-Type': 'application/x-www-form-urlencoded'

@@ -15,16 +15,21 @@ import CandyTreatDownloadBox from './CandyTreatDownloadBox';
 import CandyTreatCommentsBox from './CandyTreatCommentsBox';
 import ReactMarkdown from 'react-markdown';
 import { Grid, Row, Col } from 'react-flexbox-grid-aphrodite';
+import TextField from 'material-ui/TextField';
+import RaisedButton from 'material-ui/RaisedButton';
+import FlatButton from 'material-ui/FlatButton'; 'material-ui/svg-icons/editor/mode-edit';
 
 class CandyTreatView extends Component {
     constructor(props) {
         super(props);
         this.props=props;
         this.state = {
+            edit: false,
             treat: null,
             author: null,
             userToken: props.userToken,
             userRating: null,
+            newDescription: null,
             treatname: props.treatname || 'TREAT_NAME',
             treatdescription: props.treatdescription || 'TREAT_DESC',
             treatrating: props.treatrating || 0,
@@ -68,7 +73,7 @@ class CandyTreatView extends Component {
                     console.log('Error');
                 }
                 else {
-                    this.setState({treat: data.treat, author: data.author});
+                    this.setState({treat: data.treat, author: data.author, newDescription: data.treat.description});
                     //console.log(this.state.latestTreats.treats[0]);
                 }
             }
@@ -250,6 +255,90 @@ class CandyTreatView extends Component {
                 originalClass: 'screenshot'
             });
         }
+
+        let description = (
+            <div style={{marginTop: '24px'}}>
+                <ReactMarkdown
+                    source={this.state.treat.description}
+                    className='treatdescription'
+                />
+            </div>
+        );
+        if (this.state.edit) {
+            description = (
+                <div style={{marginTop: '24px'}}>
+                    <TextField
+                        floatingLabelText='Description'
+                        fullWidth={true}
+                        onChange={(event, newValue) => {
+                            this.setState({newDescription: event.target.value});
+                        }}
+                        multiLine={true}
+                        value={this.state.newDescription}
+                    />
+                    <RaisedButton
+                        label='Save'
+                        secondary={true}
+                        onTouchTap={() => {
+                            let headers = {
+                                'Access-Control-Allow-Origin':'*',
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            };
+                            if (this.props.userToken) {
+                                headers['Authorization'] = `JWT ${this.props.userToken}`;
+                            }
+                            else {
+                                console.log('User not logged');
+                                return;
+                            }
+                            let body = `description=${this.state.newDescription}`;
+                            let request = {
+                                method: 'PUT',
+                                mode: 'cors',
+                                headers: headers,
+                                body: body
+                            };
+                            fetch(`${this.props.apiServer}/treats/${this.state.treat.package_name}`, request)
+                                .then(response => {
+                                    //console.log(response);
+                                    if (response.ok) {
+                                        return response.json();
+                                    }
+                                    else {
+                                        return response;
+                                    }
+                                })
+                                .then(data => {
+                                    if (data.status) {
+                                        console.log('Error');
+                                        console.log(data);
+                                    }
+                                    else {
+                                        console.log('treat modified');
+                                        let newtreat=this.state.treat;
+                                        newtreat.description=this.state.newDescription;
+                                        this.setState({edit: false, treat: newtreat});
+                                        //console.log(this.state.latestTreats.treats[0]);
+                                    }
+                                    //this.setState({commentPostLock: true});
+                                }
+                            );
+                        }}
+                    />
+                </div>
+            )
+        }
+
+        let editBtn=null;
+        if (this.state.treat && this.props.userToken && this.state.treat.author == JSON.parse(atob(this.props.userToken.split('.')[1])).username && !this.state.edit) {
+            editBtn=(
+                <FlatButton touch={true}
+                    onTouchTap={() => {this.setState({edit: 'true'})}}
+                    secondary={true}
+                    label='Edit'
+                />
+            );
+        }
         return (
             <div className='CandyTreatView' style={{ margin: '12px 12px 12px 12px' }}>
                 <Grid>
@@ -288,11 +377,9 @@ class CandyTreatView extends Component {
                                         <ToggleStarIcon color={palette.iconGrey} style={{width: '14px', height: '14px', float: 'left'}} />
                                         <span style={{float: 'left', paddingLeft: '7px'}}>{this.state.treat.total_rating/2}</span>
                                     </div>
-                                    <div style={{marginTop: '24px'}}>
-                                        <ReactMarkdown
-                                            source={this.state.treat.description}
-                                            className='treatdescription'
-                                        />
+                                    <div style={{position: 'relative'}}>
+                                        {editBtn}
+                                        {description}
                                     </div>
                                 </CardText>
                             </Card>

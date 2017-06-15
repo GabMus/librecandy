@@ -37,7 +37,7 @@ class CandyToolbar extends Component {
     render() {
         let palette = this.props.muiTheme.palette;
         let loginOrMenu = null;
-        if (this.state.userToken) {
+        if (this.props.userToken) {
             loginOrMenu = (
                 <IconMenu
                     iconButtonElement={
@@ -58,11 +58,11 @@ class CandyToolbar extends Component {
                         leftIcon={<SocialCakeIcon />} />*/}
                     <MenuItem primaryText='My account'
                         linkButton
-                        containerElement={<Link to={`/users/${JSON.parse(atob(this.state.userToken.split('.')[1])).username}`} />}
+                        containerElement={<Link to={`/users/${JSON.parse(atob(this.props.userToken.split('.')[1])).username}`} />}
                         onTouchTap={() => {console.log('menu item selected');}}
                         leftIcon={<SocialPersonIcon />} />
                     <MenuItem primaryText='Logout'
-                        onTouchTap={() => {document.cookie='JWT_AUTH='}}
+                        onTouchTap={() => {document.cookie='JWT_AUTH='; this.props.onLogout()}}
                         leftIcon={<ActionExitToAppIcon />} />
                 </IconMenu>
             );

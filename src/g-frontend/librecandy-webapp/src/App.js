@@ -35,7 +35,7 @@ import ActionEventIcon from 'material-ui/svg-icons/action/event';
 
 import CandyHomeView from './components/CandyHomeView';
 
-import { Switch, Route } from 'react-router-dom'
+import { Switch, Route } from 'react-router-dom';
 
 const candyTheme = getMuiTheme({
     palette: {
@@ -67,10 +67,21 @@ class App extends Component {
             apiServer: props.apiServer,
             userToken: this.getCookie('JWT_AUTH'),
         };
+        console.log(props.history);
     }
 
     componentDidMount() { // called when the rendering is done
         //fetch(this.)
+    }
+
+    afterLogin() {
+        this.setState({userToken: this.getCookie('JWT_AUTH')});
+        this.props.history.goBack();
+    }
+
+    afterLogout() {
+        this.setState({userToken: null});
+        this.props.history.go();
     }
 
     render() {
@@ -85,7 +96,8 @@ class App extends Component {
             <div className='App'>
                 <MuiThemeProvider muiTheme={candyTheme}>
                     <div>
-                        <CandyToolbar userToken={this.state.userToken}></CandyToolbar>
+                        <CandyToolbar userToken={this.state.userToken}
+                            onLogout={this.afterLogout.bind(this)} />
                         <Switch>
                             <Route exact path='/' component={
                                 () => <CandyHomeView
@@ -95,7 +107,9 @@ class App extends Component {
                             <Route exact path='/login' component={
                                 () => <CandyRegisterOrLogin
                                     userToken={this.state.userToken}
-                                    apiServer={this.state.apiServer} />
+                                    apiServer={this.state.apiServer}
+                                    onLogin={this.afterLogin.bind(this)}
+                                    />
                             } />
                             <Route exact path='/newtreat' component={
                                 () => <CandyCreateTreat

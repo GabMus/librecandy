@@ -3,9 +3,7 @@ import muiThemeable from 'material-ui/styles/muiThemeable';
 
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 
-import {GtkIcon, QtIcon} from './CandyMatIcons';
-import MapsLayers from 'material-ui/svg-icons/maps/layers';
-import ImageCollectionsIcon from 'material-ui/svg-icons/image/collections';
+import CandyCategoryIcon from './CandyCategoryIcon';
 
 import ReactStars from 'react-stars'; // doc: https://github.com/n49/react-stars
 import ToggleStarIcon from 'material-ui/svg-icons/toggle/star'
@@ -188,57 +186,18 @@ class CandyTreatView extends Component {
 
     render() {
         let palette = this.props.muiTheme.palette;
-        let categoryBlock = null;
-        let categoryIconStyle = {
-            width: '24px',
-            float: 'left'
-        }
         if (!this.state.treat) {
             return (
                 <h2>Nothing here!</h2>
-            )
+            );
         }
-        switch (this.state.treat.category) {
-            case 'GTK':
-                categoryBlock = (
-                    <div style={{lineHeight: '24px'}}>
-                        <GtkIcon color={palette.iconGrey} style={categoryIconStyle} />
-                        <span style={{float: 'left'}}>Gtk theme</span>
-                    </div>
-                );
-                break;
-            case 'Qt':
-                categoryBlock = (
-                    <div style={{lineHeight: '24px'}}>
-                        <QtIcon color={palette.iconGrey} style={categoryIconStyle} />
-                        <span style={{float: 'left'}}>Qt theme</span>
-                    </div>
-                );
-                break;
-            case 'Icons':
-                categoryBlock = (
-                    <div style={{lineHeight: '24px'}}>
-                        <MapsLayers color={palette.iconGrey} style={categoryIconStyle} />
-                        <span style={{float: 'left'}}>Icon pack</span>
-                    </div>
-                );
-                break;
-            case 'Wallpapers':
-                categoryBlock = (
-                    <div style={{lineHeight: '24px'}}>
-                        <ImageCollectionsIcon color={palette.iconGrey} style={categoryIconStyle} />
-                        <span style={{float: 'left'}}>Wallpaper</span>
-                    </div>
-                );
-                break;
-            default:
-                categoryBlock = (
-                    <div style={{lineHeight: '24px'}}>
-                        <GtkIcon color={palette.iconGrey} style={categoryIconStyle} />
-                        <span style={{float: 'left'}}>Gtk theme</span>
-                    </div>
-                );
-        }
+
+        let treatcardtitle= (
+            <div style={{lineHeight: '24px', display: 'inline-block'}}>
+                <CandyCategoryIcon style={{float: 'left'}} category={this.state.treat.category} />
+                <h2 style={{float: 'left', marginTop: '0', marginBottom: '0', marginLeft: '12px'}}>{this.state.treat.name}</h2>
+            </div>
+        );
 
         let formattedScreenshots = [];
         for (let i in this.state.treat.screenshots) {
@@ -349,8 +308,7 @@ class CandyTreatView extends Component {
                                 />
 
                                 <CardTitle
-                                    title={this.state.treat.name}
-                                    subtitle={categoryBlock}
+                                    title={treatcardtitle}
                                 />
                                 <CardText>
                                     <div style={{lineHeight: '16px', paddingBottom: '7px'}}>

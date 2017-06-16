@@ -19,24 +19,25 @@ class CandyCategoryIcon extends Component {
     render() {
         let palette = this.props.muiTheme.palette;
         let categoryIcon = null;
+        let categoryIconStyle={float: 'right', width: '24px', height: '24px'};
         switch (this.state.category) {
             case 'GTK':
-                categoryIcon = (<GtkIcon color={palette.iconGrey} style={{float: 'right', width: '24px', height: '24px'}} />);
+                categoryIcon = (<GtkIcon color={palette.iconGrey} style={categoryIconStyle} />);
                 break;
             case 'Qt':
-                categoryIcon = (<QtIcon color={palette.iconGrey} style={{float: 'right', width: '24px', height: '24px'}} />);
+                categoryIcon = (<QtIcon color={palette.iconGrey} style={categoryIconStyle} />);
                 break;
             case 'Icons':
-                categoryIcon = (<MapsLayers color={palette.iconGrey} style={{float: 'right', width: '24px', height: '24px'}} />);
+                categoryIcon = (<MapsLayers color={palette.iconGrey} style={categoryIconStyle} />);
                 break;
             case 'Wallpapers':
-                categoryIcon = (<ImageCollectionsIcon color={palette.iconGrey} style={{float: 'right', width: '24px', height: '24px'}} />);
+                categoryIcon = (<ImageCollectionsIcon color={palette.iconGrey} style={categoryIconStyle} />);
                 break;
             default:
-                categoryIcon = (<GtkIcon color={palette.iconGrey} style={{float: 'right', width: '24px', height: '24px'}} />);
+                categoryIcon = (<GtkIcon color={palette.iconGrey} style={categoryIconStyle} />);
         }
         return (
-            <div className='CandyCategoryIcon'>
+            <div className='CandyCategoryIcon' style={this.props.style}>
                 {categoryIcon}
             </div>
         );

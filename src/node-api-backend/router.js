@@ -558,7 +558,7 @@ router.route('/treats/:pkgname/versions') // aka detail
                     }
                 }
                 treat.details.unshift(detail); // unshift = head insert
-                treat.last_pub_datetime = Date.now();
+                treat.last_pub_datetime = Date.now;
                 treat.save(function(err) {
                     if (err) return res.json(err);
                     res.json({success: true, error: null, treat: treat});

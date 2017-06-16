@@ -30,14 +30,6 @@ class CandyTreatView extends Component {
             userToken: props.userToken,
             userRating: null,
             newDescription: null,
-            treatname: props.treatname || 'TREAT_NAME',
-            treatdescription: props.treatdescription || 'TREAT_DESC',
-            treatrating: props.treatrating || 0,
-            treatuserrating: props.treatuserrating || 0,
-            treatscreenshots: props.treatscreenshots || [],
-            treatauthor: props.treatauthor || 'TREAT_AUTHOR',
-            treatcategory: props.treatcategory || 'GTK',
-            treatcomments: props.treatcomments || [],
         };
     }
 
@@ -249,9 +241,9 @@ class CandyTreatView extends Component {
         }
 
         let formattedScreenshots = [];
-        for (let i in this.state.treatscreenshots) {
+        for (let i in this.state.treat.screenshots) {
             formattedScreenshots.push({
-                original: this.state.treatscreenshots[i],
+                original: this.state.treat.screenshots[i],
                 originalClass: 'screenshot'
             });
         }

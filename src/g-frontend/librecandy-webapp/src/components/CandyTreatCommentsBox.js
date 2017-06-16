@@ -209,9 +209,7 @@ class CandyTreatCommentsBox extends Component {
                                             secondaryText={new Date(comment.pub_datetime).toDateString()}
                                             disabled={true}
                                             key={iter}
-                                            rightIconButton={
-                                                deleteiconbutton
-                                            }
+                                            rightIconButton={deleteiconbutton}
                                         />
                                         <ReactMarkdown
                                             source={comment.content}

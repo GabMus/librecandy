@@ -13,6 +13,7 @@ import IconButton from 'material-ui/IconButton';
 import Subheader from 'material-ui/Subheader';
 import StarBorder from 'material-ui/svg-icons/toggle/star-border';
 import ContentClear from 'material-ui/svg-icons/content/clear';
+import FileCloudUploadIcon from 'material-ui/svg-icons/file/cloud-upload';
 import '../App.css';
 
 class CandyUploader extends Component{
@@ -39,7 +40,10 @@ class CandyUploader extends Component{
   }
   render(){
     return(
-      <div >
+      <div style={{
+          border: `2px ${this.props.muiTheme.palette.iconGrey} solid`,
+          borderRadius: '5px'
+      }}>
         <div>
           <GridList
             cellHeight={180}
@@ -66,7 +70,21 @@ class CandyUploader extends Component{
               accept="image/*"
               className='candyUploader'
               >
-          <p>Try dropping some files here, or click to select files to upload.</p>
+            <FileCloudUploadIcon
+                color={this.props.muiTheme.palette.iconGrey}
+                style={{
+                    height: '40%',
+                    width: '40%',
+                    position: 'absolute',
+                    top: '10%',
+                    left: '0',
+                    right: '0',
+                    marginLeft: 'auto',
+                    marginRight: 'auto',
+                    zIndex: '-9999'
+                }}
+            />
+          <p>Drop your files here, or click to select files to upload.</p>
         </Dropzone>
 
       </div>

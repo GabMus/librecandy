@@ -14,80 +14,70 @@ class CandyUserView extends Component {
         super(props);
         this.props=props;
         this.state = {
-            user: props.user || {
-                username: 'gabmus',
-                email: 'emaildigabry@gmail.com',
-                realname: 'Gabriele Musco',
-                avatar: 'http://etikhacker.org/images/site/etikhacker.png',
-                bio: 'Evil linux enthusiast. Extreme gamer. Food expert. Avid travel aficionado. Troublemaker.',
-                signup_datetime: 'May 25th, 2017'
+            userToken: props.userToken,
+            username: props.username,
+            user: {
+                username: '',
+                email: '',
+                realname: '',
+                avatar: '',
+                bio: '',
+                signup_datetime: ''
             },
-            treats: this.props.treats || [
-                {
-                    name: 'Wall',
-                    total_rating: 6,
-                    screenshots: [{file: 'http://cdn.newsapi.com.au/image/v1/9fdbf585d17c95f7a31ccacdb6466af9'}],
-                    author: 'gabmus',
-                    category: 'Wallpapers'
-                },
-                {
-                    name: 'Theme',
-                    total_rating: 8,
-                    screenshots: [{file: 'http://cdn.newsapi.com.au/image/v1/9fdbf585d17c95f7a31ccacdb6466af9'}],
-                    author: 'gabmus',
-                    category: 'GTK'
-                },
-                {
-                    name: 'Iconium',
-                    total_rating: 9,
-                    screenshots: [{file: 'http://cdn.newsapi.com.au/image/v1/9fdbf585d17c95f7a31ccacdb6466af9'}],
-                    author: 'gabmus',
-                    category: 'Icons'
-                },
-                {
-                    name: 'Wall',
-                    total_rating: 6,
-                    screenshots: [{file: 'http://cdn.newsapi.com.au/image/v1/9fdbf585d17c95f7a31ccacdb6466af9'}],
-                    author: 'gabmus',
-                    category: 'Wallpapers'
-                },
-                {
-                    name: 'Theme',
-                    total_rating: 8,
-                    screenshots: [{file: 'http://cdn.newsapi.com.au/image/v1/9fdbf585d17c95f7a31ccacdb6466af9'}],
-                    author: 'gabmus',
-                    category: 'GTK'
-                },
-                {
-                    name: 'Iconium',
-                    total_rating: 9,
-                    screenshots: [{file: 'http://cdn.newsapi.com.au/image/v1/9fdbf585d17c95f7a31ccacdb6466af9'}],
-                    author: 'gabmus',
-                    category: 'Icons'
-                },
-                {
-                    name: 'Wall',
-                    total_rating: 6,
-                    screenshots: [{file: 'http://cdn.newsapi.com.au/image/v1/9fdbf585d17c95f7a31ccacdb6466af9'}],
-                    author: 'gabmus',
-                    category: 'Wallpapers'
-                },
-                {
-                    name: 'Theme',
-                    total_rating: 8,
-                    screenshots: [{file: 'http://cdn.newsapi.com.au/image/v1/9fdbf585d17c95f7a31ccacdb6466af9'}],
-                    author: 'gabmus',
-                    category: 'GTK'
-                },
-                {
-                    name: 'Iconium',
-                    total_rating: 9,
-                    screenshots: [{file: 'http://cdn.newsapi.com.au/image/v1/9fdbf585d17c95f7a31ccacdb6466af9'}],
-                    author: 'gabmus',
-                    category: 'Icons'
-                },
-            ]
+            treats: [],
         };
+    }
+
+    componentDidMount() {
+        let headers = {
+            'Access-Control-Allow-Origin':'*',
+        };
+        if (this.state.userToken) {
+            headers['Authorization'] = `JWT ${this.state.userToken}`;
+        }
+        let request = {
+            method: 'GET',
+            mode: 'cors',
+            headers: headers,
+        };
+        fetch(`${this.props.apiServer}/users/${this.props.match.params.username}`, request)
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                }
+                else {
+                    return response;
+                }
+            })
+            .then(data => {
+                if (data.status) {
+                    console.log('Error');
+                }
+                else {
+                    this.setState({user: data});
+                    fetch(`${this.props.apiServer}/users/${this.props.match.params.username}/treats?limit=999`, request)
+                        .then(response => {
+                            //console.log(response);
+                            if (response.ok) {
+                                return response.json();
+                            }
+                            else {
+                                return response;
+                            }
+                        })
+                        .then(data => {
+                            if (data.status) {
+                                console.log('Error');
+                            }
+                            else {
+                                this.setState({treats: data.treats});
+
+                            }
+                        }
+                    );
+                }
+            }
+        );
     }
 
     render() {
@@ -98,12 +88,9 @@ class CandyUserView extends Component {
                     <Row>
                         <Col xs={12} md={4} lg={4}>
                             <CandyUserCard
-                                username={this.state.user.username}
-                                email={this.state.user.email}
-                                realname={this.state.user.realname}
-                                avatar={this.state.user.avatar}
-                                bio={this.state.user.bio}
-                                signup_datetime={this.state.user.signup_datetime}
+                                user={this.state.user}
+                                userToken={this.props.userToken}
+                                apiServer={this.props.apiServer}
                             />
                         </Col>
                         <Col xs={12} md={8} lg={8}>

@@ -37,24 +37,32 @@ class CandyToolbar extends Component {
     render() {
         let palette = this.props.muiTheme.palette;
         let loginOrMenu = null;
-        if (this.state.userToken) {
+        if (this.props.userToken) {
             loginOrMenu = (
-                <IconMenu iconButtonElement={
-                    <IconButton touch={true}>
-                        <NavigationMoreVertIcon color={palette.alternateTextColor} />
-                    </IconButton>
-                }>
+                <IconMenu
+                    iconButtonElement={
+                        <IconButton touch={true}>
+                            <NavigationMoreVertIcon color={palette.alternateTextColor} />
+                        </IconButton>
+                    }
+                    anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+                    targetOrigin={{horizontal: 'right', vertical: 'top'}}
+                >
                     <MenuItem primaryText='New treat'
+                        linkButton
+                        containerElement={<Link to="/newtreat" />}
                         onTouchTap={() => {console.log('menu item selected');}}
                         leftIcon={<FileFileUploadIcon />} />
-                    <MenuItem primaryText='My treats'
+                    {/*}<MenuItem primaryText='My treats'
                         onTouchTap={() => {console.log('menu item selected');}}
-                        leftIcon={<SocialCakeIcon />} />
+                        leftIcon={<SocialCakeIcon />} />*/}
                     <MenuItem primaryText='My account'
+                        linkButton
+                        containerElement={<Link to={`/users/${JSON.parse(atob(this.props.userToken.split('.')[1])).username}`} />}
                         onTouchTap={() => {console.log('menu item selected');}}
                         leftIcon={<SocialPersonIcon />} />
                     <MenuItem primaryText='Logout'
-                        onTouchTap={() => {console.log('menu item selected');}}
+                        onTouchTap={() => {document.cookie='JWT_AUTH='; this.props.onLogout()}}
                         leftIcon={<ActionExitToAppIcon />} />
                 </IconMenu>
             );
@@ -89,7 +97,7 @@ class CandyToolbar extends Component {
                         </Link>
                     </ToolbarGroup>
                     <ToolbarGroup lastChild={true}>
-                        <CandySearch/>
+                        <CandySearch />
                         {loginOrMenu}
                     </ToolbarGroup>
                 </Toolbar>

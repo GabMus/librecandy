@@ -72,6 +72,7 @@ class CandyRegisterOrLogin extends Component {
                     }
                     else {
                         document.cookie=`JWT_AUTH=${data.token}`;
+                        this.props.onLogin();
                     }
                 }
             );

@@ -103,13 +103,10 @@ pre {
 }
 
 .candyUploader{
-  width:99%;
-
-  text-align: center;
-  border: 1px solid black;
+    text-align: center;
 }
 
 .removeImageButton{
-  position: absolute;
-  right: 0;
+    position: absolute;
+    right: 0;
 }

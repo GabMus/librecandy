@@ -75,6 +75,7 @@ var TreatSchema = new Schema({
     author: {type: String, required: true}, // username
     package_name: {type: String, required: true, unique: true},
     first_pub_datetime: {type: Date, default: Date.now},
+    last_pub_datetime: {type: Date, default: Date.now},
     screenshots: [TreatScreenshotSchema], // is this legal?
     details: [TreatDetailSchema],
     ratings: [TreatRatingSchema],

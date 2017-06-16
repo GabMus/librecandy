@@ -463,6 +463,23 @@ router.route('/treats/categories/:category/orderby/rating').get(function(req, re
 });
 
 router.route('/treats/orderby/rating').get(function(req, res) {
+    models.Treat.find().sort({'total_rating': -1}).exec(function(err, treats) {
+        if (!treats) return res.sendStatus(404);
+        if (err) return res.json(err);
+        var offset=0;
+        var limit=20;
+        if (req.param('offset')) {
+            offset=parseInt(req.param('offset'));
+        }
+        if (req.param('limit')) {
+            limit=parseInt(req.param('limit'));
+        }
+        var treats_filter = treats.slice(offset, offset+limit);
+        res.json({treats: treats_filter, offset: offset, limit: limit});
+    });
+});
+
+router.route('/treats/whatshot').get(function(req, res) {
     models.Treat.find().sort({'total_rating': -1, 'first_pub_datetime': -1}).exec(function(err, treats) {
         if (!treats) return res.sendStatus(404);
         if (err) return res.json(err);

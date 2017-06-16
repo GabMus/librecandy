@@ -8,9 +8,9 @@ var config = {
     container_avatar: 'avatars',
     container_screenshot: 'screenshots',
     container_treat: 'treats',
-    endpoint_avatar: 'https://librecandystorage.blob.core.windows.net/avatars/',
-    endpoint_screenshot: 'https://librecandystorage.blob.core.windows.net/screenshots/',
-    endpoint_treat: 'https://librecandystorage.blob.core.windows.net/treats/',
+    endpoint_avatar: 'https://librecandycdn.azureedge.net/avatars/',
+    endpoint_screenshot: 'https://librecandycdn.azureedge.net/screenshots/',
+    endpoint_treat: 'https://librecandycdn.azureedge.net/treats/',
     avatart_size: '420',
     screenshot_size: '1920',
     treat_mimetypes: [

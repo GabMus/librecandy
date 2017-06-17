@@ -6,6 +6,7 @@ import {List, ListItem} from 'material-ui/List';
 import Divider from 'material-ui/Divider';
 import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
+import CandyFetch from './../extjs/CandyFetch';
 
 const base64 = require('base-64');
 
@@ -85,18 +86,19 @@ class CandyRegisterOrLogin extends Component {
             if (this.state.registerPassword != this.state.registerPasswordVerification) {
                 return;
             }
-            let request = {
-                method: 'POST',
-                mode: 'cors',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'Access-Control-Allow-Origin':'*'
+            CandyFetch.postIt(
+                `${this.props.apiServer}/users`,
+                null,
+                {
+                    username: this.state.registerUsername,
+                    email: this.state.registerEmail,
+                    password: this.state.registerPassword,
+                    realname: this.state.registerRealname,
+                    bio: this.state.registerBio
                 },
-                body: `username=${this.state.registerUsername}&email=${this.state.registerEmail}&password=${this.state.registerPassword}&realname=${this.state.registerRealname}&bio=${this.state.registerBio}`
-            };
-            fetch(`${this.props.apiServer}/users`, request)
-                .then(response => {
-                    console.log(response);
+                (data) => {
+                    console.log('User created');
+                    console.log(data);
                 }
             );
         }

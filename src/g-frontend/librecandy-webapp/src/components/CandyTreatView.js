@@ -15,7 +15,9 @@ import ReactMarkdown from 'react-markdown';
 import { Grid, Row, Col } from 'react-flexbox-grid-aphrodite';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
-import FlatButton from 'material-ui/FlatButton'; 'material-ui/svg-icons/editor/mode-edit';
+import FlatButton from 'material-ui/FlatButton';
+import CandyFetch from './../extjs/CandyFetch';
+
 
 class CandyTreatView extends Component {
     constructor(props) {
@@ -36,150 +38,46 @@ class CandyTreatView extends Component {
         if (!this.state.userRating) {
             this.updateUserRating();
         }
-
-        let headers = {
-            'Access-Control-Allow-Origin':'*',
-        };
-        if (this.state.userToken) {
-            headers['Authorization'] = `JWT ${this.state.userToken}`;
-        }
-        let request = {
-            method: 'GET',
-            mode: 'cors',
-            headers: headers,
-        };
-        fetch(`${this.props.apiServer}/treats/${this.props.match.params.pkgname}`, request)
-            .then(response => {
-                //console.log(response);
-                if (response.ok) {
-                    return response.json();
-                }
-                else {
-                    return response;
-                }
-            })
-            .then(data => {
-                if (data.status) {
-                    console.log('Error');
-                }
-                else {
-                    this.setState({treat: data.treat, author: data.author, newDescription: data.treat.description});
-                    //console.log(this.state.latestTreats.treats[0]);
-                }
+        CandyFetch.getIt(
+            `${this.props.apiServer}/treats/${this.props.match.params.pkgname}`,
+            this.state.userToken,
+            (data) => {
+                this.setState({treat: data.treat, author: data.author, newDescription: data.treat.description});
             }
         );
     }
 
     updateUserRating = () => {
-        let headers = {
-            'Access-Control-Allow-Origin':'*',
-        };
-        if (this.state.userToken) {
-            headers['Authorization'] = `JWT ${this.state.userToken}`;
-        }
-        let request = {
-            method: 'GET',
-            mode: 'cors',
-            headers: headers,
-        };
-        fetch(`${this.props.apiServer}/treats/${this.props.match.params.pkgname}/ratings/fromuser`, request)
-            .then(response => {
-                //console.log(response);
-                if (response.ok) {
-                    return response.json();
-                }
-                else {
-                    return response;
-                }
-            })
-            .then(data => {
-                if (data.status) {
-                    console.log('Error');
-                }
-                else {
-                    this.setState({userRating: data.rating});
-                    //console.log(this.state.latestTreats.treats[0]);
-                }
+        CandyFetch.getIt(
+            `${this.props.apiServer}/treats/${this.props.match.params.pkgname}/ratings/fromuser`,
+            this.state.userToken,
+            (data) => {
+                this.setState({userRating: data.rating});
             }
         );
     }
 
     submitRating = (newRating) => {
         newRating = newRating*2;
-        let headers = {
-            'Access-Control-Allow-Origin':'*',
-            'Content-Type': 'application/x-www-form-urlencoded'
-        };
-        if (this.state.userToken) {
-            headers['Authorization'] = `JWT ${this.state.userToken}`;
-        }
-        else {
-            console.log('User not logged');
-            return;
-        }
-        let body = `rating=${newRating}`;
-        console.log(body);
-        let request = {
-            method: 'POST',
-            mode: 'cors',
-            headers: headers,
-            body: body
-        };
-        // TODO fix rating update for userRating
-        fetch(`${this.props.apiServer}/treats/${this.state.treat.package_name}/ratings`, request)
-            .then(response => {
-                //console.log(response);
-                if (response.ok) {
-                    return response.json();
-                }
-                else {
-                    return response;
-                }
-            })
-            .then(data => {
-                if (data.status) {
-                    console.log('Error');
-                    console.log(data);
-                }
-                else {
-                    this.setState({treat: data.treat});
-                    this.updateUserRating();
-                    //this.setState({comments: data.treat.comments});
-                    //console.log(this.state.latestTreats.treats[0]);
-                }
+        CandyFetch.postIt(
+            `${this.props.apiServer}/treats/${this.state.treat.package_name}/ratings`,
+            this.state.userToken,
+            {
+                rating: newRating
+            },
+            (data) => {
+                this.setState({treat: data.treat});
+                this.updateUserRating();
             }
         );
     }
 
     getUserAvatar(username) {
-        let headers = {
-            'Access-Control-Allow-Origin':'*',
-        };
-        if (this.state.userToken) {
-            headers['Authorization'] = `JWT ${this.state.userToken}`;
-        }
-        let request = {
-            method: 'GET',
-            mode: 'cors',
-            headers: headers,
-        };
-        fetch(`${this.props.apiServer}/users/${this.state.treat.author}`, request)
-            .then(response => {
-                //console.log(response);
-                if (response.ok) {
-                    return response.json();
-                }
-                else {
-                    return response;
-                }
-            })
-            .then(data => {
-                if (data.status) {
-                    console.log('Error');
-                }
-                else {
-                    return data.avatar
-                }
+        CandyFetch.getIt(
+            `${this.props.apiServer}/users/${this.state.treat.author}`,
+            this.state.userToken,
+            (data) => {
+                return data.avatar;
             }
         );
     }
@@ -231,47 +129,17 @@ class CandyTreatView extends Component {
                         label='Save'
                         secondary={true}
                         onTouchTap={() => {
-                            let headers = {
-                                'Access-Control-Allow-Origin':'*',
-                                'Content-Type': 'application/x-www-form-urlencoded'
-                            };
-                            if (this.props.userToken) {
-                                headers['Authorization'] = `JWT ${this.props.userToken}`;
-                            }
-                            else {
-                                console.log('User not logged');
-                                return;
-                            }
-                            let body = `description=${this.state.newDescription}`;
-                            let request = {
-                                method: 'PUT',
-                                mode: 'cors',
-                                headers: headers,
-                                body: body
-                            };
-                            fetch(`${this.props.apiServer}/treats/${this.state.treat.package_name}`, request)
-                                .then(response => {
-                                    //console.log(response);
-                                    if (response.ok) {
-                                        return response.json();
-                                    }
-                                    else {
-                                        return response;
-                                    }
-                                })
-                                .then(data => {
-                                    if (data.status) {
-                                        console.log('Error');
-                                        console.log(data);
-                                    }
-                                    else {
-                                        console.log('treat modified');
-                                        let newtreat=this.state.treat;
-                                        newtreat.description=this.state.newDescription;
-                                        this.setState({edit: false, treat: newtreat});
-                                        //console.log(this.state.latestTreats.treats[0]);
-                                    }
-                                    //this.setState({commentPostLock: true});
+                            CandyFetch.putIt(
+                                `${this.props.apiServer}/treats/${this.state.treat.package_name}`,
+                                this.state.userToken,
+                                {
+                                    description: this.state.newDescription
+                                },
+                                (data) => {
+                                    console.log('treat modified');
+                                    let newtreat=this.state.treat;
+                                    newtreat.description=this.state.newDescription;
+                                    this.setState({edit: false, treat: newtreat});
                                 }
                             );
                         }}
@@ -281,7 +149,7 @@ class CandyTreatView extends Component {
         }
 
         let editBtn=null;
-        if (this.state.treat && this.props.userToken && this.state.treat.author == JSON.parse(atob(this.props.userToken.split('.')[1])).username && !this.state.edit) {
+        if (this.state.treat && this.state.userToken && this.state.treat.author == JSON.parse(atob(this.state.userToken.split('.')[1])).username && !this.state.edit) {
             editBtn=(
                 <FlatButton touch={true}
                     onTouchTap={() => {this.setState({edit: 'true'})}}

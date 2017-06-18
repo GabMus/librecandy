@@ -20,9 +20,6 @@ import MenuItem from 'material-ui/MenuItem';
 
 import CandyFetch from './../extjs/CandyFetch';
 
-function checkURL(filename) {
-  return(filename.match(/\.(jpeg|jpg|gif|png)$/) != null);
-}
 
 function generateRandomString() //Just for testing, ty stackoverflow
 {

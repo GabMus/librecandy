@@ -503,7 +503,9 @@ router.route('/treats/orderby/rating').get(function(req, res) {
 });
 
 router.route('/treats/whatshot').get(function(req, res) {
-    models.Treat.find().sort({'total_rating': -1, 'first_pub_datetime': -1}).exec(function(err, treats) {
+    var date_last_month = new Date(Date.now());
+    date_last_month.setMonth(date_last_month.getMonth() - 1);
+    models.Treat.find({'first_pub_datetime': { $gte : date_last_month }}).sort({'total_rating': -1}).exec(function(err, treats) {
         if (!treats) return res.sendStatus(404);
         if (err) return res.json(err);
         var offset=0;

@@ -55,12 +55,14 @@ class CandyCreateTreat extends React.Component {
       setUploadStarted: () => {
         this.setState({
           uploadStarted: true,
+          uploadFinished: false,
           canContinue: false
         })
       },
       setUploadFinished: () => {
         this.setState({
           uploadFinished: true,
+          uploadStarted: false,
           canContinue: true
         })
       },
@@ -117,6 +119,8 @@ class CandyCreateTreat extends React.Component {
       }));
     }
   };
+
+
 
   handleChange = (event, index, treatCategory) => {
     this.setState({treatCategory})
@@ -177,6 +181,8 @@ class CandyCreateTreat extends React.Component {
     return (
       <div>
         <CandyUploader
+            fileType="image"
+            requestKey="screenshot"
             userToken={this.props.userToken}
             setUploadFinished={this.state.setUploadFinished}
             setUploadStarted={this.state.setUploadStarted}
@@ -185,7 +191,59 @@ class CandyCreateTreat extends React.Component {
         />
       </div>
   )}
-  /*handlePrev = () => {
+
+  createVersion = () => {
+    CandyFetch.postIt(
+        `${this.props.apiServer}/treats/${this.state.treatPackageName}/versions`,
+        this.props.userToken,
+        {
+            version: this.state.treatVersion,
+        },
+        (data) => {
+            if(data.success === false){
+              console.log('error while creating the version');
+              return;
+            }
+            console.log('VERSION CREATED')
+            console.log(data);
+            this.setState({versionCreated: true})
+        }
+    );
+  }
+
+  getVersionCreationForm = () => {
+    return (
+      <div>
+        <div>
+          <TextField
+            floatingLabelText='Version'
+            onChange={(event, treatVersion) => {
+                this.setState({treatVersion });
+            }}
+          />
+        </div>
+        <div>
+          <RaisedButton
+            label={'Create version'}
+            primary={true}
+            disabled={(this.state.treatVersion === "")}
+            onTouchTap={this.createVersion}
+          />
+        </div>
+        <div>
+          <CandyUploader
+              fileType="compressed"
+              requestKey="versionfile"
+              userToken={this.props.userToken}
+              setUploadFinished={this.state.setUploadFinished}
+              setUploadStarted={this.state.setUploadStarted}
+              requestUrl={`${this.props.apiServer}/treats/${this.state.treatPackageName}/versions/${this.state.treatVersion}/file`}
+              label='Upload images'
+          />
+        </div>
+      </div>
+  )}
+  handlePrev = () => {
     const {stepIndex} = this.state;
     if (!this.state.loading) {
       this.dummyAsync(() => this.setState({
@@ -193,7 +251,7 @@ class CandyCreateTreat extends React.Component {
         stepIndex: stepIndex - 1,
       }));
     }
-  }*/
+  }
 
   getStepContent(stepIndex) {
     switch (stepIndex) {
@@ -208,9 +266,8 @@ class CandyCreateTreat extends React.Component {
 
       case 2:
         return (
-          <p>
-              Load files placeholder
-          </p>
+
+            this.getVersionCreationForm()
         );
       default:
         return 'You\'re a long way from home sonny jim!';

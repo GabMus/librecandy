@@ -23,7 +23,8 @@ class CandyUploader extends Component{
     super(props);
     this.state = {
       files: [],
-      uploaded: []
+      uploaded: [],
+      accepted: ''
     }
   }
 
@@ -49,7 +50,7 @@ class CandyUploader extends Component{
     let fileProcessed = 0;
     for(let i = 0; i < this.state.files.length; i++){
       let formData = new FormData();
-      formData.append("screenshot",this.state.files[i])
+      formData.append(this.props.requestKey,this.state.files[i])
       let headers = {};
       if (this.props.userToken)
           headers['Authorization'] = `JWT ${this.props.userToken}`;
@@ -80,14 +81,24 @@ class CandyUploader extends Component{
 
     }
   }
-  render(){
-    return(
-      <div>
-      <div style={{
-          border: `2px ${this.props.muiTheme.palette.iconGrey} solid`,
-          borderRadius: '5px'
-      }}>
-        <div>
+
+  componentWillMount(){
+    switch(this.props.fileType){
+      case 'image':
+        this.setState({accepted: 'image/*'})
+        break;
+      case 'compressed':
+        this.setState({accepted: 'application/zip'})
+        break;
+    }
+  }
+
+
+  printFileContainer = () => {
+    switch(this.props.fileType){
+      case 'image':
+        return(
+          <div>
           <GridList
             cellHeight={180}
             style={styles.gridList}
@@ -104,7 +115,7 @@ class CandyUploader extends Component{
             );
           })
           }
-          {this.state.uploaded.map((image, id) => {
+          {this.state.uploaded.map((image, id) => { //insert an icon for the upload
             return(
               <GridTile key={id} style={{padding:40}}>
                 <img className='previewImage' src={image.preview} />
@@ -114,27 +125,60 @@ class CandyUploader extends Component{
           }
 
         </GridList>
+          <FileCloudUploadIcon
+            color={this.props.muiTheme.palette.iconGrey}
+            style={{
+                height: '40%',
+                width: '40%',
+                position: 'absolute',
+                top: '10%',
+                left: '0',
+                right: '0',
+                marginLeft: 'auto',
+                marginRight: 'auto',
+                zIndex: '-9999'
+            }}
+          />
+          </div>
+        )
+        break;
+      case 'compressed':
+        return(
+        <div>
+        {
+          this.state.files.map((file, id) => {
+            return(
+              <div key={id} style={{padding:40}}>
+                <span>{file.name}</span>
+              </div>
+            );
+          })
+        }
+        </div>
+      );
+      default:
+        break;
+    }
 
+
+
+  }
+  render(){
+    return(
+      <div>
+      <div style={{
+          border: `2px ${this.props.muiTheme.palette.iconGrey} solid`,
+          borderRadius: '5px'
+      }}>
+        <div>
+          {this.printFileContainer()}
         </div>
         <Dropzone
               onDrop={this.onDrop}
-              accept="image/*"
+              accept={this.state.accepted}
               className='candyUploader'
               >
-            <FileCloudUploadIcon
-                color={this.props.muiTheme.palette.iconGrey}
-                style={{
-                    height: '40%',
-                    width: '40%',
-                    position: 'absolute',
-                    top: '10%',
-                    left: '0',
-                    right: '0',
-                    marginLeft: 'auto',
-                    marginRight: 'auto',
-                    zIndex: '-9999'
-                }}
-            />
+
           <p>Drop your files here, or click to select files to upload.</p>
         </Dropzone>
           </div>

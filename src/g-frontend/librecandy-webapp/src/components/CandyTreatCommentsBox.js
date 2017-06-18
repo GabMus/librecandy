@@ -10,7 +10,9 @@ import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
 
 import IconButton from 'material-ui/IconButton';
-import ActionDeleteForeverIcon from 'material-ui/svg-icons/action/delete-forever'
+import ActionDeleteForeverIcon from 'material-ui/svg-icons/action/delete-forever';
+
+import CandyFetch from './../extjs/CandyFetch';
 
 class CandyTreatCommentsBox extends Component {
     constructor(props) {
@@ -33,118 +35,36 @@ class CandyTreatCommentsBox extends Component {
 
     sendComment = (event) => {
         this.setState({commentPostLock: false});
-        let headers = {
-            'Access-Control-Allow-Origin':'*',
-            'Content-Type': 'application/x-www-form-urlencoded'
-        };
-        if (this.props.userToken) {
-            headers['Authorization'] = `JWT ${this.props.userToken}`;
-        }
-        else {
-            console.log('User not logged');
-            return;
-        }
-        let body = `content=${this.state.newComment}`;
-        let request = {
-            method: 'POST',
-            mode: 'cors',
-            headers: headers,
-            body: body
-        };
-        fetch(`${this.props.apiServer}/treats/${this.state.pkgname}/comments`, request)
-            .then(response => {
-                //console.log(response);
-                if (response.ok) {
-                    return response.json();
-                }
-                else {
-                    return response;
-                }
-            })
-            .then(data => {
-                if (data.status) {
-                    console.log('Error');
-                    console.log(data);
-                }
-                else {
-                    this.setState({comments: data.treat.comments, newComment: ''});
-                    document.getElementById('newCommentTextField').value='';
-                    //console.log(this.state.latestTreats.treats[0]);
-                }
+        CandyFetch.postIt(
+            `${this.props.apiServer}/treats/${this.state.pkgname}/comments`,
+            this.props.userToken,
+            {
+                content: this.state.newComment
+            },
+            (data) => {
+                this.setState({comments: data.treat.comments, newComment: ''});
+                document.getElementById('newCommentTextField').value='';
                 this.setState({commentPostLock: true});
             }
         );
-        // TODO: send comment and reload(?) page
     }
 
     deleteComment(commentid) {
-        let headers = {
-            'Access-Control-Allow-Origin':'*',
-        };
-        if (this.props.userToken) {
-            headers['Authorization'] = `JWT ${this.props.userToken}`;
-        }
-        else {
-            console.log('User not logged');
-            return;
-        }
-        let request = {
-            method: 'DELETE',
-            mode: 'cors',
-            headers: headers
-        };
-        fetch(`${this.props.apiServer}/treats/${this.state.pkgname}/comments/${commentid}`, request)
-            .then(response => {
-                //console.log(response);
-                if (response.ok) {
-                    return response.json();
-                }
-                else {
-                    return response;
-                }
-            })
-            .then(data => {
-                if (data.status) {
-                    console.log('Error');
-                    console.log(data);
-                }
-                else {
-                    this.setState({comments: data.treat.comments});
-                    //console.log(this.state.latestTreats.treats[0]);
-                }
+        CandyFetch.deleteIt(
+            `${this.props.apiServer}/treats/${this.state.pkgname}/comments/${commentid}`,
+            this.props.userToken,
+            (data) => {
+                this.setState({comments: data.treat.comments});
             }
         );
     }
 
     getUserAvatar(username) {
-        let headers = {
-            'Access-Control-Allow-Origin':'*',
-        };
-        if (this.state.userToken) {
-            headers['Authorization'] = `JWT ${this.state.userToken}`;
-        }
-        let request = {
-            method: 'GET',
-            mode: 'cors',
-            headers: headers,
-        };
-        fetch(`${this.props.apiServer}/users/${username}`, request)
-            .then(response => {
-                //console.log(response);
-                if (response.ok) {
-                    return response.json();
-                }
-                else {
-                    return response;
-                }
-            })
-            .then(data => {
-                if (data.status) {
-                    console.log('Error');
-                }
-                else {
-                    return data.avatar
-                }
+        CandyFetch.getIt(
+            `${this.props.apiServer}/users/${username}`,
+            this.props.userToken,
+            (data) => {
+                return data.avatar
             }
         );
     }

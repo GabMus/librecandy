@@ -16,7 +16,9 @@ import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import ExpandTransition from 'material-ui/internal/ExpandTransition';
 import DropDownMenu from 'material-ui/DropDownMenu';
-import MenuItem from 'material-ui/MenuItem'
+import MenuItem from 'material-ui/MenuItem';
+
+import CandyFetch from './../extjs/CandyFetch';
 
 function checkURL(filename) {
   return(filename.match(/\.(jpeg|jpg|gif|png)$/) != null);
@@ -44,16 +46,16 @@ class CandyCreateTreat extends React.Component {
   }
 
   componentWillMount(){
-    fetch(`${this.props.apiServer}/treats/categories`)
-    .then(response => {
-      return response.json()
-    })
-    .then(data => {
-      console.log('componentWillMount')
-      this.setState({
-        treatCategories: data.categories
-      })
-    })
+      CandyFetch.getIt(
+          `${this.props.apiServer}/treats/categories`,
+          null,
+          (data) => {
+              console.log('componentWillMount')
+              this.setState({
+                  treatCategories: data.categories
+              });
+          }
+      );
   }
 
   dummyAsync = (cb) => {
@@ -63,38 +65,23 @@ class CandyCreateTreat extends React.Component {
   };
 
   handleNext = () => {
-    const {stepIndex} = this.state;
-    switch (this.state.stepIndex) {
-      case 0:
-        let headers = {
-            'Access-Control-Allow-Origin':'*',
-            'Content-Type': 'application/x-www-form-urlencoded'
-        };
-        if (this.props.userToken) {
-            headers['Authorization'] = `JWT ${this.props.userToken}`;
-        }
-        else {
-            console.log('User not logged');
-            return;
-        }
-        let body = `name=${this.state.treatName}&category=${this.state.treatCategory}&description=${this.state.treatDescription}`
-        let request = {
-            method: 'POST',
-            mode: 'cors',
-            headers: headers,
-            body: body
-        };
-        fetch(`${this.props.apiServer}/treats`,request)
-        .then(response => {
-          console.log(this.props.userToken)
-          return response.json();
-        })
-        .then(data => {
-          this.setState({treatPackageName: data.treat.package_name})
-          //console.log(data.treat.package_name)
-        })
-        break;
-      default:
+      const {stepIndex} = this.state;
+      switch (this.state.stepIndex) {
+          case 0:
+          CandyFetch.postIt(
+              `${this.props.apiServer}/treats`,
+              this.props.userToken,
+              {
+                  name: this.state.treatName,
+                  category: this.state.treatCategory,
+                  description: this.state.treatDescription
+              },
+              (data) => {
+                  this.setState({treatPackageName: data.treat.package_name});
+              }
+          );
+          break;
+          default:
 
     }
     if (!this.state.loading) {

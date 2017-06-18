@@ -51,16 +51,26 @@ class CandyHorizontalCardview extends Component {
                 </div>
             )
         }
+
+        /*let getWidth = () => {
+            let vw=document.documentElement.clientWidth;
+            let cw=250+24;
+            let n=Math.floor(vw/cw);
+            return vw-(vw/n);
+        }*/
+
         return (
             <div className='CandyHorizontalCardview' style={{margin: 'auto', display: 'block'}}>
 
                 {sectionLabelHeader}
                 <div style={{
+                    width: '100%',
+                    margin: 'auto',
                     display: 'flex',
                     flexWrap: 'wrap',
                     alignItems: 'left',
                     alignContent: 'left',
-                    justifyContent: 'space-around'
+                    justifyContent: 'left'
                 }}>
                     {(this.props.treats && this.props.treats.map((treat, iter) => {
                         let pic=null;

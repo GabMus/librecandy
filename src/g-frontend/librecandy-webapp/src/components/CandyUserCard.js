@@ -10,6 +10,8 @@ import RaisedButton from 'material-ui/RaisedButton';
 import IconButton from 'material-ui/IconButton';
 import EditorModeEditIcon from 'material-ui/svg-icons/editor/mode-edit';
 
+import CandyFetch from './../extjs/CandyFetch';
+
 class CandyUserCard extends Component {
     constructor(props) {
         super(props);
@@ -106,45 +108,20 @@ class CandyUserCard extends Component {
                     label='Save'
                     secondary={true}
                     onTouchTap={() => {
-                        let headers = {
-                            'Access-Control-Allow-Origin':'*',
-                            'Content-Type': 'application/x-www-form-urlencoded'
+                        let reqbody={
+                            realname: this.state.newRealname || '',
+                            bio: this.state.newBio || '',
                         };
-                        if (this.props.userToken) {
-                            headers['Authorization'] = `JWT ${this.props.userToken}`;
+                        if (this.state.newPassword && this.state.newPassword.trim()!='') {
+                            reqbody['password']=this.state.newPassword;
                         }
-                        else {
-                            console.log('User not logged');
-                            return;
-                        }
-                        let body = `realname=${this.state.newRealname}&bio=${this.state.newBio}${(this.state.newPassword!=null && this.state.newPassword.trim()!='') ? `&password=${this.state.newPassword.trim()}` : '' }`;
-                        let request = {
-                            method: 'PUT',
-                            mode: 'cors',
-                            headers: headers,
-                            body: body
-                        };
-                        fetch(`${this.props.apiServer}/users/${this.props.user.username}`, request)
-                            .then(response => {
-                                //console.log(response);
-                                if (response.ok) {
-                                    return response.json();
-                                }
-                                else {
-                                    return response;
-                                }
-                            })
-                            .then(data => {
-                                if (data.status) {
-                                    console.log('Error');
-                                    console.log(data);
-                                }
-                                else {
-                                    console.log('user modified');
-                                    this.setState({edit: false, currentBio: this.state.newBio, currentRealname: this.state.newRealname});
-                                    //console.log(this.state.latestTreats.treats[0]);
-                                }
-                                //this.setState({commentPostLock: true});
+                        CandyFetch.putIt(
+                            `${this.props.apiServer}/users/${this.props.user.username}`,
+                            this.props.userToken,
+                            reqbody,
+                            (data) => {
+                                console.log('user modified');
+                                this.setState({edit: false, currentBio: this.state.newBio, currentRealname: this.state.newRealname});
                             }
                         );
                     }}
@@ -164,7 +141,7 @@ class CandyUserCard extends Component {
             );
         }
         let editIconBtn=null;
-        if (this.props.user.username == JSON.parse(atob(this.props.userToken.split('.')[1])).username && !this.state.edit) {
+        if (this.props.user && this.props.userToken && this.props.user.username == JSON.parse(atob(this.props.userToken.split('.')[1])).username && !this.state.edit) {
             editIconBtn=(
                 <IconButton touch={true}
                     onTouchTap={() => {this.setState({edit: 'true'})}}

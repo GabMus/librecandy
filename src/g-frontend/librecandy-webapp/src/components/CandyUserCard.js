@@ -12,6 +12,8 @@ import EditorModeEditIcon from 'material-ui/svg-icons/editor/mode-edit';
 
 import CandyFetch from './../extjs/CandyFetch';
 
+import Dropzone from 'react-dropzone';
+
 class CandyUserCard extends Component {
     constructor(props) {
         super(props);
@@ -33,6 +35,30 @@ class CandyUserCard extends Component {
             currentRealname: this.props.user.realname,
             currentBio: this.props.user.bio,
         });
+    }
+
+    uploadUserAvatar = (file) => {
+      let formData = new FormData();
+      console.log(file)
+      formData.append('avatar',file[0])
+      let headers = {};
+      if (this.props.userToken)
+          headers['Authorization'] = `JWT ${this.props.userToken}`;
+      else {
+          console.log('User not logged');
+          return;
+      }
+      let request = {
+          method: 'POST',
+          mode: 'cors',
+          headers: headers,
+          body: formData
+      };
+      console.log(`${this.props.apiServer}/users/${this.props.user.username}/avatar`)
+      fetch(`${this.props.apiServer}/users/${this.props.user.username}/avatar`, request)
+      .then(response => {return response.json()})
+      .then(data => console.log(data))
+      .catch(error => console.log(error))
     }
 
     render() {
@@ -158,7 +184,11 @@ class CandyUserCard extends Component {
         return (
             <div className='CandyUserCard' style={{margin: '12px 12px 12px 12px'}}>
                 <Card className='fullbleedcard'>
+
+
+
                     <CardText style={{textAlign: 'center', position: 'relative'}}>
+                      <Dropzone style={{}} onDrop={this.uploadUserAvatar}>
                         <img src={this.props.user.avatar || 'https://cdn1.iconfinder.com/data/icons/user-pictures/100/unknown-512.png'} style={{
                             borderRadius: '100%',
                             objectFit: 'cover',
@@ -167,6 +197,7 @@ class CandyUserCard extends Component {
                             margin: 'auto',
                             display: 'block'
                         }} />
+                        </Dropzone>
                         <div style={{
                             marginTop: '25px'
                         }}>
@@ -179,6 +210,7 @@ class CandyUserCard extends Component {
                             {saveBtn}
                         </div>
                     </CardText>
+
                 </Card>
             </div>
         );

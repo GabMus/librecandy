@@ -7,6 +7,7 @@ import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
 import CandyFilePreview from './CandyFilePreview';
 import Dropzone from 'react-dropzone';
+import RaisedButton from 'material-ui/RaisedButton';
 import { Image } from 'material-ui-image';
 import {GridList, GridTile} from 'material-ui/GridList';
 import IconButton from 'material-ui/IconButton';
@@ -14,6 +15,7 @@ import Subheader from 'material-ui/Subheader';
 import StarBorder from 'material-ui/svg-icons/toggle/star-border';
 import ContentClear from 'material-ui/svg-icons/content/clear';
 import FileCloudUploadIcon from 'material-ui/svg-icons/file/cloud-upload';
+import CandyFetch from '../extjs/CandyFetch';
 import '../App.css';
 
 class CandyUploader extends Component{
@@ -21,10 +23,8 @@ class CandyUploader extends Component{
     super(props);
     this.state = {
       files: [],
+      uploaded: []
     }
-  }
-  renderSelectedFiles = () => {
-    console.log(this.state.files)
   }
 
   onDrop = (files) => {
@@ -38,8 +38,51 @@ class CandyUploader extends Component{
       files: this.state.files.filter((element, i) => {return id !== i })
     })
   }
+
+  handleEndOfUpload = () => {
+    this.props.setUploadFinished()
+    this.setState({uploaded: this.state.files, files: []})
+  }
+
+  uploadFiles = () => {
+    this.props.setUploadStarted()
+    let fileProcessed = 0;
+    for(let i = 0; i < this.state.files.length; i++){
+      let formData = new FormData();
+      formData.append("screenshot",this.state.files[i])
+      let headers = {};
+      if (this.props.userToken)
+          headers['Authorization'] = `JWT ${this.props.userToken}`;
+      else {
+          console.log('User not logged');
+          return;
+      }
+      let body = `${formData}`
+      let request = {
+          method: 'POST',
+          mode: 'cors',
+          headers: headers,
+          body: formData
+      };
+      fetch(this.props.requestUrl, request)
+      .then(response => {return response.json()})
+      .then(data => {
+        console.log('File uploaded')
+        fileProcessed++;
+        if(fileProcessed === this.state.files.length){
+          this.handleEndOfUpload()
+          console.log('All files were uploaded');
+
+        }
+        console.log(data)
+      })
+      .catch(error => console.log(error))
+
+    }
+  }
   render(){
     return(
+      <div>
       <div style={{
           border: `2px ${this.props.muiTheme.palette.iconGrey} solid`,
           borderRadius: '5px'
@@ -56,6 +99,14 @@ class CandyUploader extends Component{
             return(
               <GridTile key={id} style={{padding:40}}>
                 <ContentClear onClick={() => this.handleRemoveButtonClick(id)} className='removeImageButton'/>
+                <img className='previewImage' src={image.preview} />
+              </GridTile>
+            );
+          })
+          }
+          {this.state.uploaded.map((image, id) => {
+            return(
+              <GridTile key={id} style={{padding:40}}>
                 <img className='previewImage' src={image.preview} />
               </GridTile>
             );
@@ -86,9 +137,18 @@ class CandyUploader extends Component{
             />
           <p>Drop your files here, or click to select files to upload.</p>
         </Dropzone>
+          </div>
+          <RaisedButton
+            label='Upload'
+            primary={true}
+            onTouchTap={this.uploadFiles}
+            disabled={(this.state.files.length > 0 ? false : true)}
+            style={{marginTop:20}}
+          />
 
       </div>
     );
+
   }
 }
 const styles = {

@@ -24,6 +24,17 @@ function checkURL(filename) {
   return(filename.match(/\.(jpeg|jpg|gif|png)$/) != null);
 }
 
+function generateRandomString() //Just for testing, ty stackoverflow
+{
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    for( var i=0; i < 7; i++ )
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
+}
+
 /**
  * A contrived example using a transition between steps
  */
@@ -31,14 +42,28 @@ class CandyCreateTreat extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      treatName: '',
-      treatDescription: '',
+      treatName: generateRandomString(),
+      treatDescription: generateRandomString(),
       treatVersion: '',
-      treatCategory: '',
+      treatCategory: 'Qt',
       treatCategories: [],
       treatPackageName: '',
       fileName: '',
       pathFile: '',
+      uploadStarted: false,
+      uploadFinished: false,
+      setUploadStarted: () => {
+        this.setState({
+          uploadStarted: true,
+          canContinue: false
+        })
+      },
+      setUploadFinished: () => {
+        this.setState({
+          uploadFinished: true,
+          canContinue: true
+        })
+      },
       loading: false,
       finished: false,
       stepIndex: 0,
@@ -149,12 +174,16 @@ class CandyCreateTreat extends React.Component {
   )
 
   getScreenshotUploaderForm = () => {
-    console.log(this.state.treatCategories)
     return (
-
-    <div>
-      <CandyUploader apiServer={this.props.apiServer} packageName={this.state.treatPackageName} label='Upload images'/>
-    </div>
+      <div>
+        <CandyUploader
+            userToken={this.props.userToken}
+            setUploadFinished={this.state.setUploadFinished}
+            setUploadStarted={this.state.setUploadStarted}
+            requestUrl={`${this.props.apiServer}/treats/${this.state.treatPackageName}/screenshots`}
+            label='Upload images'
+        />
+      </div>
   )}
   /*handlePrev = () => {
     const {stepIndex} = this.state;
@@ -270,7 +299,7 @@ class CandyCreateTreat extends React.Component {
             <StepContent>
                 <div style={contentStyle}>
                   <div>{this.getStepContent(1)}</div>
-                  {this.renderStepControls(1)}
+                  {this.renderStepControls(1, this.state.canContinue)}
                 </div>
             </StepContent>
           </Step>
@@ -286,6 +315,7 @@ class CandyCreateTreat extends React.Component {
         </Stepper>
       </div>
     );
+
   }
 }
 

@@ -11,6 +11,7 @@ var mkdirp = require('fs-mkdirp');
 var mv = require('mv');
 var fse = require('fs-extra');
 var imagesize = require('image-size');
+var crypto = require('crypto');
 imagic.convert.path = '/usr/bin/convert';
 
 
@@ -62,12 +63,7 @@ function get_file_ext(filename) {
     }
     return '.' + parts[parts.length-1];
 }
-function make_treat_screenshot_path(username, treat, detail) {
-    return config.media_path +
-        '/users/'+username +
-        '/'+treat.package_name+
-        '/screenshots/';
-}
+
 function treat2pkgname(treat) {
     var pkgname = 'org.' +
         treat.author + '.' +
@@ -776,8 +772,10 @@ router.route('/treats/:pkgname/screenshots').post(auth.isAuthenticated,
                         return res.sendStatus(403);
                     }
                 }
-                var screenshot_filename = treat.name+'_screenshot'+
-                    treat.screenshots.length+'_'+Date.now()+'.png';
+                    var screenshot_filename_prehash = treat.name+'_screenshot'+
+                    treat.screenshots.length+'_'+Date.now();
+                    var screenshot_filename = crypto.createHash('sha1').update(screenshot_filename_prehash).digest('hex');
+                    screenshot_filename = screenshot_filename + '.png';
                     var screenshot_dir_path = 'media/screenshots/';
                     var screenshot_path = screenshot_dir_path+
                         screenshot_filename;

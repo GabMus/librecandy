@@ -24,6 +24,17 @@ function checkURL(filename) {
   return(filename.match(/\.(jpeg|jpg|gif|png)$/) != null);
 }
 
+function generateRandomString() //Just for testing, ty stackoverflow
+{
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    for( var i=0; i < 7; i++ )
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
+}
+
 /**
  * A contrived example using a transition between steps
  */
@@ -31,14 +42,30 @@ class CandyCreateTreat extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      treatName: '',
-      treatDescription: '',
+      treatName: generateRandomString(),
+      treatDescription: generateRandomString(),
       treatVersion: '',
-      treatCategory: '',
+      treatCategory: 'Qt',
       treatCategories: [],
       treatPackageName: '',
       fileName: '',
       pathFile: '',
+      uploadStarted: false,
+      uploadFinished: false,
+      setUploadStarted: () => {
+        this.setState({
+          uploadStarted: true,
+          uploadFinished: false,
+          canContinue: false
+        })
+      },
+      setUploadFinished: () => {
+        this.setState({
+          uploadFinished: true,
+          uploadStarted: false,
+          canContinue: true
+        })
+      },
       loading: false,
       finished: false,
       stepIndex: 0,
@@ -92,6 +119,8 @@ class CandyCreateTreat extends React.Component {
       }));
     }
   };
+
+
 
   handleChange = (event, index, treatCategory) => {
     this.setState({treatCategory})
@@ -149,14 +178,72 @@ class CandyCreateTreat extends React.Component {
   )
 
   getScreenshotUploaderForm = () => {
-    console.log(this.state.treatCategories)
     return (
-
-    <div>
-      <CandyUploader apiServer={this.props.apiServer} packageName={this.state.treatPackageName} label='Upload images'/>
-    </div>
+      <div>
+        <CandyUploader
+            fileType="image"
+            requestKey="screenshot"
+            userToken={this.props.userToken}
+            setUploadFinished={this.state.setUploadFinished}
+            setUploadStarted={this.state.setUploadStarted}
+            requestUrl={`${this.props.apiServer}/treats/${this.state.treatPackageName}/screenshots`}
+            label='Upload images'
+        />
+      </div>
   )}
-  /*handlePrev = () => {
+
+  createVersion = () => {
+    CandyFetch.postIt(
+        `${this.props.apiServer}/treats/${this.state.treatPackageName}/versions`,
+        this.props.userToken,
+        {
+            version: this.state.treatVersion,
+        },
+        (data) => {
+            if(data.success === false){
+              console.log('error while creating the version');
+              return;
+            }
+            console.log('VERSION CREATED')
+            console.log(data);
+            this.setState({versionCreated: true})
+        }
+    );
+  }
+
+  getVersionCreationForm = () => {
+    return (
+      <div>
+        <div>
+          <TextField
+            floatingLabelText='Version'
+            onChange={(event, treatVersion) => {
+                this.setState({treatVersion });
+            }}
+          />
+        </div>
+        <div>
+          <RaisedButton
+            label={'Create version'}
+            primary={true}
+            disabled={(this.state.treatVersion === "")}
+            onTouchTap={this.createVersion}
+          />
+        </div>
+        <div>
+          <CandyUploader
+              fileType="compressed"
+              requestKey="versionfile"
+              userToken={this.props.userToken}
+              setUploadFinished={this.state.setUploadFinished}
+              setUploadStarted={this.state.setUploadStarted}
+              requestUrl={`${this.props.apiServer}/treats/${this.state.treatPackageName}/versions/${this.state.treatVersion}/file`}
+              label='Upload images'
+          />
+        </div>
+      </div>
+  )}
+  handlePrev = () => {
     const {stepIndex} = this.state;
     if (!this.state.loading) {
       this.dummyAsync(() => this.setState({
@@ -164,7 +251,7 @@ class CandyCreateTreat extends React.Component {
         stepIndex: stepIndex - 1,
       }));
     }
-  }*/
+  }
 
   getStepContent(stepIndex) {
     switch (stepIndex) {
@@ -179,9 +266,8 @@ class CandyCreateTreat extends React.Component {
 
       case 2:
         return (
-          <p>
-              Load files placeholder
-          </p>
+
+            this.getVersionCreationForm()
         );
       default:
         return 'You\'re a long way from home sonny jim!';
@@ -270,7 +356,7 @@ class CandyCreateTreat extends React.Component {
             <StepContent>
                 <div style={contentStyle}>
                   <div>{this.getStepContent(1)}</div>
-                  {this.renderStepControls(1)}
+                  {this.renderStepControls(1, this.state.canContinue)}
                 </div>
             </StepContent>
           </Step>
@@ -286,6 +372,7 @@ class CandyCreateTreat extends React.Component {
         </Stepper>
       </div>
     );
+
   }
 }
 

@@ -20,9 +20,6 @@ import MenuItem from 'material-ui/MenuItem';
 
 import CandyFetch from './../extjs/CandyFetch';
 
-function checkURL(filename) {
-  return(filename.match(/\.(jpeg|jpg|gif|png)$/) != null);
-}
 
 function generateRandomString() //Just for testing, ty stackoverflow
 {
@@ -66,6 +63,7 @@ class CandyCreateTreat extends React.Component {
           canContinue: true
         })
       },
+      versionCreated: false,
       loading: false,
       finished: false,
       stepIndex: 0,
@@ -214,23 +212,25 @@ class CandyCreateTreat extends React.Component {
   getVersionCreationForm = () => {
     return (
       <div>
-        <div>
-          <TextField
-            floatingLabelText='Version'
-            onChange={(event, treatVersion) => {
-                this.setState({treatVersion });
-            }}
-          />
+        <div style={{display: this.state.versionCreated ? 'none' : 'block' }}>
+          <div>
+            <TextField
+              floatingLabelText='Version'
+              onChange={(event, treatVersion) => {
+                  this.setState({treatVersion });
+              }}
+            />
+          </div>
+          <div>
+            <RaisedButton
+              label={'Create version'}
+              primary={true}
+              disabled={(this.state.treatVersion === "")}
+              onTouchTap={this.createVersion}
+            />
+          </div>
         </div>
-        <div>
-          <RaisedButton
-            label={'Create version'}
-            primary={true}
-            disabled={(this.state.treatVersion === "")}
-            onTouchTap={this.createVersion}
-          />
-        </div>
-        <div>
+        <div style={{display: this.state.versionCreated ? 'block' : 'none' }}>
           <CandyUploader
               fileType="compressed"
               requestKey="versionfile"
@@ -339,6 +339,9 @@ class CandyCreateTreat extends React.Component {
     const {loading, stepIndex} = this.state;
     const contentStyle = {margin: '0 16px', overflow: 'hidden'};
 
+    if(this.state.uploadFinished && this.state.versionCreated){
+      this.setState({uploadFinished: false},this.handleNext())
+    }
     return (
       <div style={{width: '100%', maxWidth: 700, margin: 'auto'}}>
         <Stepper activeStep={stepIndex} orientation='vertical'>
@@ -361,7 +364,7 @@ class CandyCreateTreat extends React.Component {
             </StepContent>
           </Step>
           <Step>
-            <StepLabel>Upload your file</StepLabel>
+            <StepLabel>Create version and upload treat</StepLabel>
             <StepContent>
                 <div style={contentStyle}>
                   <div>{this.getStepContent(2)}</div>

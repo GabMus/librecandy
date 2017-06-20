@@ -52,6 +52,7 @@ const candyTheme = getMuiTheme({
 class App extends Component {
     constructor(props) {
         super(props);
+        console.log(this.history);
         this.props = props;
         this.getCookie = (cname) => {
             var name = cname + "=";
@@ -66,8 +67,8 @@ class App extends Component {
         this.state = {
             apiServer: props.apiServer,
             userToken: this.getCookie('JWT_AUTH'),
+            currentpage: '/',
         };
-        console.log(props.history);
     }
 
     componentDidMount() { // called when the rendering is done
@@ -76,12 +77,12 @@ class App extends Component {
 
     afterLogin() {
         this.setState({userToken: this.getCookie('JWT_AUTH')});
-        this.props.history.goBack();
+        this.props.history.push('/');
     }
 
     afterLogout() {
         this.setState({userToken: null});
-        this.props.history.go();
+        this.props.history.push('/');
     }
 
     render() {
@@ -97,7 +98,7 @@ class App extends Component {
                 <MuiThemeProvider muiTheme={candyTheme}>
                     <div>
                         <CandyToolbar userToken={this.state.userToken}
-                            onLogout={this.afterLogout.bind(this)} />
+                            onLogout={this.afterLogout.bind(this)} history={this.props.history} />
                         <Switch>
                             <Route exact path='/' component={
                                 () => <CandyHomeView

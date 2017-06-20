@@ -97,7 +97,7 @@ class CandyToolbar extends Component {
                         </Link>
                     </ToolbarGroup>
                     <ToolbarGroup lastChild={true}>
-                        <CandySearch />
+                        <CandySearch history={this.props.history} />
                         {loginOrMenu}
                     </ToolbarGroup>
                 </Toolbar>

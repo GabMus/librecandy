@@ -5,6 +5,7 @@ import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'mat
 import {List, ListItem} from 'material-ui/List';
 import Divider from 'material-ui/Divider';
 import TextField from 'material-ui/TextField';
+import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import CandyFetch from './../extjs/CandyFetch';
 
@@ -50,6 +51,7 @@ class CandyRegisterOrLogin extends Component {
         let doLogin = () => {
             if (!this.state.loginUsername) return;
             if (!this.state.loginPassword) return;
+            // NOTE: didn't use CandyFetch because it's a different kind of request
             let request = {
                 method: 'POST',
                 mode: 'cors',
@@ -106,169 +108,147 @@ class CandyRegisterOrLogin extends Component {
         return (
             <div className='CandyRegisterOrLogin'>
                 <Card className='loginregistercard'>
-                    <List style={{paddingBottom: '0px', paddingTop: '0px'}}>
-                        <ListItem
-                            primaryText={<span style={{fontSize: '18pt'}}>Login</span>}
-                            open={this.state.loginopen}
-                            onTouchTap={() => {this.setState({loginopen: !this.state.loginopen, registeropen: !this.state.registeropen});}}
-                            nestedItems={[
-                                (<div>
-                                    {loginErrorDisplay}
-                                    <ListItem style={loginRegisterListItemStyle}
-                                        disabled={true}
-                                        primaryText={
-                                            <TextField
-                                                floatingLabelText='Username'
-                                                fullWidth={true}
-                                                onChange={(event, newValue) => {
-                                                    this.setState({
-                                                        loginUsername : newValue
-                                                    });
-                                                }}
-                                            />
-                                        }
-                                    />
-                                </div>),
-                                (<div>
-                                    <ListItem style={loginRegisterListItemStyle}
-                                        disabled={true}
-                                        primaryText={
-                                            <TextField
-                                                floatingLabelText='Password'
-                                                fullWidth={true}
-                                                type='password'
-                                                onChange={(event, newValue) => {
-                                                    this.setState({
-                                                        loginPassword : newValue
-                                                    });
-                                                }}
-                                            />
-                                        }
-                                    />
-                                </div>),
-                                (
-                                    <FlatButton
-                                        style={{marginLeft: '12px'}}
-                                        label='Login'
-                                        primary={true}
-                                        onTouchTap={() => {doLogin()}}
-                                    />
-                                )
-                            ]}
+                    <div id='loginForm' style={{
+                        display: this.state.loginopen ? 'block' : 'none',
+                    }}>
+                        <CardTitle title='Login' />
+
+                        <CardText>
+                            {loginErrorDisplay}
+                            <TextField
+                                floatingLabelText='Username'
+                                fullWidth={true}
+                                onChange={(event, newValue) => {
+                                    this.setState({
+                                        loginUsername : newValue
+                                    });
+                                }}
+                            />
+                            <TextField
+                                floatingLabelText='Password'
+                                fullWidth={true}
+                                type='password'
+                                onChange={(event, newValue) => {
+                                    this.setState({
+                                        loginPassword : newValue
+                                    });
+                                }}
+                            />
+                        </CardText>
+                        <CardActions style={{
+                            marginLeft: 'auto',
+                            display: 'table'
+                        }}>
+                        <FlatButton
+                            style={{marginLeft: 'auto'}}
+                            label='Register'
+                            primary={true}
+                            onTouchTap={() => {
+                                this.setState({
+                                    registeropen: true,
+                                    loginopen: false
+                                });
+                            }}
                         />
-                        <ListItem
-                            primaryText={<span style={{fontSize: '18pt'}}>Register</span>}
-                            open={this.state.registeropen}
-                            onTouchTap={() => {this.setState({loginopen: !this.state.loginopen, registeropen: !this.state.registeropen})}}
-                            nestedItems={[
-                                (<div>
-                                    <ListItem style={loginRegisterListItemStyle}
-                                        disabled={true}
-                                        primaryText={
-                                            <TextField
-                                                floatingLabelText='Username'
-                                                fullWidth={true}
-                                                onChange={(event, newValue) => {
-                                                    this.setState({
-                                                        registerUsername: newValue
-                                                    });
-                                                }}
-                                            />
-                                        }
-                                    />
-                                </div>),
-                                (<div>
-                                    <ListItem style={loginRegisterListItemStyle}
-                                        disabled={true}
-                                        primaryText={
-                                            <TextField
-                                                floatingLabelText='Real name'
-                                                fullWidth={true}
-                                                onChange={(event, newValue) => {
-                                                    this.setState({
-                                                        registerRealname: newValue
-                                                    });
-                                                }}
-                                            />
-                                        }
-                                    />
-                                </div>),
-                                (<div>
-                                    <ListItem style={loginRegisterListItemStyle}
-                                        disabled={true}
-                                        primaryText={
-                                            <TextField
-                                                floatingLabelText='E-Mail'
-                                                fullWidth={true}
-                                                onChange={(event, newValue) => {
-                                                    this.setState({
-                                                        registerEmail: newValue
-                                                    });
-                                                }}
-                                            />
-                                        }
-                                    />
-                                </div>),
-                                (<div>
-                                    <ListItem style={loginRegisterListItemStyle}
-                                        disabled={true}
-                                        primaryText={
-                                            <TextField
-                                                floatingLabelText='Password'
-                                                fullWidth={true}
-                                                type='password'
-                                                onChange={(event, newValue) => {
-                                                    this.setState({
-                                                        registerPassword: newValue
-                                                    });
-                                                }}
-                                            />
-                                        }
-                                    />
-                                </div>),
-                                (<div>
-                                    <ListItem style={loginRegisterListItemStyle}
-                                        disabled={true}
-                                        primaryText={
-                                            <TextField
-                                                floatingLabelText='Re-type password'
-                                                fullWidth={true}
-                                                type='password'
-                                                onChange={(event, newValue) => {
-                                                    this.setState({
-                                                        registerPasswordVerification: newValue
-                                                    });
-                                                }}
-                                            />
-                                        }
-                                    />
-                                </div>),
-                                (<div>
-                                    <ListItem style={loginRegisterListItemStyle}
-                                        disabled={true}
-                                        primaryText={
-                                            <TextField
-                                                floatingLabelText='Bio'
-                                                multiLine={true}
-                                                fullWidth={true}
-                                                onChange={(event, newValue) => {
-                                                    this.setState({
-                                                        registerBio: newValue
-                                                    });
-                                                }}
-                                            />
-                                        }
-                                    />
-                                </div>),
-                                <FlatButton
-                                    style={{marginLeft: '12px'}}
-                                    label='Register'
-                                    primary={true}
-                                    onTouchTap={() => {doRegister()}}
-                                />
-                            ]}
+                        <RaisedButton
+                            style={{marginLeft: 'auto'}}
+                            label='Login'
+                            primary={true}
+                            onTouchTap={() => {doLogin()}}
                         />
-                    </List>
+                    </CardActions>
+                    </div>
+
+                    {/* XXXXXXXXXXXXXXXXXXXXXXXXXXX */}
+
+                    <div id='registrationForm' style={{
+                        display: this.state.registeropen ? 'block' : 'none',
+                    }}>
+                        <CardTitle title='Register' />
+                        <CardText>
+                            <TextField
+                                floatingLabelText='Username'
+                                fullWidth={true}
+                                onChange={(event, newValue) => {
+                                    this.setState({
+                                        registerUsername: newValue
+                                    });
+                                }}
+                            />
+                            <TextField
+                                floatingLabelText='Real name'
+                                fullWidth={true}
+                                onChange={(event, newValue) => {
+                                    this.setState({
+                                        registerRealname: newValue
+                                    });
+                                }}
+                            />
+                            <TextField
+                                floatingLabelText='E-Mail'
+                                fullWidth={true}
+                                onChange={(event, newValue) => {
+                                    this.setState({
+                                        registerEmail: newValue
+                                    });
+                                }}
+                            />
+                            <TextField
+                                floatingLabelText='Password'
+                                fullWidth={true}
+                                type='password'
+                                onChange={(event, newValue) => {
+                                    this.setState({
+                                        registerPassword: newValue
+                                    });
+                                }}
+                            />
+                            <TextField
+                                floatingLabelText='Re-type password'
+                                fullWidth={true}
+                                type='password'
+                                onChange={(event, newValue) => {
+                                    this.setState({
+                                        registerPasswordVerification: newValue
+                                    });
+                                }}
+                            />
+                            <TextField
+                                floatingLabelText='Bio'
+                                multiLine={true}
+                                fullWidth={true}
+                                onChange={(event, newValue) => {
+                                    this.setState({
+                                        registerBio: newValue
+                                    });
+                                }}
+                            />
+                        </CardText>
+                        <CardActions style={{
+                            marginLeft: 'auto',
+                            display: 'table'
+                        }}>
+                        <FlatButton
+                            style={{marginLeft: 'auto'}}
+                            label='Login'
+                            primary={true}
+                            onTouchTap={() => {
+                                this.setState({
+                                    registeropen: false,
+                                    loginopen: true
+                                });
+                            }}
+                        />
+                        <RaisedButton
+                            style={{
+                                marginLeft: 'auto',
+                            }}
+                            label='Register'
+                            primary={true}
+                            onTouchTap={() => {doRegister()}}
+                        />
+                    </CardActions>
+                    </div>
                 </Card>
             </div>
         );

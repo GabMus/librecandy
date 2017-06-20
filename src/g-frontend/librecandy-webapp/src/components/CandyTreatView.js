@@ -48,6 +48,7 @@ class CandyTreatView extends Component {
     }
 
     updateUserRating = () => {
+        if (!this.state.userToken) return;
         CandyFetch.getIt(
             `${this.props.apiServer}/treats/${this.props.match.params.pkgname}/ratings/fromuser`,
             this.state.userToken,

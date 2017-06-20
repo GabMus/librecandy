@@ -112,7 +112,7 @@ class CandyTreatCommentsBox extends Component {
                         {
                             this.state.comments.map((comment, iter) => {
                                 let deleteiconbutton=null;
-                                if (comment.author == JSON.parse(atob(this.state.userToken.split('.')[1])).username) {
+                                if (this.state.userToken && comment.author == JSON.parse(atob(this.state.userToken.split('.')[1])).username) {
                                     deleteiconbutton = (
                                         <IconButton
                                             touch={true}

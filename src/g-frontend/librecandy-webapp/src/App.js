@@ -121,6 +121,13 @@ class App extends Component {
                                     userToken={this.state.userToken}
                                     apiServer={this.state.apiServer} />
                             } />
+                            <Route exact path={`/search/:title`} component={
+                                (params) => <CandyInfiniteScrollPage
+                                        userToken={this.state.userToken}
+                                        apiServer={this.state.apiServer}
+                                        fetchurl={`/search?title=${params.match.params.title}`}
+                                        label={`Searching for ${params.match.params.title}`} />
+                            } />
                             <Route exact path={`/users/:username`} component={
                                 (params) => <CandyUserView {...params}
                                     userToken={this.state.userToken}
@@ -131,7 +138,7 @@ class App extends Component {
                                     userToken={this.state.userToken}
                                     apiServer={this.state.apiServer}
                                     fetchurl='/treats/orderby/rating'
-                                    label='Most Popular' />
+                                    label='Most popular' />
                             } />
                             <Route exact path={`/latest`} component={
                                 () => <CandyInfiniteScrollPage
@@ -139,6 +146,13 @@ class App extends Component {
                                     apiServer={this.state.apiServer}
                                     fetchurl='/treats'
                                     label='Latest' />
+                            } />
+                            <Route exact path={`/whatshot`} component={
+                                () => <CandyInfiniteScrollPage
+                                    userToken={this.state.userToken}
+                                    apiServer={this.state.apiServer}
+                                    fetchurl='/treats/whatshot'
+                                    label={'What\'s hot'} />
                             } />
                             <Route exact path={`/categories/Icons/whatshot`} component={
                                 () => <CandyInfiniteScrollPage

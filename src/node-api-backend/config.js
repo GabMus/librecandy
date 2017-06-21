@@ -1,6 +1,6 @@
 var config = {
     secret: 'notsosecretsecret',
-    database: 'localhost:27017',
+    database: 'root:DRopdogUlvOssA7@104.47.144.126:27017',
     media_storage: 'DefaultEndpointsProtocol=https;AccountName=librecandystorage;AccountKey=fLsRGnUnsteIRD1ZJ+BpLtXjKF6QnMROtbCbSAuvW+TV/im0DlmSEWHtsweQu7vFC94V7mhL9x0s6UEzsNntqw==;EndpointSuffix=core.windows.net',
     jwt_refresh_time: 3600000, // 1 hour
     media_upload: '/tmp/librecandy/uploads/',

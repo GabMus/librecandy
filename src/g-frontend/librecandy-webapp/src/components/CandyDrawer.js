@@ -27,7 +27,7 @@ class CandyDrawer extends Component {
             <div className='CandyDrawer'>
                 <Drawer
                     docked={false}
-                    width={250}
+                    width={280}
                     open={this.props.open}
                     onRequestChange={this.props.onToggleDrawer}
                     swipeAreaWidth={20}
@@ -35,7 +35,7 @@ class CandyDrawer extends Component {
                         textAlign: 'left'
                     }}
                     >
-                        <img src='https://www.w3schools.com/w3images/fjords.jpg' width={250} />
+                        <img src={`${process.env.PUBLIC_URL}/img/header.png`} width={280} />
                         <MenuItem onTouchTap={this.props.onToggleDrawer}
                             linkButton
                             containerElement={<Link to="/categories/GTK" />}

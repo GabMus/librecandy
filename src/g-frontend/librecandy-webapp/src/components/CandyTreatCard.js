@@ -19,7 +19,7 @@ class CandyTreatCard extends Component {
 
     render() {
         let palette = this.props.muiTheme.palette;
-        let pic='https://www.w3schools.com/w3images/fjords.jpg';
+        let pic=`${process.env.PUBLIC_URL}/img/header_bw.png`;
         if (this.state.treat && this.state.treat.screenshots[0]) {
             pic=this.state.treat.screenshots[0];
         }

@@ -94,7 +94,7 @@ class CandyTreatView extends Component {
         let treatcardtitle= (
             <div style={{lineHeight: '24px', display: 'inline-block'}}>
                 <CandyCategoryIcon style={{float: 'left'}} category={this.state.treat.category} />
-                <h2 style={{float: 'left', marginTop: '0', marginBottom: '0', marginLeft: '12px'}}>{this.state.treat.name}</h2>
+                <span style={{float: 'left', marginTop: '0', marginBottom: '0', marginLeft: '12px'}}>{this.state.treat.name}</span>
             </div>
         );
 

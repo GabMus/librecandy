@@ -23,7 +23,7 @@ class CandySearch extends Component{
             <div
                 onTouchTap={() => this.setState({isSearchActive: true})}
                 onBlur={() => this.setState({isSearchActive: false})}>
-                {(this.state.isSearchActive === false) ? <IconButton><ActionSearchIcon color={'white'}/></IconButton> : <CandySearchBox/>}
+                {(this.state.isSearchActive === false) ? <IconButton><ActionSearchIcon color={'white'}/></IconButton> : <CandySearchBox history={this.props.history} />}
             </div>
         );
     }

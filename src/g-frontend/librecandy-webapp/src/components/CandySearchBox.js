@@ -11,16 +11,31 @@ class CandySearchBox extends Component {
 
     handleKeyPress = (e) => {
         let keyCode = (e.keyCode) ? e.keyCode : e.which;
-        console.log("key press captured");
-        if(keyCode === 13){ //Enter key captured
-            /*Starting fetch and loading data screen*/
+        if(keyCode === 13) {
+            this.props.history.push(`/search/${e.target.value}`);
         }
     }
     render() {
         let palette = this.props.muiTheme.palette;
         return(
-            <div className="CandySearchBox">
+            <div className="CandySearchBox" style={{
+                zIndex: '99',
+                position: 'absolute',
+                right: '50px',
+                top: '0',
+                display: 'flex'
+            }}>
+                <div style={{
+                    width: '24px',
+                    backgroundImage: `linear-gradient(left, ${palette.primary1Color} 0%, rgba(240,98,146,0) 100%)`,
+                    backgroundImage: `linear-gradient(to left, ${palette.primary1Color} 0%, rgba(240,98,146,0) 100%)`,
+                }} />
                 <TextField
+                    style={{
+                        backgroundColor: palette.primary1Color,
+                        float: 'left',
+                        paddingLeft: '6px'
+                    }}
                     hintText="Search..."
                     inputStyle={{color: palette.alternateTextColor}}
                     underlineFocusStyle={{borderColor: palette.alternateTextColor}}

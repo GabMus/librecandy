@@ -151,8 +151,10 @@ class CandyUploader extends Component{
         {
           this.state.files.map((file, id) => {
             return(
-              <div key={id} style={{padding:40}}>
+              <div key={id} style={{padding:20}}>
+              <ContentClear onClick={() => this.handleRemoveButtonClick(id)} className='removeFileButton'/>
                 <span>{file.name}</span>
+
               </div>
             );
           })
@@ -196,6 +198,10 @@ class CandyUploader extends Component{
       </div>
     );
 
+  }
+
+  static defaultProps = {
+    allowMultiple: false
   }
 }
 const styles = {

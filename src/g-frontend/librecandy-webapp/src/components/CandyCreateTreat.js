@@ -90,9 +90,10 @@ class CandyCreateTreat extends React.Component {
   };
 
   handleNext = () => {
-      const {stepIndex} = this.state;
+      const {stepIndex, loading, finished} = this.state;
       switch (this.state.stepIndex) {
           case 0:
+          this.setState({loading: true})
           CandyFetch.postIt(
               `${this.props.apiServer}/treats`,
               this.props.userToken,
@@ -102,20 +103,28 @@ class CandyCreateTreat extends React.Component {
                   description: this.state.treatDescription
               },
               (data) => {
-                  this.setState({treatPackageName: data.treat.package_name});
+                if("code" in data){
+                  console.error("Error while creating the treat");
+                  return;
+                }
+                this.setState({treatPackageName: data.treat.package_name});
+                this.dummyAsync(() => this.setState({
+                  loading: false,
+                  stepIndex: stepIndex + 1,
+                  finished: stepIndex >= 2,
+                }));
               }
           );
           break;
           default:
+            this.dummyAsync(() => this.setState({
+              loading: false,
+              stepIndex: stepIndex + 1,
+              finished: stepIndex >= 2,
+            }));
 
     }
-    if (!this.state.loading) {
-      this.dummyAsync(() => this.setState({
-        loading: false,
-        stepIndex: stepIndex + 1,
-        finished: stepIndex >= 2,
-      }));
-    }
+
   };
 
 
@@ -185,6 +194,7 @@ class CandyCreateTreat extends React.Component {
             setUploadStarted={this.state.setUploadStarted}
             requestUrl={`${this.props.apiServer}/treats/${this.state.treatPackageName}/screenshots`}
             label='Upload images'
+            allowMultiple={true}
         />
       </div>
   )}
@@ -255,14 +265,12 @@ class CandyCreateTreat extends React.Component {
         break;
       case 2:
         console.log('version created ' + this.state.versionCreated);
-        if(this.state.versionCreated === false){
-          console.log('JOINEDDDD')
+        if(!this.state.versionCreated){
           return (
             this.getVersionCreationForm()
           );
           break;
-        }else if(this.state.versionCreated === true){
-          console.log('CandyUploader join with ' + this.state.versionCreated);
+        }else{
           return (
             <div>
               <CandyUploader
@@ -375,7 +383,7 @@ class CandyCreateTreat extends React.Component {
             <StepContent>
                 <div style={contentStyle}>
                   <div>{this.getStepContent(2)}</div>
-                  {this.renderStepControls(2)}
+                  {this.renderStepControls(2, this.state.canContinue)}
                 </div>
             </StepContent>
           </Step>

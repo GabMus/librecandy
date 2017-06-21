@@ -91,7 +91,7 @@ class CandyUploader extends Component{
         this.setState({accepted: 'image/*'})
         break;
       case 'compressed':
-        this.setState({accepted: 'application/zip'})
+        this.setState({accepted: '.zip, .tar.gz, .tar.xz, .7z'})
         break;
     }
   }

@@ -188,7 +188,12 @@ class CandyUserCard extends Component {
 
 
                     <CardText style={{textAlign: 'center', position: 'relative'}}>
-                      <Dropzone style={{}} onDrop={this.uploadUserAvatar}>
+                      <Dropzone
+                          style={{}}
+                          onDrop={this.uploadUserAvatar}
+                          disableClick={!this.state.edit}
+                          accept="image/*"
+                        >
                         <img src={this.props.user.avatar || `${process.env.PUBLIC_URL}/img/defaultavatar.png`} style={{
                             borderRadius: '100%',
                             objectFit: 'cover',

@@ -354,7 +354,7 @@ router.route('/users/:username/treats').get(function(req, res) {
 });
 
 router.route('/treats').get(function(req, res) {
-    models.Treat.find({}, null, {sort: '-first_pub_datetime'}, function(err, treats) {
+    models.Treat.find({}, null, {sort: '-last_pub_datetime'}, function(err, treats) {
         if (err) return res.json(err);
         var offset=0;
         var limit=20;
@@ -369,11 +369,12 @@ router.route('/treats').get(function(req, res) {
     });
 }).post(auth.isAuthenticated, function(req, res) {
     var treat = new models.Treat();
-    if (req.body.name.includes('_') || req.body.name.includes('.'))
-        return res.json({
-            success: false,
-            error: 'Treat names cannot contain the `_` (underscore) or `.` (dot) characters'
-        });
+    if (req.body.name.match(/[^a-zA-Z0-9,[]()-*]/gi)){
+      return res.json({
+        success: false,
+        error: 'Treat names cannot contain the `_` (underscore) or `.` (dot) characters'
+      });
+    }
     if (!config.treat_categories.includes(req.body.category))
         return res.json({
             success: false,
@@ -483,7 +484,7 @@ router.route('/treats/orderby/rating').get(function(req, res) {
 router.route('/treats/whatshot').get(function(req, res) {
     var date_last_month = new Date(Date.now());
     date_last_month.setMonth(date_last_month.getMonth() - 1);
-    models.Treat.find({'first_pub_datetime': { $gte : date_last_month }}).sort({'total_rating': -1}).exec(function(err, treats) {
+    models.Treat.find({'last_pub_datetime': { $gte : date_last_month }}).sort({'total_rating': -1}).exec(function(err, treats) {
         if (!treats) return res.sendStatus(404);
         if (err) return res.json(err);
         var offset=0;

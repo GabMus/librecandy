@@ -29,9 +29,12 @@ class CandyUploader extends Component{
   }
 
   onDrop = (files) => {
-    this.setState({
-      files: this.state.files.concat(files)
-    });
+    if(this.props.allowMultiple)
+      this.setState({
+        files: this.state.files.concat(files)
+      });
+    else
+      this.setState({ files })
   }
 
   handleRemoveButtonClick = (id) => {
@@ -88,7 +91,7 @@ class CandyUploader extends Component{
         this.setState({accepted: 'image/*'})
         break;
       case 'compressed':
-        this.setState({accepted: 'application/zip'})
+        this.setState({accepted: '.zip, .tar.gz, .tar.xz, .7z'})
         break;
     }
   }
@@ -148,8 +151,10 @@ class CandyUploader extends Component{
         {
           this.state.files.map((file, id) => {
             return(
-              <div key={id} style={{padding:40}}>
+              <div key={id} style={{padding:20}}>
+              <ContentClear onClick={() => this.handleRemoveButtonClick(id)} className='removeFileButton'/>
                 <span>{file.name}</span>
+
               </div>
             );
           })
@@ -193,6 +198,10 @@ class CandyUploader extends Component{
       </div>
     );
 
+  }
+
+  static defaultProps = {
+    allowMultiple: false
   }
 }
 const styles = {

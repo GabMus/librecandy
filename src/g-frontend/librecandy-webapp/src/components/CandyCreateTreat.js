@@ -90,9 +90,10 @@ class CandyCreateTreat extends React.Component {
   };
 
   handleNext = () => {
-      const {stepIndex} = this.state;
+      const {stepIndex, loading, finished} = this.state;
       switch (this.state.stepIndex) {
           case 0:
+          this.setState({loading: true})
           CandyFetch.postIt(
               `${this.props.apiServer}/treats`,
               this.props.userToken,
@@ -102,20 +103,28 @@ class CandyCreateTreat extends React.Component {
                   description: this.state.treatDescription
               },
               (data) => {
-                  this.setState({treatPackageName: data.treat.package_name});
+                if("code" in data){
+                  console.error("Error while creating the treat");
+                  return;
+                }
+                this.setState({treatPackageName: data.treat.package_name});
+                this.dummyAsync(() => this.setState({
+                  loading: false,
+                  stepIndex: stepIndex + 1,
+                  finished: stepIndex >= 2,
+                }));
               }
           );
           break;
           default:
+            this.dummyAsync(() => this.setState({
+              loading: false,
+              stepIndex: stepIndex + 1,
+              finished: stepIndex >= 2,
+            }));
 
     }
-    if (!this.state.loading) {
-      this.dummyAsync(() => this.setState({
-        loading: false,
-        stepIndex: stepIndex + 1,
-        finished: stepIndex >= 2,
-      }));
-    }
+
   };
 
 
@@ -165,7 +174,6 @@ class CandyCreateTreat extends React.Component {
             onChange={this.handleChange}>
             {
                 this.state.treatCategories.map((category, index) => {
-                    console.log('Category: '+category)
                     return <MenuItem key={index} value={category} primaryText={category} />
                 })
             }
@@ -186,6 +194,7 @@ class CandyCreateTreat extends React.Component {
             setUploadStarted={this.state.setUploadStarted}
             requestUrl={`${this.props.apiServer}/treats/${this.state.treatPackageName}/screenshots`}
             label='Upload images'
+            allowMultiple={true}
         />
       </div>
   )}
@@ -210,14 +219,14 @@ class CandyCreateTreat extends React.Component {
   }
 
   getVersionCreationForm = () => {
+
     return (
       <div>
-        <div style={{display: this.state.versionCreated ? 'none' : 'block' }}>
           <div>
             <TextField
               floatingLabelText='Version'
               onChange={(event, treatVersion) => {
-                  this.setState({treatVersion });
+                  this.setState({treatVersion});
               }}
             />
           </div>
@@ -229,20 +238,9 @@ class CandyCreateTreat extends React.Component {
               onTouchTap={this.createVersion}
             />
           </div>
-        </div>
-        <div style={{display: this.state.versionCreated ? 'block' : 'none' }}>
-          <CandyUploader
-              fileType="compressed"
-              requestKey="versionfile"
-              userToken={this.props.userToken}
-              setUploadFinished={this.state.setUploadFinished}
-              setUploadStarted={this.state.setUploadStarted}
-              requestUrl={`${this.props.apiServer}/treats/${this.state.treatPackageName}/versions/${this.state.treatVersion}/file`}
-              label='Upload images'
-          />
-        </div>
       </div>
   )}
+
   handlePrev = () => {
     const {stepIndex} = this.state;
     if (!this.state.loading) {
@@ -259,16 +257,35 @@ class CandyCreateTreat extends React.Component {
         return(
           this.getTreatCreationForm()
         );
+        break;
       case 1:
         return(
           this.getScreenshotUploaderForm()
         );
-
+        break;
       case 2:
-        return (
-
+        console.log('version created ' + this.state.versionCreated);
+        if(!this.state.versionCreated){
+          return (
             this.getVersionCreationForm()
-        );
+          );
+          break;
+        }else{
+          return (
+            <div>
+              <CandyUploader
+                  fileType="compressed"
+                  requestKey="versionfile"
+                  userToken={this.props.userToken}
+                  setUploadFinished={this.state.setUploadFinished}
+                  setUploadStarted={this.state.setUploadStarted}
+                  requestUrl={`${this.props.apiServer}/treats/${this.state.treatPackageName}/versions/${this.state.treatVersion}/file`}
+                  label='Upload images'
+              />
+            </div>
+          )
+        }
+
       default:
         return 'You\'re a long way from home sonny jim!';
     }
@@ -339,9 +356,7 @@ class CandyCreateTreat extends React.Component {
     const {loading, stepIndex} = this.state;
     const contentStyle = {margin: '0 16px', overflow: 'hidden'};
 
-    if(this.state.uploadFinished && this.state.versionCreated){
-      this.setState({uploadFinished: false},this.handleNext())
-    }
+
     return (
       <div style={{width: '100%', maxWidth: 700, margin: 'auto'}}>
         <Stepper activeStep={stepIndex} orientation='vertical'>
@@ -368,7 +383,7 @@ class CandyCreateTreat extends React.Component {
             <StepContent>
                 <div style={contentStyle}>
                   <div>{this.getStepContent(2)}</div>
-                  {this.renderStepControls(2)}
+                  {this.renderStepControls(2, this.state.canContinue)}
                 </div>
             </StepContent>
           </Step>

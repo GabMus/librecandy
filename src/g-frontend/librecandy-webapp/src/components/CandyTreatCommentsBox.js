@@ -7,7 +7,7 @@ import Divider from 'material-ui/Divider';
 import Avatar from 'material-ui/Avatar';
 import ReactMarkdown from 'react-markdown';
 import TextField from 'material-ui/TextField';
-import FlatButton from 'material-ui/FlatButton';
+import RaisedButton from 'material-ui/RaisedButton';
 
 import IconButton from 'material-ui/IconButton';
 import ActionDeleteForeverIcon from 'material-ui/svg-icons/action/delete-forever';
@@ -82,12 +82,17 @@ class CandyTreatCommentsBox extends Component {
                         fullWidth={true}
                         onChange={this.onCommentTextFieldChange}
                     />
-                    <FlatButton
-                        label='Post'
-                        primary={true}
-                        disabled={!(this.state.newComment && this.state.commentPostLock)}
-                        onTouchTap={this.sendComment}
-                    />
+                    <div style={{
+                        marginLeft: 'auto',
+                        display: 'table'
+                    }}>
+                        <RaisedButton
+                            label='Post'
+                            primary={true}
+                            disabled={!(this.state.newComment && this.state.commentPostLock)}
+                            onTouchTap={this.sendComment}
+                        />
+                    </div>
                 </div>
             );
         }

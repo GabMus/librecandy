@@ -6,6 +6,7 @@ import TextField from 'material-ui/TextField';
 
 import ReactMarkdown from 'react-markdown';
 import RaisedButton from 'material-ui/RaisedButton';
+import FlatButton from 'material-ui/FlatButton';
 
 import IconButton from 'material-ui/IconButton';
 import EditorModeEditIcon from 'material-ui/svg-icons/editor/mode-edit';
@@ -130,28 +131,45 @@ class CandyUserCard extends Component {
                 />
             );
             saveBtn=(
-                <RaisedButton
-                    label='Save'
-                    secondary={true}
-                    onTouchTap={() => {
-                        let reqbody={
-                            realname: this.state.newRealname || '',
-                            bio: this.state.newBio || '',
-                        };
-                        if (this.state.newPassword && this.state.newPassword.trim()!='') {
-                            reqbody['password']=this.state.newPassword;
-                        }
-                        CandyFetch.putIt(
-                            `${this.props.apiServer}/users/${this.props.user.username}`,
-                            this.props.userToken,
-                            reqbody,
-                            (data) => {
-                                console.log('user modified');
-                                this.setState({edit: false, currentBio: this.state.newBio, currentRealname: this.state.newRealname});
+                <CardActions style={{
+                    marginLeft: 'auto',
+                    display: 'table'
+                }}>
+                    <FlatButton
+                        label='Cancel'
+                        primary={true}
+                        onTouchTap={() => {
+                            this.setState({
+                                edit: false,
+                                newBio: this.state.currentBio,
+                                newRealname: this.state.currentRealname,
+                                newPassword: null
+                            });
+                        }}
+                    />
+                    <RaisedButton
+                        label='Save'
+                        primary={true}
+                        onTouchTap={() => {
+                            let reqbody={
+                                realname: this.state.newRealname || '',
+                                bio: this.state.newBio || '',
+                            };
+                            if (this.state.newPassword && this.state.newPassword.trim()!='') {
+                                reqbody['password']=this.state.newPassword;
                             }
-                        );
-                    }}
-                />
+                            CandyFetch.putIt(
+                                `${this.props.apiServer}/users/${this.props.user.username}`,
+                                this.props.userToken,
+                                reqbody,
+                                (data) => {
+                                    console.log('user modified');
+                                    this.setState({edit: false, currentBio: this.state.newBio, currentRealname: this.state.newRealname});
+                                }
+                            );
+                        }}
+                    />
+                </CardActions>
             );
             password = (
                 <TextField style={{textAlign: 'left'}}
@@ -191,10 +209,10 @@ class CandyUserCard extends Component {
                       <Dropzone
                           style={{}}
                           onDrop={this.uploadUserAvatar}
-                          accept="image/*"
                           disableClick={!this.state.edit}
+                          accept="image/*"
                         >
-                        <img src={this.props.user.avatar || 'https://cdn1.iconfinder.com/data/icons/user-pictures/100/unknown-512.png'} style={{
+                        <img src={this.props.user.avatar || `${process.env.PUBLIC_URL}/img/defaultavatar.png`} style={{
                             borderRadius: '100%',
                             objectFit: 'cover',
                             width: '170px',

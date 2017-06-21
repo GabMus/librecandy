@@ -17,7 +17,7 @@ import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import CandyFetch from './../extjs/CandyFetch';
-
+import CandyUploader from './CandyUploader';
 
 class CandyTreatView extends Component {
     constructor(props) {
@@ -30,6 +30,23 @@ class CandyTreatView extends Component {
             userToken: props.userToken,
             userRating: null,
             newDescription: null,
+            uploadStarted: false,
+            uploadFinished: false,
+            canSave: true,
+            setUploadStarted: () => {
+              this.setState({
+                uploadStarted: true,
+                uploadFinished: false,
+                canSave: false
+              })
+            },
+            setUploadFinished: () => {
+              this.setState({
+                uploadFinished: true,
+                uploadStarted: false,
+                canSave: true
+              })
+            },
         };
     }
 
@@ -106,6 +123,12 @@ class CandyTreatView extends Component {
             });
         }
 
+        let screenshot = (
+          <div></div>
+        );
+        let saveButton = (
+          <div></div>
+        );
         let description = (
             <div style={{marginTop: '24px'}}>
                 <ReactMarkdown
@@ -126,26 +149,46 @@ class CandyTreatView extends Component {
                         multiLine={true}
                         value={this.state.newDescription}
                     />
-                    <RaisedButton
-                        label='Save'
-                        secondary={true}
-                        onTouchTap={() => {
-                            CandyFetch.putIt(
-                                `${this.props.apiServer}/treats/${this.state.treat.package_name}`,
-                                this.state.userToken,
-                                {
-                                    description: this.state.newDescription
-                                },
-                                (data) => {
-                                    console.log('treat modified');
-                                    let newtreat=this.state.treat;
-                                    newtreat.description=this.state.newDescription;
-                                    this.setState({edit: false, treat: newtreat});
-                                }
-                            );
-                        }}
-                    />
+
                 </div>
+            )
+
+            screenshot= (
+              <div>
+                <CandyUploader
+                    fileType="image"
+                    requestKey="screenshot"
+                    userToken={this.props.userToken}
+                    setUploadFinished={this.state.setUploadFinished}
+                    setUploadStarted={this.state.setUploadStarted}
+                    requestUrl={`${this.props.apiServer}/treats/${this.state.treat.package_name}/screenshots`}
+                    label='Upload images'
+                    allowMultiple={true}
+                />
+              </div>
+            )
+
+            saveButton = (
+              <RaisedButton
+                  label='Save'
+                  secondary={true}
+                  disabled={!this.state.canSave}
+                  onTouchTap={() => {
+                      CandyFetch.putIt(
+                          `${this.props.apiServer}/treats/${this.state.treat.package_name}`,
+                          this.state.userToken,
+                          {
+                              description: this.state.newDescription
+                          },
+                          (data) => {
+                              console.log('treat modified');
+                              let newtreat=this.state.treat;
+                              newtreat.description=this.state.newDescription;
+                              this.setState({edit: false, treat: newtreat});
+                          }
+                      );
+                  }}
+              />
             )
         }
 
@@ -199,6 +242,8 @@ class CandyTreatView extends Component {
                                     <div style={{position: 'relative'}}>
                                         {editBtn}
                                         {description}
+                                        {screenshot}
+                                        {saveButton}
                                     </div>
                                 </CardText>
                             </Card>

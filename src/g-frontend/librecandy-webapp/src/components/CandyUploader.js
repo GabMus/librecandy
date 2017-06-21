@@ -29,9 +29,12 @@ class CandyUploader extends Component{
   }
 
   onDrop = (files) => {
-    this.setState({
-      files: this.state.files.concat(files)
-    });
+    if(this.props.allowMultiple)
+      this.setState({
+        files: this.state.files.concat(files)
+      });
+    else
+      this.setState({ files })
   }
 
   handleRemoveButtonClick = (id) => {

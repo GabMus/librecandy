@@ -165,7 +165,6 @@ class CandyCreateTreat extends React.Component {
             onChange={this.handleChange}>
             {
                 this.state.treatCategories.map((category, index) => {
-                    console.log('Category: '+category)
                     return <MenuItem key={index} value={category} primaryText={category} />
                 })
             }
@@ -210,14 +209,14 @@ class CandyCreateTreat extends React.Component {
   }
 
   getVersionCreationForm = () => {
+
     return (
       <div>
-        <div style={{display: this.state.versionCreated ? 'none' : 'block' }}>
           <div>
             <TextField
               floatingLabelText='Version'
               onChange={(event, treatVersion) => {
-                  this.setState({treatVersion });
+                  this.setState({treatVersion});
               }}
             />
           </div>
@@ -229,20 +228,9 @@ class CandyCreateTreat extends React.Component {
               onTouchTap={this.createVersion}
             />
           </div>
-        </div>
-        <div style={{display: this.state.versionCreated ? 'block' : 'none' }}>
-          <CandyUploader
-              fileType="compressed"
-              requestKey="versionfile"
-              userToken={this.props.userToken}
-              setUploadFinished={this.state.setUploadFinished}
-              setUploadStarted={this.state.setUploadStarted}
-              requestUrl={`${this.props.apiServer}/treats/${this.state.treatPackageName}/versions/${this.state.treatVersion}/file`}
-              label='Upload images'
-          />
-        </div>
       </div>
   )}
+
   handlePrev = () => {
     const {stepIndex} = this.state;
     if (!this.state.loading) {
@@ -259,16 +247,37 @@ class CandyCreateTreat extends React.Component {
         return(
           this.getTreatCreationForm()
         );
+        break;
       case 1:
         return(
           this.getScreenshotUploaderForm()
         );
-
+        break;
       case 2:
-        return (
-
+        console.log('version created ' + this.state.versionCreated);
+        if(this.state.versionCreated === false){
+          console.log('JOINEDDDD')
+          return (
             this.getVersionCreationForm()
-        );
+          );
+          break;
+        }else if(this.state.versionCreated === true){
+          console.log('CandyUploader join with ' + this.state.versionCreated);
+          return (
+            <div>
+              <CandyUploader
+                  fileType="compressed"
+                  requestKey="versionfile"
+                  userToken={this.props.userToken}
+                  setUploadFinished={this.state.setUploadFinished}
+                  setUploadStarted={this.state.setUploadStarted}
+                  requestUrl={`${this.props.apiServer}/treats/${this.state.treatPackageName}/versions/${this.state.treatVersion}/file`}
+                  label='Upload images'
+              />
+            </div>
+          )
+        }
+
       default:
         return 'You\'re a long way from home sonny jim!';
     }
@@ -339,9 +348,7 @@ class CandyCreateTreat extends React.Component {
     const {loading, stepIndex} = this.state;
     const contentStyle = {margin: '0 16px', overflow: 'hidden'};
 
-    if(this.state.uploadFinished && this.state.versionCreated){
-      this.setState({uploadFinished: false},this.handleNext())
-    }
+
     return (
       <div style={{width: '100%', maxWidth: 700, margin: 'auto'}}>
         <Stepper activeStep={stepIndex} orientation='vertical'>

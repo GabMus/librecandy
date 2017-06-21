@@ -189,7 +189,7 @@ class CandyUserCard extends Component {
 
                     <CardText style={{textAlign: 'center', position: 'relative'}}>
                       <Dropzone style={{}} onDrop={this.uploadUserAvatar}>
-                        <img src={this.props.user.avatar || 'https://cdn1.iconfinder.com/data/icons/user-pictures/100/unknown-512.png'} style={{
+                        <img src={this.props.user.avatar || `${process.env.PUBLIC_URL}/img/defaultavatar.png`} style={{
                             borderRadius: '100%',
                             objectFit: 'cover',
                             width: '170px',

@@ -31,7 +31,9 @@ class CandyTreatDownloadBox extends Component {
                                         rightIcon={<FileFileDownloadIcon />}
                                         primaryText={version.version}
                                         secondaryText={new Date(version.pub_datetime).toDateString()}
-                                        onTouchTap={() => {console.log('download this plz');}}
+                                        onTouchTap={() => {
+                                            window.location=version.file;
+                                        }}
                                         key={iter}
                                     />
                             );

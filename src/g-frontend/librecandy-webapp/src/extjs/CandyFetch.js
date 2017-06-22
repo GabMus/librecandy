@@ -15,7 +15,7 @@ const xwwwfurlenc = (srcjson) => {
 }
 
 const CandyFetch = {
-    fetchIt: (url, method, body, auth, callback) => {
+    fetchIt: (url, method, body, auth, callback, errCb=null) => {
         let headers={
             'Access-Control-Allow-Origin':'*',
         };
@@ -44,23 +44,25 @@ const CandyFetch = {
         }).then(data => {
             if (data.status) {
                 console.log('Error');
+                if (errCb)
+                    errCb(data);
             }
             else {
                 callback(data);
             }
         });
     },
-    getIt: (url, auth, callback) => {
-        this.a.fetchIt(url, 'GET', null, auth, callback);
+    getIt: (url, auth, callback, errCb=null) => {
+        this.a.fetchIt(url, 'GET', null, auth, callback, errCb);
     },
-    postIt: (url, auth, body, callback) => {
-        this.a.fetchIt(url, 'POST', body, auth, callback);
+    postIt: (url, auth, body, callback, errCb=null) => {
+        this.a.fetchIt(url, 'POST', body, auth, callback, errCb);
     },
-    putIt: (url, auth, body, callback) => {
-        this.a.fetchIt(url, 'PUT', body, auth, callback);
+    putIt: (url, auth, body, callback, errCb=null) => {
+        this.a.fetchIt(url, 'PUT', body, auth, callback, errCb);
     },
-    deleteIt: (url, auth, callback) => {
-        this.a.fetchIt(url, 'DELETE', null, auth, callback);
+    deleteIt: (url, auth, callback, errCb=null) => {
+        this.a.fetchIt(url, 'DELETE', null, auth, callback, errCb);
     }
 }
 

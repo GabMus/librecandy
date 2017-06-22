@@ -28,6 +28,9 @@ class CandyCreateTreat extends React.Component {
   constructor(props){
     super(props);
     this.state = {
+      nameError: null,
+      descriptionError: null,
+      versionError: null,
       treatName: '',
       treatDescription: '',
       treatVersion: '',
@@ -91,6 +94,18 @@ class CandyCreateTreat extends React.Component {
                   description: this.state.treatDescription
               },
               (data) => {
+                if (data.success===false) {
+                    this.setState({
+                        nameError: data.message,
+                        descriptionError: data.message,
+                    });
+                    return;
+                }
+                else this.setState({
+                    nameError: null,
+                    descriptionError: null,
+                });
+
                 if("code" in data){
                   console.error("Error while creating the treat");
                   return;
@@ -127,6 +142,7 @@ class CandyCreateTreat extends React.Component {
   getTreatCreationForm = () => (
     <div>
     <TextField
+        errorText={this.state.nameError}
         floatingLabelText='Name'
         fullWidth={true}
         onChange={(event, valueName) => {
@@ -136,16 +152,17 @@ class CandyCreateTreat extends React.Component {
         }}
     />
     <TextField
-      floatingLabelText="Description"
-      multiLine={true}
-      fullWidth={true}
-      rows={3}
-      onChange={(event, valueDescription) => {
+        errorText={this.state.descriptionError}
+        floatingLabelText="Description"
+        multiLine={true}
+        fullWidth={true}
+        rows={3}
+        onChange={(event, valueDescription) => {
           this.setState({
               treatDescription: valueDescription
           });
-      }}
-    />
+        }}
+        />
     <div style={{
         lineHeight: '54px',
         padding: '24px 0 72px 0'
@@ -198,11 +215,15 @@ class CandyCreateTreat extends React.Component {
             version: this.state.newTreatVersion,
         },
         (data) => {
-            if(data.success === false){
-                console.log(data)
-              console.log('error while creating the version');
-              return;
+            if (data.success===false) {
+                this.setState({
+                    versionError: data.message,
+                });
+                return;
             }
+            else this.setState({
+                versionError: true,
+            });
             this.setState({versionCreated: true})
         }
     );
@@ -214,6 +235,7 @@ class CandyCreateTreat extends React.Component {
           <div>
             <div>
               <TextField
+                errorText={this.state.versionError}
                 floatingLabelText='Version'
                 onChange={(event, newTreatVersion) => {
                     this.setState({newTreatVersion});

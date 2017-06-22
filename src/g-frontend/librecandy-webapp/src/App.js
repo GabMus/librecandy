@@ -122,7 +122,9 @@ class App extends Component {
                             <Route exact path={`/treat/:pkgname`} component={
                                 (params) => <CandyTreatView {...params}
                                     userToken={this.state.userToken}
-                                    apiServer={this.state.apiServer} />
+                                    apiServer={this.state.apiServer}
+                                    history={this.props.history}
+                                    />
                             } />
                             <Route exact path={`/search/:title`} component={
                                 (params) => <CandyInfiniteScrollPage

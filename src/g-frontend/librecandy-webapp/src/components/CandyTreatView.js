@@ -23,6 +23,8 @@ import Checkbox from 'material-ui/Checkbox';
 import {List, ListItem} from 'material-ui/List';
 import ActionDeleteForeverIcon from 'material-ui/svg-icons/action/delete-forever';
 import IconButton from 'material-ui/IconButton';
+import Dialog from 'material-ui/Dialog';
+import Candy404 from './Candy404';
 
 class CandyTreatView extends Component {
     constructor(props) {
@@ -31,6 +33,7 @@ class CandyTreatView extends Component {
         this.state = {
             edit: false,
             treat: null,
+            loaded: false,
             author: null,
             userToken: props.userToken,
             userRating: null,
@@ -39,6 +42,9 @@ class CandyTreatView extends Component {
             uploadStarted: false,
             uploadFinished: false,
             canSave: true,
+            deleteDialogOpen: false,
+            deleteNameConfirmation: null,
+            deleteNameConfirmationFieldError: null,
             setUploadStarted: () => {
                 this.setState({
                     uploadStarted: true,
@@ -65,7 +71,10 @@ class CandyTreatView extends Component {
             `${this.props.apiServer}/treats/${this.props.match.params.pkgname}`,
             this.state.userToken,
             (data) => {
-                this.setState({treat: data.treat, author: data.author, newDescription: data.treat.description});
+                this.setState({treat: data.treat, author: data.author, newDescription: data.treat.description, loaded: true});
+            },
+            (errdata) => {
+                this.setState({'loaded': true});
             }
         );
     }
@@ -123,12 +132,14 @@ class CandyTreatView extends Component {
       );
     }
 
+
     render() {
         let palette = this.props.muiTheme.palette;
-        if (!this.state.treat) {
-            return (
-                <h2>Nothing here!</h2>
-            );
+        if (!this.state.treat && this.state.loaded) {
+            return <Candy404 />;
+        }
+        else if (!this.state.treat && !this.state.loaded) {
+            return <div />
         }
 
         let treatcardtitle= (
@@ -149,6 +160,7 @@ class CandyTreatView extends Component {
         let screenshot = null;
         let saveButton = null;
         let doneEditingButton = null;
+        let deleteTreatButton = null;
         let versioning = null;
         let description = (
             <div style={{marginTop: '24px'}}>
@@ -297,6 +309,18 @@ class CandyTreatView extends Component {
                     }}
                 />
             )
+
+            deleteTreatButton = (
+                <RaisedButton
+                    style={{margin:'12px 0 12px 0', display: 'block '}}
+                    label='Delete treat'
+                    backgroundColor='red'
+                    labelColor='white'
+                    onTouchTap={() =>{
+                        this.setState({deleteDialogOpen: true})
+                    }}
+                />
+            )
         }
 
         let editBtn=null;
@@ -354,7 +378,54 @@ class CandyTreatView extends Component {
                                         {saveButton}
                                         {screenshot}
                                         {versioning}
+                                        {deleteTreatButton}
                                         {doneEditingButton}
+                                        <Dialog
+                                          title="Delete treat"
+                                          actions={[
+                                              <FlatButton
+                                                  label='Cancel'
+                                                  secondary={true}
+                                                  onTouchTap={() => {
+                                                      this.setState({deleteDialogOpen: false});
+                                                  }}
+                                              />,
+                                              <RaisedButton
+                                                  label='Delete treat'
+                                                  primary={true}
+                                                  onTouchTap={() => {
+                                                      if (this.state.deleteNameConfirmation==this.state.treat.name) {
+                                                          CandyFetch.deleteIt(
+                                                              `${this.props.apiServer}/treats/${this.state.treat.package_name}`,
+                                                              this.props.userToken,
+                                                              (data) => {
+                                                                  if (data.success===false) {
+                                                                      this.setState({deleteNameConfirmationFieldError: data.message});
+                                                                  }
+                                                                  else {
+                                                                      this.props.history.push('/');
+                                                                  }
+                                                              }
+                                                          );
+                                                      }
+                                                      else {
+                                                          this.setState({deleteNameConfirmationFieldError: 'The name does not match'});
+                                                      }
+                                                  }}
+                                              />
+                                          ]}
+                                          modal={true}
+                                          open={this.state.deleteDialogOpen}
+                                        >
+                                          <TextField
+                                              errorText={this.state.deleteNameConfirmationFieldError}
+                                              floatingLabelText='Insert the treat name to confirm'
+                                              fullWidth={true}
+                                              onChange={(event, newValue) => {
+                                                  this.setState({deleteNameConfirmation: event.target.value});
+                                              }}
+                                          />
+                                        </Dialog>
                                     </div>
                                 </CardText>
                             </Card>

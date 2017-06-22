@@ -49,7 +49,7 @@ class CandyTreatDownloadBox extends Component {
                         CandyFetch.deleteIt(
                             `${this.props.apiServer}/treats/${this.props.treat.package_name}/versions/${version.version}`,
                             this.props.userToken,
-                            (data) => {                                                            
+                            (data) => {
                                 this.props.onVersionDelete(data);
                             }
                         )
@@ -78,17 +78,17 @@ class CandyTreatDownloadBox extends Component {
                 deprecatedItems.push(listitem);
             }
         }
-        )
-
+        );
 
         let olderversions = null;
-        if (deprecatedItems) {
+        if (deprecatedItems.length) {
             olderversions = <ListItem
-                primaryText="Older versions"
-                initiallyOpen={false}
-                primaryTogglesNestedList={true}
-                nestedItems={deprecatedItems}
-            />}
+                    primaryText="Older versions"
+                    initiallyOpen={false}
+                    primaryTogglesNestedList={true}
+                    nestedItems={deprecatedItems}
+                />
+        }
         if (this.props.treat.details && this.props.treat.details.length > 0) {
             downloadsItems = (
                 <List style={{paddingBottom: '0px'}}>

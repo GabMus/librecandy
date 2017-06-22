@@ -20,19 +20,32 @@ Di seguito viene illustrato quali servizi sono stati utilizzati:
 
 <img src="doc/Icons/vm.png" width="50"> Virtual Machine (Backend)
 
-
+  Macchina virtuale relativa all'hosting delle API della piattaforma. Si occupa di gestire le richieste e di conseguenza comunica con il database e con lo storage (in cui immagazina tutti file degli utenti).
+  Per lo sviluppo delle API il linguaggio utilizzato è Node.js che si presta agevolmente a tutte le esigenze di implementazione della piattaforma.
 
 <img src="doc/Icons/vm.png" width="50"> Virtual Machine (Frontend)
 
+  Macchina virtuale relativa all'hosting del client Web della piattaforma. Gli utenti si approcciano a questo server, il quale farà le richieste al server delle API e ne elaborerà le risposte. Riceve i file dallo storage tramite la CDN. Per lo sviluppo del client il linguaggio utilizzato è React.js che permette una rapida e intuitiva gestione delle richieste da inviare e inoltre ha permesso che il client fosse single-page-app.
+
 <img src="doc/Icons/db.png" width="50"> MongoDB Service
+
+  Il database della piattaforma. MongoDB è il DBMS di default per lo sviluppo in Node.js e, valutanto i pro e i contro rispetto agli altri DBMS, risulta quello ottimale per le esigenze previste dalla piattaforma. Il servizio dato a disposizione da Azure permette una veloce configurazione ed una ottima interoperabilità con gli altri servizi.
 
 <img src="doc/Icons/cdn.png" width="50"> Content Delivery Network (CDN)
 
+  La CDN si occupa di servire al client tutti i file contenuti nello storage ottimizzando la latenza e le prestazioni rispetto al richiedere gli stessi file direttamente allo storage. Tutto questo avviene in modo del tutto trasparente agli altri servizi.
+
 <img src="doc/Icons/storage.png" width="50"> Storage service
+
+  Servizio di archiviazione di tutti i media files della piattaforma. All'interno sono contenute le immagini del profilo e i contenuti caricati dagli utenti. I file vengono immagazzinati all'interno dello storage dal server delle API e poi vengono richiesti dal client tramite la CDN.
 
 <img src="doc/Icons/log.png" width="50"> Application Insights - Log Analytics
 
+  Servizio che mette a disposizione Azure per monitorare i log dei servizi e gestire gli accessi alla piattaforma.
+
 <img src="doc/Icons/backup.png" width="50"> Recovery service
+
+  Servizio di backup che permette il recupero di una precedente versione della piattaforma in caso di problemi tecnici o malfunzionamenti.
 
 ## Documentazione API
 
@@ -331,10 +344,4 @@ rating
 
 Elimina il rating dato in input del treat dato in input
 
-### Documentazione Database
-
-
-
-### Struttura GitHub
-
-### Links
+### <a href="#">Consulta il sito</a>

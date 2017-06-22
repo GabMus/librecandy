@@ -104,6 +104,9 @@ class CandyCreateTreat extends React.Component {
               }
           );
           break;
+          case 2:
+            this.props.history.push(`/treat/${this.state.treatPackageName}`);
+            break;
           default:
             this.dummyAsync(() => this.setState({
               loading: false,
@@ -192,10 +195,11 @@ class CandyCreateTreat extends React.Component {
         `${this.props.apiServer}/treats/${this.state.treatPackageName}/versions`,
         this.props.userToken,
         {
-            version: this.state.treatVersion,
+            version: this.state.newTreatVersion,
         },
         (data) => {
             if(data.success === false){
+                console.log(data)
               console.log('error while creating the version');
               return;
             }

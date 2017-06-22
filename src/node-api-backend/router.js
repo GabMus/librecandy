@@ -170,11 +170,12 @@ router.route('/superuser').post(function(req, res) {
 router.route('/users').post(function(req, res) {
     var user = new models.User();
     user.username = req.body.username;
-    if (req.body.username.includes('.'))
-        return res.json({
-            success: false,
-            error: 'Usernames cannot contain the `.` (dot) character'
-        });
+    if (req.body.username.match(/[^a-zA-Z0-9,[]()-*]/gi)){
+      return res.json({
+        success: false,
+        error: 'Treat names cannot contain special characters'
+      });
+    }
     user.email = req.body.email;
     if (req.body.realname) user.realname = req.body.realname;
     if (req.body.password) user.password = req.body.password;
@@ -569,8 +570,11 @@ router.route('/treats/:pkgname/versions') // aka detail
 
                 var detail = new models.TreatDetail();
                 if (!req.body.version) return res.json({success: false, error: 'Version not provided'});
-                if (req.body.version.includes(' ')) {
-                    return res.json({success: false, error: 'Version names cannot contain spaces'});
+                if (req.body.version.match(/[^a-zA-Z0-9,[]()-*]/gi)){
+                  return res.json({
+                    success: false,
+                    error: 'Treat names cannot contain special characters'
+                  });
                 }
                 detail.version = req.body.version;
                 for (i in treat.details) {

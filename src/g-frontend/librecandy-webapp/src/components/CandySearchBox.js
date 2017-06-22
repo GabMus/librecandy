@@ -21,7 +21,7 @@ class CandySearchBox extends Component {
             <div className="CandySearchBox" style={{
                 zIndex: '99',
                 position: 'absolute',
-                right: '50px',
+                right: '100px',
                 top: '0',
                 display: 'flex'
             }}>

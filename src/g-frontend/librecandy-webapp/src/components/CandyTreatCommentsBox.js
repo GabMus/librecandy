@@ -122,7 +122,7 @@ class CandyTreatCommentsBox extends Component {
                                         <IconButton
                                             touch={true}
                                             onTouchTap={() => {this.deleteComment(comment._id)}}>
-                                            <ActionDeleteForeverIcon color={palette.iconGrey}/>
+                                                <ActionDeleteForeverIcon color={palette.iconGrey}/>
                                         </IconButton>
                                     );
                                 }

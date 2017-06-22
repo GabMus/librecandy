@@ -280,7 +280,8 @@ class CandyCreateTreat extends React.Component {
                   setUploadFinished={this.state.setUploadFinished}
                   setUploadStarted={this.state.setUploadStarted}
                   requestUrl={`${this.props.apiServer}/treats/${this.state.treatPackageName}/versions/${this.state.treatVersion}/file`}
-                  label='Upload images'
+                  label='Upload file'
+                  allowMultiple={false}
               />
             </div>
           )

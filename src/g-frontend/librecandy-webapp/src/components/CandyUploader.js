@@ -123,8 +123,6 @@ class CandyUploader extends Component{
           >
 
           {this.state.files.map((image, id) => {
-            console.log('image: ',image)
-            console.log('id: '+id);
             return(
               <GridTile key={id} style={{padding:40}}>
                 <ContentClear onClick={() => this.handleRemoveButtonClick(id)} className='removeImageButton'/>

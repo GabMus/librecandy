@@ -129,7 +129,7 @@ class CandyTreatCommentsBox extends Component {
                                 return (
                                     <div key={iter}>
                                         <ListItem
-                                            leftAvatar={<Avatar src={this.getUserAvatar(comment.author)}>{comment.author[0].toUpperCase()}</Avatar>}
+                                            leftAvatar={<Avatar src={this.getUserAvatar(comment.author)}></Avatar>}
                                             primaryText={comment.author}
                                             secondaryText={new Date(comment.pub_datetime).toDateString()}
                                             disabled={true}

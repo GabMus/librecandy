@@ -21,17 +21,6 @@ import MenuItem from 'material-ui/MenuItem';
 import CandyFetch from './../extjs/CandyFetch';
 
 
-function generateRandomString() //Just for testing, ty stackoverflow
-{
-    var text = "";
-    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-    for( var i=0; i < 7; i++ )
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
-
-    return text;
-}
-
 /**
  * A contrived example using a transition between steps
  */
@@ -39,8 +28,8 @@ class CandyCreateTreat extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      treatName: generateRandomString(),
-      treatDescription: generateRandomString(),
+      treatName: '',
+      treatDescription: '',
       treatVersion: '',
       treatCategory: 'Qt',
       treatCategories: [],
@@ -75,7 +64,6 @@ class CandyCreateTreat extends React.Component {
           `${this.props.apiServer}/treats/categories`,
           null,
           (data) => {
-              console.log('componentWillMount')
               this.setState({
                   treatCategories: data.categories
               });
@@ -211,14 +199,12 @@ class CandyCreateTreat extends React.Component {
               console.log('error while creating the version');
               return;
             }
-            console.log('VERSION CREATED')
-            console.log(data);
             this.setState({versionCreated: true})
         }
     );
   }
 
-  getVersionCreationForm = () => {
+  getVersionCreationForm2 = () => {
 
     return (
       <div>
@@ -240,6 +226,41 @@ class CandyCreateTreat extends React.Component {
           </div>
       </div>
   )}
+
+  getVersionCreationForm = () => {
+      return(
+        <div>
+          <div>
+            <div>
+              <TextField
+                floatingLabelText='Version'
+                onChange={(event, newTreatVersion) => {
+                    this.setState({newTreatVersion});
+                }}
+              />
+            </div>
+          </div>
+          <div style={{paddingTop:'24px'}}>
+
+            <CandyUploader
+                fileType="compressed"
+                requestKey="versionfile"
+                userToken={this.props.userToken}
+                setUploadFinished={this.state.setUploadFinished}
+                setUploadStarted={this.state.setUploadStarted}
+                beforeUpload={() => {
+                    this.createVersion();
+                }}
+                enabled={!!this.state.newTreatVersion}
+                onUploadFinished={(data) => this.setState({treat: data.treat})}
+                requestUrl={`${this.props.apiServer}/treats/${this.state.treatPackageName}/versions/${this.state.newTreatVersion}/file`}
+                label='Create version'
+            />
+          </div>
+        </div>
+
+      )
+  }
 
   handlePrev = () => {
     const {stepIndex} = this.state;
@@ -264,7 +285,6 @@ class CandyCreateTreat extends React.Component {
         );
         break;
       case 2:
-        console.log('version created ' + this.state.versionCreated);
         if(!this.state.versionCreated){
           return (
             this.getVersionCreationForm()

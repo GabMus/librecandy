@@ -183,13 +183,14 @@ class CandyTreatView extends Component {
                             <div key={iter}>
                                 <ListItem
                                     primaryText={
-                                        <img style={{
-                                            objectFit: 'cover',
-                                            width:'96px',
-                                            height:'54px'
-                                        }}
-                                        src={`http://localhost:12345${screen.file}`}  />
-
+                                        <img
+                                            style={{
+                                                objectFit: 'cover',
+                                                width:'96px',
+                                                height:'54px'
+                                            }}
+                                            src={screen.file}
+                                        />
                                     }
                                     disabled={true}
                                     rightIconButton={
@@ -218,7 +219,6 @@ class CandyTreatView extends Component {
                             </div>
                         ))}
                     </List>
-                    <span>Upload more screenshots</span>
                     <CandyUploader
                         fileType="image"
                         requestKey="screenshot"
@@ -246,8 +246,7 @@ class CandyTreatView extends Component {
                     />
                   </div>
                 </div>
-                <div>
-                  <span>Treat will be uploaded for version {this.state.newTreatVersion}</span>
+                <div style={{paddingTop:'24px'}}>
                   <CandyUploader
                       fileType="compressed"
                       requestKey="versionfile"

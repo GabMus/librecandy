@@ -3,9 +3,7 @@ import muiThemeable from 'material-ui/styles/muiThemeable';
 
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 
-import {GtkIcon, QtIcon} from './CandyMatIcons';
-import MapsLayers from 'material-ui/svg-icons/maps/layers';
-import ImageCollectionsIcon from 'material-ui/svg-icons/image/collections';
+import CandyCategoryIcon from './CandyCategoryIcon';
 
 import ReactStars from 'react-stars'; // doc: https://github.com/n49/react-stars
 import { Link } from 'react-router-dom';
@@ -21,24 +19,7 @@ class CandyTreatCard extends Component {
 
     render() {
         let palette = this.props.muiTheme.palette;
-        let categoryIcon = null;
-        switch (this.state.treat.category) {
-            case 'GTK':
-                categoryIcon = (<GtkIcon color={palette.iconGrey} style={{float: 'right', width: '24px'}} />);
-                break;
-            case 'Qt':
-                categoryIcon = (<QtIcon color={palette.iconGrey} style={{float: 'right', width: '24px'}} />);
-                break;
-            case 'Icons':
-                categoryIcon = (<MapsLayers color={palette.iconGrey} style={{float: 'right', width: '24px'}} />);
-                break;
-            case 'Wallpapers':
-                categoryIcon = (<ImageCollectionsIcon color={palette.iconGrey} style={{float: 'right', width: '24px'}} />);
-                break;
-            default:
-                categoryIcon = (<GtkIcon color={palette.iconGrey} style={{float: 'right', width: '24px'}} />);
-        }
-        let pic='https://www.w3schools.com/w3images/fjords.jpg';
+        let pic=`${process.env.PUBLIC_URL}/img/header_bw.png`;
         if (this.state.treat && this.state.treat.screenshots[0]) {
             pic=this.state.treat.screenshots[0];
         }
@@ -86,13 +67,18 @@ class CandyTreatCard extends Component {
                             padding: '0 12px 0 12px',
                             lineHeight: '24px'
                         }}>
-                            {categoryIcon}
+                            <CandyCategoryIcon
+                                category={this.state.treat.category}
+                                style={{
+                                    float: 'right'
+                                }}
+                            />
                             <ReactStars
                                 style={{float: 'left'}}
                                 count={5}
                                 size={24}
                                 color2={palette.accent1Color}
-                                value={this.state.treat.rating/2}
+                                value={this.state.treat.total_rating/2}
                                 edit={false} />
                         </div>
                     </div>

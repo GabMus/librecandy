@@ -7,10 +7,12 @@ import Divider from 'material-ui/Divider';
 import Avatar from 'material-ui/Avatar';
 import ReactMarkdown from 'react-markdown';
 import TextField from 'material-ui/TextField';
-import FlatButton from 'material-ui/FlatButton';
+import RaisedButton from 'material-ui/RaisedButton';
 
 import IconButton from 'material-ui/IconButton';
-import ActionDeleteForeverIcon from 'material-ui/svg-icons/action/delete-forever'
+import ActionDeleteForeverIcon from 'material-ui/svg-icons/action/delete-forever';
+
+import CandyFetch from './../extjs/CandyFetch';
 
 class CandyTreatCommentsBox extends Component {
     constructor(props) {
@@ -21,6 +23,7 @@ class CandyTreatCommentsBox extends Component {
             userToken: props.userToken,
             comments: props.comments,
             pkgname: props.pkgname,
+            commentPostLock: true,
         };
     }
 
@@ -31,48 +34,39 @@ class CandyTreatCommentsBox extends Component {
     }
 
     sendComment = (event) => {
-        let headers = {
-            'Access-Control-Allow-Origin':'*',
-            'Content-Type': 'application/x-www-form-urlencoded'
-        };
-        if (this.state.userToken) {
-            headers['Authorization'] = `JWT ${this.state.userToken}`;
-        }
-        else {
-            console.log('User not logged');
-            return;
-        }
-        let body = `content=${this.state.newComment}`;
-        console.log(body);
-        let request = {
-            method: 'POST',
-            mode: 'cors',
-            headers: headers,
-            body: body
-        };
-        fetch(`${this.props.apiServer}/treats/${this.state.pkgname}/comments`, request)
-            .then(response => {
-                //console.log(response);
-                if (response.ok) {
-                    return response.json();
-                }
-                else {
-                    return response;
-                }
-            })
-            .then(data => {
-                if (data.status) {
-                    console.log('Error');
-                    console.log(data);
-                }
-                else {
-                    this.setState({comments: data.treat.comments});
-                    document.getElementById('newCommentTextField').value='';
-                    //console.log(this.state.latestTreats.treats[0]);
-                }
+        this.setState({commentPostLock: false});
+        CandyFetch.postIt(
+            `${this.props.apiServer}/treats/${this.state.pkgname}/comments`,
+            this.props.userToken,
+            {
+                content: this.state.newComment
+            },
+            (data) => {
+                this.setState({comments: data.treat.comments, newComment: ''});
+                document.getElementById('newCommentTextField').value='';
+                this.setState({commentPostLock: true});
             }
         );
-        // TODO: send comment and reload(?) page
+    }
+
+    deleteComment(commentid) {
+        CandyFetch.deleteIt(
+            `${this.props.apiServer}/treats/${this.state.pkgname}/comments/${commentid}`,
+            this.props.userToken,
+            (data) => {
+                this.setState({comments: data.treat.comments});
+            }
+        );
+    }
+
+    getUserAvatar(username) {
+        CandyFetch.getIt(
+            `${this.props.apiServer}/users/${username}`,
+            this.props.userToken,
+            (data) => {
+                return data.avatar
+            }
+        );
     }
 
     render() {
@@ -88,12 +82,17 @@ class CandyTreatCommentsBox extends Component {
                         fullWidth={true}
                         onChange={this.onCommentTextFieldChange}
                     />
-                    <FlatButton
-                        label='Post'
-                        primary={true}
-                        disabled={!this.state.newComment}
-                        onTouchTap={this.sendComment}
-                    />
+                    <div style={{
+                        marginLeft: 'auto',
+                        display: 'table'
+                    }}>
+                        <RaisedButton
+                            label='Post'
+                            primary={true}
+                            disabled={!(this.state.newComment && this.state.commentPostLock)}
+                            onTouchTap={this.sendComment}
+                        />
+                    </div>
                 </div>
             );
         }
@@ -117,21 +116,25 @@ class CandyTreatCommentsBox extends Component {
                         <Divider />
                         {
                             this.state.comments.map((comment, iter) => {
+                                let deleteiconbutton=null;
+                                if (this.state.userToken && comment.author == JSON.parse(atob(this.state.userToken.split('.')[1])).username) {
+                                    deleteiconbutton = (
+                                        <IconButton
+                                            touch={true}
+                                            onTouchTap={() => {this.deleteComment(comment._id)}}>
+                                                <ActionDeleteForeverIcon color={palette.iconGrey}/>
+                                        </IconButton>
+                                    );
+                                }
                                 return (
-                                    <div>
+                                    <div key={iter}>
                                         <ListItem
-                                            leftAvatar={<Avatar>{comment.author[0].toUpperCase()}</Avatar>}
+                                            leftAvatar={<Avatar src={this.getUserAvatar(comment.author)}></Avatar>}
                                             primaryText={comment.author}
                                             secondaryText={new Date(comment.pub_datetime).toDateString()}
                                             disabled={true}
                                             key={iter}
-                                            rightIconButton={
-                                                <IconButton
-                                                    touch={true}
-                                                    onTouchTap={() => {console.log('delete');}}>
-                                                    <ActionDeleteForeverIcon color={palette.iconGrey}/>
-                                                </IconButton>
-                                            }
+                                            rightIconButton={deleteiconbutton}
                                         />
                                         <ReactMarkdown
                                             source={comment.content}

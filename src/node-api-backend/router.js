@@ -181,11 +181,12 @@ router.route('/superuser').post(function(req, res) {
 router.route('/users').post(function(req, res) {
     var user = new models.User();
     user.username = req.body.username;
-    if (req.body.username.includes('.'))
-        return res.json({
-            success: false,
-            error: 'Usernames cannot contain the `.` (dot) character'
-        });
+    if (req.body.username.match(/[^a-zA-Z0-9,[]()-*]/gi)){
+      return res.json({
+        success: false,
+        error: 'Treat names cannot contain special characters'
+      });
+    }
     user.email = req.body.email;
     if (req.body.realname) user.realname = req.body.realname;
     if (req.body.password) user.password = req.body.password;
@@ -376,7 +377,7 @@ router.route('/users/:username/treats').get(function(req, res) {
 });
 
 router.route('/treats').get(function(req, res) {
-    models.Treat.find({}, null, {sort: '-first_pub_datetime'}, function(err, treats) {
+    models.Treat.find({}, null, {sort: '-last_pub_datetime'}, function(err, treats) {
         if (err) return res.json(err);
         var offset=0;
         var limit=20;
@@ -391,11 +392,12 @@ router.route('/treats').get(function(req, res) {
     });
 }).post(auth.isAuthenticated, function(req, res) {
     var treat = new models.Treat();
-    if (req.body.name.includes('_') || req.body.name.includes('.'))
-        return res.json({
-            success: false,
-            error: 'Treat names cannot contain the `_` (underscore) or `.` (dot) characters'
-        });
+    if (req.body.name.match(/[^a-zA-Z0-9,[]()-*]/gi)){
+      return res.json({
+        success: false,
+        error: 'Treat names cannot contain the `_` (underscore) or `.` (dot) characters'
+      });
+    }
     if (!config.treat_categories.includes(req.body.category))
         return res.json({
             success: false,
@@ -505,7 +507,7 @@ router.route('/treats/orderby/rating').get(function(req, res) {
 router.route('/treats/whatshot').get(function(req, res) {
     var date_last_month = new Date(Date.now());
     date_last_month.setMonth(date_last_month.getMonth() - 1);
-    models.Treat.find({'first_pub_datetime': { $gte : date_last_month }}).sort({'total_rating': -1}).exec(function(err, treats) {
+    models.Treat.find({'last_pub_datetime': { $gte : date_last_month }}).sort({'total_rating': -1}).exec(function(err, treats) {
         if (!treats) return res.sendStatus(404);
         if (err) return res.json(err);
         var offset=0;
@@ -591,8 +593,11 @@ router.route('/treats/:pkgname/versions') // aka detail
 
                 var detail = new models.TreatDetail();
                 if (!req.body.version) return res.json({success: false, error: 'Version not provided'});
-                if (req.body.version.includes(' ')) {
-                    return res.json({success: false, error: 'Version names cannot contain spaces'});
+                if (req.body.version.match(/[^a-zA-Z0-9,[]()-*]/gi)){
+                  return res.json({
+                    success: false,
+                    error: 'Treat names cannot contain special characters'
+                  });
                 }
                 detail.version = req.body.version;
                 for (i in treat.details) {
@@ -1005,7 +1010,7 @@ router.route('/treats/:pkgname/ratings/fromuser').get(auth.isAuthenticated, func
                 return res.json({success: true, error: null, treat: treat, rating: treat.ratings[i].value});
             }
         }
-        return es.json({success: true, error: null, message: 'The user did not rate yet', treat: treat, rating: 0});
+        return res.json({success: true, error: null, message: 'The user did not rate yet', treat: treat, rating: 0});
     });
 });
 

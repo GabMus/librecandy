@@ -29,7 +29,9 @@ class CandyHomeView extends Component {
             latestTreats: [],
             mostratedTreats: [],
             hotTreats: [],
-            userToken: this.props.userToken
+            userToken: this.props.userToken,
+            fetchurl: this.props.fetchurl || '/treats',
+            target: this.props.target || '',
         };
     }
 
@@ -46,7 +48,7 @@ class CandyHomeView extends Component {
             mode: 'cors',
             headers: headers,
         };
-        fetch(`${this.props.apiServer}/treats?limit=5&offset=0`, request)
+        fetch(`${this.props.apiServer}${this.state.fetchurl}?limit=5&offset=0`, request)
             .then(response => {
                 //console.log(response);
                 if (response.ok) {
@@ -66,7 +68,7 @@ class CandyHomeView extends Component {
                 }
             }
         );
-        fetch(`${this.props.apiServer}/treats/orderby/rating?limit=5&offset=0`, request)
+        fetch(`${this.props.apiServer}${this.state.fetchurl}/orderby/rating?limit=5&offset=0`, request)
             .then(response => {
                 //console.log(response);
                 if (response.ok) {
@@ -86,7 +88,7 @@ class CandyHomeView extends Component {
                 }
             }
         );
-        fetch(`${this.props.apiServer}/treats?limit=5&offset=0`, request) // TODO: implement HOT request
+        fetch(`${this.props.apiServer}/${this.state.fetchurl}?limit=5&offset=0`, request) // TODO: implement HOT request
             .then(response => {
                 //console.log(response);
                 if (response.ok) {
@@ -127,6 +129,7 @@ class CandyHomeView extends Component {
                                 style={sectionHeaderIconStyle}
                             />
                         }
+                        seemorelink={`${this.state.target}/whatshot`}
                     ></CandyHorizontalCardview>
                     <CandyHorizontalCardview
                         treats={this.state.mostratedTreats}
@@ -136,6 +139,7 @@ class CandyHomeView extends Component {
                                 style={sectionHeaderIconStyle}
                             />
                         }
+                        seemorelink={`${this.state.target}/mostpopular`}
                     ></CandyHorizontalCardview>
                     <CandyHorizontalCardview
                         treats={this.state.latestTreats}
@@ -145,6 +149,7 @@ class CandyHomeView extends Component {
                                 style={sectionHeaderIconStyle}
                             />
                         }
+                        seemorelink={`${this.state.target}/latest`}
                     ></CandyHorizontalCardview>
                 </div>
             </div>

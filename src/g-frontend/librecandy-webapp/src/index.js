@@ -5,12 +5,13 @@ import registerServiceWorker from './registerServiceWorker';
 import './index.css';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import config from './config';
-import {BrowserRouter} from 'react-router-dom';
+import { Router } from 'react-router';
+import createHistory from 'history/createBrowserHistory';
 
 injectTapEventPlugin();
-
+const history=createHistory();
 ReactDOM.render(
-    <BrowserRouter><App apiServer={config.apiServer}/></BrowserRouter>, 
+    <Router history={history}><App history={history} apiServer={config.apiServer}/></Router>,
     document.getElementById('root')
 );
 registerServiceWorker();

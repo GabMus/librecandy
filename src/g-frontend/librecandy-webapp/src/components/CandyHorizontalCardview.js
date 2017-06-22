@@ -1,4 +1,4 @@
-import React, { Component, Link } from 'react';
+import React, { Component } from 'react';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 
 import Divider from 'material-ui/Divider';
@@ -6,6 +6,7 @@ import { Grid, Row, Col } from 'react-flexbox-grid-aphrodite';
 import CandyTreatCard from './CandyTreatCard';
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 import RaisedButton from 'material-ui/RaisedButton'
+import { Link } from 'react-router-dom';
 
 class CandyHorizontalCardview extends Component {
     constructor(props) {
@@ -36,6 +37,7 @@ class CandyHorizontalCardview extends Component {
                     lineHeight: '70px',
                     fontSize: '16pt'
                 }}
+                containerElement={<Link to={this.props.seemorelink} className='link' />}
             />);
         }
         let sectionLabelHeader = null;
@@ -49,34 +51,47 @@ class CandyHorizontalCardview extends Component {
                 </div>
             )
         }
+
         return (
-            <div className='CandyHorizontalCardview' style={{margin: 'auto', display: 'block'}}>
+            <div className='CandyHorizontalCardview' style={{margin: 'auto', display: 'block'}} >
 
                 {sectionLabelHeader}
                 <div style={{
                     display: 'flex',
-                    flexWrap: 'wrap',
-                    alignItems: 'left',
-                    alignContent: 'left',
-                    justifyContent: 'space-around'
                 }}>
-                    {(this.props.treats && this.props.treats.map((treat, iter) => {
-                        let pic=null;
-                        if (treat.screenshots) {
-                            pic=treat.screenshots[0];
-                        }
-                        return (<CandyTreatCard
-                            treat={treat}
-                            treatname={treat.name}
-                            treatrating={treat.total_rating}
-                            treatpic={pic}
-                            treatauthor={treat.author}
-                            treatcategory={treat.category}
-                            key={iter}
-                        />);
-                    })) || <h2>Nothing here!</h2>}
-                    {seemoreOrNothing}
-
+                    <span style={{
+                        width: '10%',
+                    }} />
+                    <div style={{
+                        width: this.props.twoCols ? '548px' : '100%',
+                        maxWidth: '100%',
+                        margin: 'auto',
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        alignItems: 'left',
+                        alignContent: 'left',
+                        justifyContent: 'left'
+                    }} className='hcardviewContainer'>
+                        {(this.props.treats && this.props.treats.map((treat, iter) => {
+                            let pic=null;
+                            if (treat.screenshots) {
+                                pic=treat.screenshots[0];
+                            }
+                            return (<CandyTreatCard
+                                treat={treat}
+                                treatname={treat.name}
+                                treatrating={treat.total_rating}
+                                treatpic={pic}
+                                treatauthor={treat.author}
+                                treatcategory={treat.category}
+                                key={iter}
+                            />);
+                        })) || <h2>Nothing here!</h2>}
+                        {seemoreOrNothing}
+                    </div>
+                    <span style={{
+                        width: '10%',
+                    }} />
                 </div>
             </div>
         );

@@ -36,9 +36,6 @@ class CandyScreenshotGallery extends Component {
     constructor(props) {
         super(props);
         this.props=props;
-        this.state = {
-            screenshots: this.props.screenshots || this.test_images || []
-        };
     }
 
     render() {
@@ -71,7 +68,7 @@ class CandyScreenshotGallery extends Component {
                         color: palette.alternateTextColor
                     }}>
                         <ImageGallery
-                            items={this.state.screenshots}
+                            items={this.props.screenshots}
                             showThumbnails={false}
                             showPlayButton={false}
                             showFullscreenButton={false}

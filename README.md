@@ -18,19 +18,19 @@ Di seguito viene illustrato quali servizi sono stati utilizzati:
 
 
 
-<img src="frontend/logo.png" width="50"> Virtual Machine (Backend)
+<img src="Icons/vm.png" width="50"> Virtual Machine (Backend)
 
-<img src="frontend/logo.png" width="50"> Virtual Machine (Frontend)
+<img src="Icons/vm.png" width="50"> Virtual Machine (Frontend)
 
-<img src="frontend/logo.png" width="50"> MongoDB Service
+<img src="Icons/db.png" width="50"> MongoDB Service
 
-<img src="frontend/logo.png" width="50"> Content Delivery Network (CDN)
+<img src="Icons/cdn.png" width="50"> Content Delivery Network (CDN)
 
-<img src="frontend/logo.png" width="50"> Storage service
+<img src="Icons/storage.png" width="50"> Storage service
 
-<img src="frontend/logo.png" width="50"> Application Insights - Log Analytics
+<img src="Icons/log.png" width="50"> Application Insights - Log Analytics
 
-<img src="frontend/logo.png" width="50"> Recovery service
+<img src="Icons/backup.png" width="50"> Recovery service
 
 ## Documentazione API
 

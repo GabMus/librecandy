@@ -886,7 +886,9 @@ router.route('/treats/:pkgname/screenshots/:scrotfilename').put(auth.isAuthentic
             for (i in treat.screenshots) {
                 if (treat.screenshots[i].filename == req.params.scrotfilename) {
                     scrot = treat.screenshots[i];
-                    fs.unlink(scrot.file);
+                    if (fs.existsSync(scrot.file)) {
+                        fs.unlink(scrot.file);
+                    }
                     treat.screenshots.splice(i, 1);
                     if (treat.screenshots.length != 0 && scrot.is_main) {
                         treat.screenshots[0].is_main = true;

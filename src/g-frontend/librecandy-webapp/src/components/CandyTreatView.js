@@ -18,6 +18,11 @@ import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import CandyFetch from './../extjs/CandyFetch';
 import CandyUploader from './CandyUploader';
+import Divider from 'material-ui/Divider';
+import Checkbox from 'material-ui/Checkbox';
+import {List, ListItem} from 'material-ui/List';
+import ActionDeleteForeverIcon from 'material-ui/svg-icons/action/delete-forever';
+import IconButton from 'material-ui/IconButton';
 
 class CandyTreatView extends Component {
     constructor(props) {
@@ -30,22 +35,23 @@ class CandyTreatView extends Component {
             userToken: props.userToken,
             userRating: null,
             newDescription: null,
+            versionCreated: null,
             uploadStarted: false,
             uploadFinished: false,
             canSave: true,
             setUploadStarted: () => {
-              this.setState({
-                uploadStarted: true,
-                uploadFinished: false,
-                canSave: false
-              })
+                this.setState({
+                    uploadStarted: true,
+                    uploadFinished: false,
+                    canSave: false
+                });
             },
             setUploadFinished: () => {
-              this.setState({
-                uploadFinished: true,
-                uploadStarted: false,
-                canSave: true
-              })
+                this.setState({
+                    uploadFinished: true,
+                    uploadStarted: false,
+                    canSave: true
+                });
             },
         };
     }
@@ -100,6 +106,23 @@ class CandyTreatView extends Component {
         );
     }
 
+    createVersion = () => {
+      CandyFetch.postIt(
+          `${this.props.apiServer}/treats/${this.state.treat.package_name}/versions`,
+          this.props.userToken,
+          {
+              version: this.state.newTreatVersion,
+          },
+          (data) => {
+              if(data.success === false){
+                console.log('error while creating the version');
+                return;
+              }
+              this.setState({versionCreated: true})
+          }
+      );
+    }
+
     render() {
         let palette = this.props.muiTheme.palette;
         if (!this.state.treat) {
@@ -123,12 +146,10 @@ class CandyTreatView extends Component {
             });
         }
 
-        let screenshot = (
-          <div></div>
-        );
-        let saveButton = (
-          <div></div>
-        );
+        let screenshot = null;
+        let saveButton = null;
+        let doneEditingButton = null;
+        let versioning = null;
         let description = (
             <div style={{marginTop: '24px'}}>
                 <ReactMarkdown
@@ -149,29 +170,107 @@ class CandyTreatView extends Component {
                         multiLine={true}
                         value={this.state.newDescription}
                     />
-
                 </div>
             )
 
-            screenshot= (
+            screenshot = (
+                <div>
+                    <List style={{
+                        maxHeight:'560px',
+                        overflowY: 'auto'
+                    }}>
+                        {this.state.treat.screenshots.map((screen, iter) => (
+                            <div key={iter}>
+                                <ListItem
+                                    primaryText={
+                                        <img style={{
+                                            objectFit: 'cover',
+                                            width:'96px',
+                                            height:'54px'
+                                        }}
+                                        src={`http://localhost:12345${screen.file}`}  />
+
+                                    }
+                                    disabled={true}
+                                    rightIconButton={
+                                        <IconButton
+                                            touch={true}
+                                            onTouchTap={() => {
+                                                CandyFetch.deleteIt(
+                                                    `${this.props.apiServer}/treats/${this.state.treat.package_name}/screenshots/${screen.filename}`,
+                                                    this.props.userToken,
+                                                    (data) => {
+                                                        this.setState({
+                                                            treat: data.treat
+                                                        })
+                                                    }
+                                                )
+                                            }}
+                                        >
+                                            <ActionDeleteForeverIcon
+                                                color={palette.iconGrey}
+                                            />
+                                        </IconButton>
+                                    }
+
+                                />
+                                <Divider />
+                            </div>
+                        ))}
+                    </List>
+                    <span>Upload more screenshots</span>
+                    <CandyUploader
+                        fileType="image"
+                        requestKey="screenshot"
+                        userToken={this.props.userToken}
+                        setUploadFinished={this.state.setUploadFinished}
+                        setUploadStarted={this.state.setUploadStarted}
+                        requestUrl={`${this.props.apiServer}/treats/${this.state.treat.package_name}/screenshots`}
+                        onUploadFinished={(data) => this.setState({treat: data.treat})}
+                        label='Upload screenshot'
+                        keepAfterUpload={false}
+                        allowMultiple={true}
+                    />
+                </div>
+            )
+
+            versioning = (
               <div>
-                <CandyUploader
-                    fileType="image"
-                    requestKey="screenshot"
-                    userToken={this.props.userToken}
-                    setUploadFinished={this.state.setUploadFinished}
-                    setUploadStarted={this.state.setUploadStarted}
-                    requestUrl={`${this.props.apiServer}/treats/${this.state.treat.package_name}/screenshots`}
-                    label='Upload images'
-                    allowMultiple={true}
-                />
+                <div>
+                  <div>
+                    <TextField
+                      floatingLabelText='Version'
+                      onChange={(event, newTreatVersion) => {
+                          this.setState({newTreatVersion});
+                      }}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <span>Treat will be uploaded for version {this.state.newTreatVersion}</span>
+                  <CandyUploader
+                      fileType="compressed"
+                      requestKey="versionfile"
+                      userToken={this.props.userToken}
+                      setUploadFinished={this.state.setUploadFinished}
+                      setUploadStarted={this.state.setUploadStarted}
+                      beforeUpload={() => {
+                          this.createVersion();
+                      }}
+                      enabled={!!this.state.newTreatVersion}
+                      onUploadFinished={(data) => this.setState({treat: data.treat})}
+                      requestUrl={`${this.props.apiServer}/treats/${this.state.treat.package_name}/versions/${this.state.newTreatVersion}/file`}
+                      label='Create version'
+                  />
+                </div>
               </div>
+
             )
 
             saveButton = (
               <RaisedButton
                   label='Save'
-                  secondary={true}
+                  primary={true}
                   disabled={!this.state.canSave}
                   onTouchTap={() => {
                       CandyFetch.putIt(
@@ -184,11 +283,20 @@ class CandyTreatView extends Component {
                               console.log('treat modified');
                               let newtreat=this.state.treat;
                               newtreat.description=this.state.newDescription;
-                              this.setState({edit: false, treat: newtreat});
+                              this.setState({treat: newtreat});
                           }
                       );
                   }}
               />
+            )
+            doneEditingButton = (
+                <FlatButton
+                    label='Done'
+                    secondary={true}
+                    onTouchTap={() => {
+                        this.setState({edit: false});
+                    }}
+                />
             )
         }
 
@@ -207,7 +315,9 @@ class CandyTreatView extends Component {
                 <Grid>
                     <Row>
                         <Col xs={12}>
-                            <CandyScreenshotGallery screenshots={formattedScreenshots}></CandyScreenshotGallery>
+                            <CandyScreenshotGallery
+                                screenshots={formattedScreenshots}
+                            />
                         </Col>
                     </Row>
                     <Row>
@@ -242,15 +352,26 @@ class CandyTreatView extends Component {
                                     <div style={{position: 'relative'}}>
                                         {editBtn}
                                         {description}
-                                        {screenshot}
                                         {saveButton}
+                                        {screenshot}
+                                        {versioning}
+                                        {doneEditingButton}
                                     </div>
                                 </CardText>
                             </Card>
                         </Col>
                         <Col xs={12} md={4} lg={4}>
                             <CandyTreatDownloadBox
-                                versions={this.state.treat.details}
+                                treat={this.state.treat}
+                                userToken={this.props.userToken}
+                                apiServer={this.props.apiServer}
+                                edit={this.state.edit}
+                                onVersionDelete={(data) => {
+                                    this.setState({treat: data.treat});
+                                }}
+                                onVersionDeprecateToggle={(data) => {
+                                    this.setState({treat: data.treat});
+                                }}
                             />
                         </Col>
                         <Col xs={12}>

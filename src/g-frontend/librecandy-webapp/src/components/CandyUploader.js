@@ -68,15 +68,18 @@ class CandyUploader extends Component{
           headers: headers,
           body: formData
       };
+      if(this.props.beforeUpload){
+          this.props.beforeUpload();
+      }
       fetch(this.props.requestUrl, request)
       .then(response => {return response.json()})
       .then(data => {
-        console.log('File uploaded')
         fileProcessed++;
         if(fileProcessed === this.state.files.length){
-          this.handleEndOfUpload()
-          console.log('All files were uploaded');
-
+          this.handleEndOfUpload();
+          if(this.props.onUploadFinished){
+              this.props.onUploadFinished(data);
+          }
         }
         console.log(data)
       })
@@ -96,15 +99,27 @@ class CandyUploader extends Component{
     }
   }
 
+    renderUploadedFiles = () => {
+        if(this.props.keepAfterUpload){
+            return(this.state.uploaded.map((image, id) => { //insert an icon for the upload
+                return(
+                    <GridTile key={id} style={{padding:40}}>
+                        <img className='previewImage' src={image.preview} />
+                    </GridTile>
+                );
+            }))
+        }else{
+            return(<GridList></GridList>)
+        }
+    }
 
-  printFileContainer = () => {
+    printFileContainer = () => {
     switch(this.props.fileType){
       case 'image':
         return(
-          <div>
+          <div style={this.props.style}>
           <GridList
-            cellHeight={180}
-            style={styles.gridList}
+            style={{...styles.gridList, height: 'auto', maxHeight: '300px', minHeight: '140px'}}
           >
 
           {this.state.files.map((image, id) => {
@@ -118,30 +133,10 @@ class CandyUploader extends Component{
             );
           })
           }
-          {this.state.uploaded.map((image, id) => { //insert an icon for the upload
-            return(
-              <GridTile key={id} style={{padding:40}}>
-                <img className='previewImage' src={image.preview} />
-              </GridTile>
-            );
-          })
-          }
+
+          {this.renderUploadedFiles()}
 
         </GridList>
-          <FileCloudUploadIcon
-            color={this.props.muiTheme.palette.iconGrey}
-            style={{
-                height: '40%',
-                width: '40%',
-                position: 'absolute',
-                top: '10%',
-                left: '0',
-                right: '0',
-                marginLeft: 'auto',
-                marginRight: 'auto',
-                zIndex: '-9999'
-            }}
-          />
           </div>
         )
         break;
@@ -173,7 +168,8 @@ class CandyUploader extends Component{
       <div>
       <div style={{
           border: `2px ${this.props.muiTheme.palette.iconGrey} solid`,
-          borderRadius: '5px'
+          borderRadius: '5px',
+          padding: '2px'
       }}>
         <div>
           {this.printFileContainer()}
@@ -181,17 +177,25 @@ class CandyUploader extends Component{
         <Dropzone
               onDrop={this.onDrop}
               accept={this.state.accepted}
+
               className='candyUploader'
               >
 
-          <p>Drop your files here, or click to select files to upload.</p>
+          <div style={{
+              padding: '50px 0 50px 0',
+              margin: 'auto',
+              width: '98%',
+              border: `2px ${this.props.muiTheme.palette.iconGrey} dashed`
+          }}>
+              Drop your files here, or click to select files to upload.
+          </div>
         </Dropzone>
           </div>
           <RaisedButton
-            label='Upload'
+            label={this.props.label}
             primary={true}
             onTouchTap={this.uploadFiles}
-            disabled={(this.state.files.length > 0 ? false : true)}
+            disabled={!this.state.files.length || !this.props.enabled}
             style={{marginTop:20}}
           />
 
@@ -201,7 +205,10 @@ class CandyUploader extends Component{
   }
 
   static defaultProps = {
-    allowMultiple: false
+    allowMultiple: false,
+    keepAfterUpload: true,
+    enabled: true,
+    label: 'Upload'
   }
 }
 const styles = {

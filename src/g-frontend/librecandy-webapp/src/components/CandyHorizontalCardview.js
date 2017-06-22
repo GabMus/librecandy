@@ -52,43 +52,46 @@ class CandyHorizontalCardview extends Component {
             )
         }
 
-        /*let getWidth = () => {
-            let vw=document.documentElement.clientWidth;
-            let cw=250+24;
-            let n=Math.floor(vw/cw);
-            return vw-(vw/n);
-        }*/
-
         return (
-            <div className='CandyHorizontalCardview' style={{margin: 'auto', display: 'block'}}>
+            <div className='CandyHorizontalCardview' style={{margin: 'auto', display: 'block'}} >
 
                 {sectionLabelHeader}
                 <div style={{
-                    width: '100%',
-                    margin: 'auto',
                     display: 'flex',
-                    flexWrap: 'wrap',
-                    alignItems: 'left',
-                    alignContent: 'left',
-                    justifyContent: 'left'
                 }}>
-                    {(this.props.treats && this.props.treats.map((treat, iter) => {
-                        let pic=null;
-                        if (treat.screenshots) {
-                            pic=treat.screenshots[0];
-                        }
-                        return (<CandyTreatCard
-                            treat={treat}
-                            treatname={treat.name}
-                            treatrating={treat.total_rating}
-                            treatpic={pic}
-                            treatauthor={treat.author}
-                            treatcategory={treat.category}
-                            key={iter}
-                        />);
-                    })) || <h2>Nothing here!</h2>}
-                    {seemoreOrNothing}
-
+                    <span style={{
+                        width: '10%',
+                    }} />
+                    <div style={{
+                        width: this.props.twoCols ? '548px' : '100%',
+                        maxWidth: '100%',
+                        margin: 'auto',
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        alignItems: 'left',
+                        alignContent: 'left',
+                        justifyContent: 'left'
+                    }} className='hcardviewContainer'>
+                        {(this.props.treats && this.props.treats.map((treat, iter) => {
+                            let pic=null;
+                            if (treat.screenshots) {
+                                pic=treat.screenshots[0];
+                            }
+                            return (<CandyTreatCard
+                                treat={treat}
+                                treatname={treat.name}
+                                treatrating={treat.total_rating}
+                                treatpic={pic}
+                                treatauthor={treat.author}
+                                treatcategory={treat.category}
+                                key={iter}
+                            />);
+                        })) || <h2>Nothing here!</h2>}
+                        {seemoreOrNothing}
+                    </div>
+                    <span style={{
+                        width: '10%',
+                    }} />
                 </div>
             </div>
         );

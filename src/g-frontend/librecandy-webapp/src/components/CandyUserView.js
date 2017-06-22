@@ -8,6 +8,8 @@ import { Grid, Row, Col } from 'react-flexbox-grid-aphrodite';
 
 import CandyUserCard from './CandyUserCard';
 import CandyHorizontalCardview from './CandyHorizontalCardview';
+import CandyFetch from '../extjs/CandyFetch';
+
 
 class CandyUserView extends Component {
     constructor(props) {
@@ -29,53 +31,18 @@ class CandyUserView extends Component {
     }
 
     componentDidMount() {
-        let headers = {
-            'Access-Control-Allow-Origin':'*',
-        };
-        if (this.state.userToken) {
-            headers['Authorization'] = `JWT ${this.state.userToken}`;
-        }
-        let request = {
-            method: 'GET',
-            mode: 'cors',
-            headers: headers,
-        };
-        fetch(`${this.props.apiServer}/users/${this.props.match.params.username}`, request)
-            .then(response => {
-                if (response.ok) {
-                    return response.json();
-                }
-                else {
-                    return response;
-                }
-            })
-            .then(data => {
-                if (data.status) {
-                    console.log('Error');
-                }
-                else {
-                    this.setState({user: data});
-                    fetch(`${this.props.apiServer}/users/${this.props.match.params.username}/treats?limit=999`, request)
-                        .then(response => {
-                            //console.log(response);
-                            if (response.ok) {
-                                return response.json();
-                            }
-                            else {
-                                return response;
-                            }
-                        })
-                        .then(data => {
-                            if (data.status) {
-                                console.log('Error');
-                            }
-                            else {
-                                this.setState({treats: data.treats});
-
-                            }
-                        }
-                    );
-                }
+        CandyFetch.getIt(
+            `${this.props.apiServer}/users/${this.props.match.params.username}`,
+            this.props.userToken,
+            (data) => {
+                this.setState({user: data});
+                CandyFetch.getIt(
+                    `${this.props.apiServer}/users/${this.props.match.params.username}/treats?limit=999`,
+                    this.props.userToken,
+                    (data) => {
+                        this.setState({treats: data.treats});
+                    }
+                );
             }
         );
     }
@@ -98,6 +65,7 @@ class CandyUserView extends Component {
                             <CandyHorizontalCardview
                                 treats={this.state.treats}
                                 seemore={false}
+                                twoCols={true}
                             />
                         </Col>
                     </Row>

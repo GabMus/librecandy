@@ -1,6 +1,6 @@
 # LibreCandy
 
-<img src="frontend/logo.png" width="200">
+<img src="doc/frontend/logo.png" width="200">
 
 Librecandy è una piattaforma pensata e sviluppata per permettere agli utenti di condividere dei contenuti estetici per Linux. Questo progetto va a favore dell'open-source e cerca di migliorare l'esperienza degli utenti Linux nell'ambito di personalizzazione grafica del proprio ambiente desktop. La piattaforma fornisce la possibilità di poter commentare e votare dei prodotti di altri utenti nell'intento di creare una community che incarni a pieno i principi e i vantaggi dello sviluppo open-source.
 
@@ -18,19 +18,21 @@ Di seguito viene illustrato quali servizi sono stati utilizzati:
 
 
 
-<img src="Icons/vm.png" width="50"> Virtual Machine (Backend)
+<img src="doc/Icons/vm.png" width="50"> Virtual Machine (Backend)
 
-<img src="Icons/vm.png" width="50"> Virtual Machine (Frontend)
+    
 
-<img src="Icons/db.png" width="50"> MongoDB Service
+<img src="doc/Icons/vm.png" width="50"> Virtual Machine (Frontend)
 
-<img src="Icons/cdn.png" width="50"> Content Delivery Network (CDN)
+<img src="doc/Icons/db.png" width="50"> MongoDB Service
 
-<img src="Icons/storage.png" width="50"> Storage service
+<img src="doc/Icons/cdn.png" width="50"> Content Delivery Network (CDN)
 
-<img src="Icons/log.png" width="50"> Application Insights - Log Analytics
+<img src="doc/Icons/storage.png" width="50"> Storage service
 
-<img src="Icons/backup.png" width="50"> Recovery service
+<img src="doc/Icons/log.png" width="50"> Application Insights - Log Analytics
+
+<img src="doc/Icons/backup.png" width="50"> Recovery service
 
 ## Documentazione API
 

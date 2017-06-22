@@ -1,2 +1,0 @@
--Backend
-Create requests for get avatar images / version treat files / treat screenshots

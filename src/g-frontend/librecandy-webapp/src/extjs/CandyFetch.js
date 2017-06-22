@@ -44,6 +44,7 @@ const CandyFetch = {
         }).then(data => {
             if (data.status) {
                 console.log('Error');
+                console.log(data);
                 if (errCb)
                     errCb(data);
             }

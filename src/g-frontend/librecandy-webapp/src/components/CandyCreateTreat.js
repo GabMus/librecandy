@@ -95,9 +95,16 @@ class CandyCreateTreat extends React.Component {
               },
               (data) => {
                 if (data.success===false) {
+                    console.log(data);
                     this.setState({
                         nameError: data.message,
                         descriptionError: data.message,
+                    });
+                    return;
+                }
+                else if  ('code' in data) {
+                    this.setState({
+                        nameError: 'A treat with this name already exists for this user',
                     });
                     return;
                 }
@@ -105,11 +112,6 @@ class CandyCreateTreat extends React.Component {
                     nameError: null,
                     descriptionError: null,
                 });
-
-                if("code" in data){
-                  console.error("Error while creating the treat");
-                  return;
-                }
                 this.setState({treatPackageName: data.treat.package_name});
                 this.dummyAsync(() => this.setState({
                   loading: false,

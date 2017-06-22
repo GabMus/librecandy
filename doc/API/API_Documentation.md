@@ -1,6 +1,6 @@
 # API DOCUMENTATION
 
-<img src="frontend/logo.png" width="200">
+<img src="../frontend/logo.png" width="200">
 
 ## BASE URI : /api/v1/
 
@@ -74,7 +74,7 @@ password
 
 Rimuove l'utente dato in input dal sistema
 
-### /user/:username/avatar
+### /users/:username/avatar
 
 #### Post
 
@@ -88,7 +88,7 @@ file
 
 Elimina l'immagine del profilo all'utente dato in input
 
-### /user/:username/treats
+### /users/:username/treats
 
 #### Get
 

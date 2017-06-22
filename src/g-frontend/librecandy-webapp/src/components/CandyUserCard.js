@@ -59,7 +59,7 @@ class CandyUserCard extends Component {
       fetch(`${this.props.apiServer}/users/${this.props.user.username}/avatar`, request)
       .then(response => {return response.json()})
       .then(data => console.log(data))
-      .catch(error => console.log(error))
+      .catch(error => console.error(error))
     }
 
     render() {
@@ -213,6 +213,7 @@ class CandyUserCard extends Component {
                           accept="image/*"
                         >
                         <img src={this.props.user.avatar || `${process.env.PUBLIC_URL}/img/defaultavatar.png`} style={{
+                            border: this.state.edit ? `4px ${palette.iconGrey} dashed` : 'none',
                             borderRadius: '100%',
                             objectFit: 'cover',
                             width: '170px',

@@ -208,29 +208,6 @@ class CandyCreateTreat extends React.Component {
     );
   }
 
-  getVersionCreationForm2 = () => {
-
-    return (
-      <div>
-          <div>
-            <TextField
-              floatingLabelText='Version'
-              onChange={(event, treatVersion) => {
-                  this.setState({treatVersion});
-              }}
-            />
-          </div>
-          <div>
-            <RaisedButton
-              label={'Create version'}
-              primary={true}
-              disabled={(this.state.treatVersion === "")}
-              onTouchTap={this.createVersion}
-            />
-          </div>
-      </div>
-  )}
-
   getVersionCreationForm = () => {
       return(
         <div>
@@ -245,7 +222,6 @@ class CandyCreateTreat extends React.Component {
             </div>
           </div>
           <div style={{paddingTop:'24px'}}>
-
             <CandyUploader
                 fileType="compressed"
                 requestKey="versionfile"
@@ -289,28 +265,10 @@ class CandyCreateTreat extends React.Component {
         );
         break;
       case 2:
-        if(!this.state.versionCreated){
-          return (
+        return(
             this.getVersionCreationForm()
-          );
-          break;
-        }else{
-          return (
-            <div>
-              <CandyUploader
-                  fileType="compressed"
-                  requestKey="versionfile"
-                  userToken={this.props.userToken}
-                  setUploadFinished={this.state.setUploadFinished}
-                  setUploadStarted={this.state.setUploadStarted}
-                  requestUrl={`${this.props.apiServer}/treats/${this.state.treatPackageName}/versions/${this.state.treatVersion}/file`}
-                  label='Upload file'
-                  allowMultiple={false}
-              />
-            </div>
-          )
-        }
-
+        );
+        break;
       default:
         return 'You\'re a long way from home sonny jim!';
     }

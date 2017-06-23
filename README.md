@@ -16,7 +16,7 @@ Per la produzione della piattaforma sono stati utilizzati i servizi di Microsoft
 Microsoft Azure è una raccolta di servizi cloud integrati in continua evoluzione usata da sviluppatori e i professionisti IT per creare, distribuire e gestire applicazioni tramite la nostra rete globale di data center.<sup><a href="https://azure.microsoft.com/it-it/overview/what-is-azure/">Microsoft</a></sup>
 La produzione è stata studiata e progettata per poter essere altamente scalabile e per poter fornire prestazioni di tutto rispetto sin dai primi periodi di lancio. Per ottenere ciò Azure fornisce molti servizi che permettono di risolvere i più comuni problemi di produzione in modo semplice e veloce.
 
-<img src="doc/planning.png" width="100">
+<img src="doc/planning.png" width="600">
 
 Di seguito viene illustrato quali servizi sono stati utilizzati:
 
